@@ -3,16 +3,22 @@
   <string name="action_settings">Settings</string>
   <string name="title_activity_settings">Settings</string>
 
+  <!--  Strings related to Intents -->
+
+  <!--  Email Intent: Send Order By Email -->
   <string name="intent_title_send_order_by_email">Send Order</string>
   <string name="intent_request_code_send_order_by_email">intent_request_code_send_order_by_email</string>
+  <string name="intent_extra_text_body_send_order_by_email">Attached is a lanyard keychain order for %1$s.</string>
 
-  <string name="bundle_key_store_name">bundle_key_store_name</string>
-  <string name="bundle_key_order_date">bundle_key_order_date</string>
-  <string name="bundle_key_quantity_cell_values">bundle_key_quantity_cell_values</string>
+  <!--  Bundles -->
 
-  <!--  Strings related to Layouts -->
+  <!--  Bundles:  OrderFragment savedInstanceState -->
+  <string name="bundle_key_orderFragment_savedInstanceState_store_name">bundle_key_store_name</string>
+  <string name="bundle_key_orderFragment_savedInstanceState_order_date">bundle_key_order_date</string>
+  <string name="bundle_key_orderFragment_savedInstanceState_quantity_cell_values">bundle_key_quantity_cell_values</string>
 
-  <!--  MainActivityFragment -->
+  <!--  Layouts -->
+  <!--  Layouts:  MainActivityFragment -->
   <string name="logoImage_SRP_contentDescription">Logo for SRP Companies</string>
   <string name="logoImage_TheNamePeople">Logo of The Name People</string>
   <string name="orderButton_text">Order Keychains</string>
@@ -20,40 +26,58 @@
   <string name="generateButton_text">DEBUG: Generate</string>
   <string name="settingsButton_text">Settings</string>
 
-  <!--  OrderFragment -->
+  <!--  Layouts:  OrderFragment -->
   <string name="storeNameText_hint">Store Name</string>
   <string name="dateText_hint">Date</string>
   <string name="resetButton_text">Reset Order</string>
   <string name="sendButton_text">Send Order</string>
 
-  <!--  Strings related to Settings -->
+  <!--  Layouts:  RequiredFieldsDialogFragment -->
+  <string name="editName_hint">Name</string>
+  <string name="editTerritory_hint">Territory</string>
+  <string name="textMessage_text">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory (ex: LIT3). If you ever need to change any of these, you can do so by clicking on Settings on the main screen.</string>
 
-  <!--  Required Fields -->
+  <!--  AlertDialog -->
+  <!--  AlertDialog:  Cancel Order -->
+  <string name="dialog_title_cancel_order">Cancel Order?</string>
+  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>
+  <string name="dialog_positive_button_cancel_order">Cancel Order</string>
+  <string name="dialog_negative_button_cancel_order">Go Back</string>
+
+  <!--  AlertDialog:  Reset Order -->
+  <string name="dialog_title_reset_order">Reset Order</string>
+  <string name="dialog_message_reset_order">Are you sure you want to reset the current order?</string>
+  <string name="dialog_positive_button_reset_order">Reset Order</string>
+  <string name="dialog_negative_button_reset_order">Go Back</string>
+
+  <!--  AlertDialog:  Incomplete Order -->
+  <string name="dialog_title_incomplete_order">Incomplete Order</string>
+  <string name="dialog_message_incomplete_order">You\'re about to send an order that isn\'t finished, do you wish to continue?</string>
+  <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.</string>
+  <string name="dialog_message_incomplete_order_date_empty">- Date is empty.</string>
+  <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were ordered.</string>
+  <string name="dialog_positive_button_incomplete_order">Continue</string>
+  <string name="dialog_negative_button_incomplete_order">Go Back</string>
+
+  <!--  Toasts -->
+  <string name="toast_dialog_cancel_order_success">Order canceled.</string>
+  <string name="toast_send_order_by_email_success">Order was sent.</string>
+  <string name="toast_dialog_incomplete_order_keychains_empty">You haven\'t chosen any keychains to order.</string>
+
+  <!--  Settings -->
+
+  <!--  Settings: Required Fields -->
   <string name="pref_header_title_required_fields">Required Fields</string>
 
-  <!--  Required Fields: Rep Name -->
+  <!--  Settings: Required Fields: Rep Name -->
   <string name="pref_key_rep_name">pref_key_rep_name</string>
   <string name="pref_title_rep_name">Rep Name</string>
   <string name="pref_description_rep_name">Your name (ex: Chuck Norris), used in order forms.</string>
 
-  <!--  Required Fields: Rep Territory -->
+  <!--  Settings: Required Fields: Rep Territory -->
   <string name="pref_key_rep_territory">pref_key_territory</string>
   <string name="pref_title_rep_territory">Rep Territory</string>
   <string name="pref_description_rep_territory">Your territory (ex: LIT3), used in order forms.</string>
-
-  <!--  Adjustable Fields -->
-  <string name="pref_header_title_adjustable_fields">Adjustable Fields</string>
-
-  <!--&lt;!&ndash;  Adjustable Fields: Default Order Quantity &ndash;&gt;-->
-  <!--<string name="pref_key_default_order_quantity">pref_key_default_order_quantity</string>-->
-  <!--<string name="pref_title_default_order_quantity">Default Order Quantity</string>-->
-  <!--<string name="pref_description_default_order_quantity">Quantity used to when clicking a keychain name.</string>-->
-  <!--<string name="pref_default_value_default_order_quantity">4</string>-->
-
-  <!--&lt;!&ndash;  Adjustable Fields: SendTo Email &ndash;&gt;-->
-  <!--<string name="pref_key_sendto_email">pref_key_sendto_email</string>-->
-  <!--<string name="pref_title_sendto_email">Keychain Order Email</string>-->
-  <!--<string name="pref_description_sendto_email">Email used when sending orders. Do not change unless requested to do so.</string>-->
 
   <!--  String formats -->
   <!--  String formats: Filename (Ex: lanyard_keychain_order-lit3-big_red_148-20180205.xls) -->
@@ -79,9 +103,6 @@
   <!--  Strings related to Excel -->
 
   <string name="excel_template_filename">template.xls</string>
-  <string name="editName_hint">Name</string>
-  <string name="editTerritory_hint">Territory</string>
-  <string name="textMessage_text">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory (ex: LIT3). If you ever need to change any of these, you can do so by clicking on Settings on the main screen.</string>
 
   <string-array name="excel_cell_values_names">
     <item>Army</item>
@@ -639,4 +660,6 @@
     <item>I114</item>
   </string-array>
 
+  <!--  Strings related to JSON -->
+  <string name="json_filename_previous_orders">orders.json</string>
 </resources>

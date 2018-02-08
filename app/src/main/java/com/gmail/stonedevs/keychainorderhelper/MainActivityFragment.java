@@ -65,8 +65,11 @@ public class MainActivityFragment extends Fragment {
     });
 
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-    String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
+    String defaultRepName = BuildConfig.DEBUG ? "Chuck Norris" : "";
+    String defaultTerritory = BuildConfig.DEBUG ? "LIT3" : "";
+    String repName = prefs.getString(getString(R.string.pref_key_rep_name), defaultRepName);
+    String repTerritory = prefs
+        .getString(getString(R.string.pref_key_rep_territory), defaultTerritory);
 
     if (repName.isEmpty() || repTerritory.isEmpty()) {
       RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();

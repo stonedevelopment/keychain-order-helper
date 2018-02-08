@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +21,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.gmail.stonedevs.keychainorderhelper.json.JSONOrderEntry;
+import com.gmail.stonedevs.keychainorderhelper.json.JSONOrderEntryList;
+import com.gmail.stonedevs.keychainorderhelper.util.JSONUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +48,7 @@ public class OrderFragment extends BackHandledFragment {
   public static final String TAG = OrderFragment.class.getSimpleName();
 
   private EditText mEditStoreName;
-  private EditText mEditDate;
+  private EditText mEditOrderDate;
 
   private RecyclerView mRecyclerView;
   private OrderAdapter mAdapter;
@@ -79,25 +81,30 @@ public class OrderFragment extends BackHandledFragment {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_order, container, false);
 
-    String storeName = "";
-    String date = "";
+    String defaultStoreName = BuildConfig.DEBUG ? "Store Name 1" : "";
+    String defaultOrderDate = BuildConfig.DEBUG ? Util.getFormattedDateForLayout() : "";
+
+    String storeName = defaultStoreName;
+    String orderDate = defaultOrderDate;
     ArrayList<Integer> quantityCellValues = new ArrayList<>(0);
 
     if (savedInstanceState != null) {
-      storeName = savedInstanceState.getString(getString(R.string.bundle_key_store_name), "");
-      date = savedInstanceState.getString(getString(R.string.bundle_key_order_date), "");
+      storeName = savedInstanceState
+          .getString(getString(R.string.bundle_key_orderFragment_savedInstanceState_store_name), defaultStoreName);
+      orderDate = savedInstanceState
+          .getString(getString(R.string.bundle_key_orderFragment_savedInstanceState_order_date), defaultOrderDate);
       quantityCellValues = savedInstanceState
-          .getIntegerArrayList(getString(R.string.bundle_key_quantity_cell_values));
+          .getIntegerArrayList(getString(R.string.bundle_key_orderFragment_savedInstanceState_quantity_cell_values));
     }
 
     mEditStoreName = view.findViewById(R.id.editStoreName);
     mEditStoreName.setText(storeName);
 
-    mEditDate = view.findViewById(R.id.editDate);
-    if (date.isEmpty()) {
-      date = Util.getFormattedDateForLayout();
+    mEditOrderDate = view.findViewById(R.id.editOrderDate);
+    if (orderDate.isEmpty()) {
+      orderDate = Util.getFormattedDateForLayout();
     }
-    mEditDate.setText(date);
+    mEditOrderDate.setText(orderDate);
 
     mRecyclerView = view.findViewById(R.id.orderRecyclerView);
 
@@ -136,20 +143,22 @@ public class OrderFragment extends BackHandledFragment {
       @Override
       public void onClick(View v) {
         AlertDialog.Builder builder = new Builder(getActivity());
-        builder.setTitle("Reset Order");
+        builder.setTitle(R.string.dialog_title_reset_order);
         builder.setMessage(
-            "Are you sure you want to reset the current order?");
-        builder.setPositiveButton("Reset Order", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            resetOrder();
-          }
-        });
-        builder.setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-          }
-        });
+            R.string.dialog_message_reset_order);
+        builder.setPositiveButton(R.string.dialog_positive_button_reset_order,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                resetOrder();
+              }
+            });
+        builder.setNegativeButton(R.string.dialog_negative_button_reset_order,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+              }
+            });
         builder.show();
       }
     });
@@ -159,20 +168,20 @@ public class OrderFragment extends BackHandledFragment {
       @Override
       public void onClick(View v) {
         final boolean isStoreNameEmpty = mEditStoreName.getText().toString().isEmpty();
-        final boolean isDateEmpty = mEditDate.getText().toString().isEmpty();
+        final boolean isDateEmpty = mEditOrderDate.getText().toString().isEmpty();
         final boolean areCellsEmpty = areCellsEmpty();
 
         if (isStoreNameEmpty || isDateEmpty || areCellsEmpty) {
           List<String> messages = new ArrayList<>(0);
 
           if (isStoreNameEmpty) {
-            messages.add("- Store name is empty.\n");
+            messages.add(getString(R.string.dialog_message_incomplete_order_store_name_empty));
           }
           if (isDateEmpty) {
-            messages.add("- Date is empty.\n");
+            messages.add(getString(R.string.dialog_message_incomplete_order_date_empty));
           }
           if (areCellsEmpty) {
-            messages.add("- No keychains were ordered.");
+            messages.add(getString(R.string.dialog_message_incomplete_order_keychains_empty));
           }
 
           StringBuilder messageFormat = new StringBuilder(0);
@@ -181,33 +190,36 @@ public class OrderFragment extends BackHandledFragment {
           }
 
           AlertDialog.Builder builder = new Builder(getActivity());
-          builder.setTitle("Incomplete Order");
+          builder.setTitle(R.string.dialog_title_incomplete_order);
           builder.setMessage(
-              "You're about to send an order that isn't finished, do you wish to continue?\n\n"
+              getString(R.string.dialog_message_incomplete_order)
                   + messageFormat);
-          builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              try {
-                sendOrderByEmail(generateExcelFile());
-              } catch (IOException | InvalidFormatException | ParseException e) {
-                e.printStackTrace();
-              }
-            }
-          });
-          builder.setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-              if (isStoreNameEmpty) {
-                mEditStoreName.requestFocus();
-              } else if (isDateEmpty) {
-                mEditDate.requestFocus();
-              } else if (areCellsEmpty) {
-                Toast.makeText(getContext(), "You haven't chosen any keychains to order.",
-                    Toast.LENGTH_SHORT).show();
-              }
-            }
-          });
+          builder.setPositiveButton(R.string.dialog_positive_button_incomplete_order,
+              new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  try {
+                    sendOrderByEmail(generateExcelFile());
+                  } catch (IOException | InvalidFormatException | ParseException e) {
+                    e.printStackTrace();
+                  }
+                }
+              });
+          builder.setNegativeButton(R.string.dialog_negative_button_incomplete_order,
+              new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  if (isStoreNameEmpty) {
+                    mEditStoreName.requestFocus();
+                  } else if (isDateEmpty) {
+                    mEditOrderDate.requestFocus();
+                  } else if (areCellsEmpty) {
+                    Toast.makeText(getContext(),
+                        R.string.toast_dialog_incomplete_order_keychains_empty,
+                        Toast.LENGTH_SHORT).show();
+                  }
+                }
+              });
           builder.show();
         } else {
           try {
@@ -226,9 +238,10 @@ public class OrderFragment extends BackHandledFragment {
   @Override
   public void onSaveInstanceState(Bundle outState) {
     outState
-        .putString(getString(R.string.bundle_key_store_name), mEditStoreName.getText().toString());
-    outState.putString(getString(R.string.bundle_key_order_date), mEditDate.getText().toString());
-    outState.putIntegerArrayList(getString(R.string.bundle_key_quantity_cell_values),
+        .putString(getString(R.string.bundle_key_orderFragment_savedInstanceState_store_name), mEditStoreName.getText().toString());
+    outState
+        .putString(getString(R.string.bundle_key_orderFragment_savedInstanceState_order_date), mEditOrderDate.getText().toString());
+    outState.putIntegerArrayList(getString(R.string.bundle_key_orderFragment_savedInstanceState_quantity_cell_values),
         (ArrayList<Integer>) getQuantityCellValues());
 
     super.onSaveInstanceState(outState);
@@ -265,7 +278,7 @@ public class OrderFragment extends BackHandledFragment {
     mEditStoreName.setText(null);
 
     //  reset date
-    mEditDate.setText(Util.getFormattedDateForLayout());
+    mEditOrderDate.setText(Util.getFormattedDateForLayout());
 
     //  reset cell values
     for (int i = 0; i < mAdapter.getItemCount(); i++) {
@@ -305,13 +318,14 @@ public class OrderFragment extends BackHandledFragment {
     emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
     //  the mail body
-    String body = String.format("Attached is a lanyard keychain order for %1$s.", storeName);
+    String body = String
+        .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
     emailIntent.putExtra(Intent.EXTRA_TEXT, body);
 
     //  send email!
-    startActivityForResult(
-        Intent.createChooser(emailIntent, getString(R.string.intent_title_send_order_by_email)),
-        R.string.intent_request_code_send_order_by_email);
+//    startActivityForResult(
+//        Intent.createChooser(emailIntent, getString(R.string.intent_title_send_order_by_email)),
+//        R.string.intent_request_code_send_order_by_email);
   }
 
   @Override
@@ -320,7 +334,9 @@ public class OrderFragment extends BackHandledFragment {
 
     switch (requestCode) {
       case R.string.intent_request_code_send_order_by_email:
-        Toast.makeText(getActivity(), "Order was sent.", Toast.LENGTH_SHORT).show();
+        Toast
+            .makeText(getActivity(), R.string.toast_send_order_by_email_success, Toast.LENGTH_SHORT)
+            .show();
         mSentEmail = true;
         break;
     }
@@ -353,11 +369,11 @@ public class OrderFragment extends BackHandledFragment {
     }
 
     //  Write Current Date.
-    String dateText = mEditDate.getText().toString();
+    String orderDate = mEditOrderDate.getText().toString();
     String[] dateCellLocations = getResources()
         .getStringArray(R.array.excel_cell_locations_order_date);
     for (String cellLocation : dateCellLocations) {
-      getCellByAddress(sheet, cellLocation).setCellValue(dateText);
+      getCellByAddress(sheet, cellLocation).setCellValue(orderDate);
     }
 
     List<String> orderQuantities = new ArrayList<>(0);
@@ -386,22 +402,32 @@ public class OrderFragment extends BackHandledFragment {
 
     SimpleDateFormat format = new SimpleDateFormat(getString(R.string.string_date_layout),
         Locale.getDefault());
-    Date newDate = format.parse(dateText);
+    Date newDate = format.parse(orderDate);
 
     format = new SimpleDateFormat(getString(R.string.string_date_filename), Locale.getDefault());
-    String date = format.format(newDate);
+    String filenameDate = format.format(newDate);
 
     File file = new File(getActivity().getExternalFilesDir(null),
         String.format(getString(R.string.string_format_filename), repTerritory.toLowerCase(),
-            storeName.toLowerCase(), date));
+            storeName.toLowerCase(), filenameDate));
     FileOutputStream out = new FileOutputStream(file);
     workbook.write(out);
     out.close();
 
     //  save to orders.json
-    Log.d(TAG, "generateExcelFile: " + orderQuantities);
+    saveOrderToJson(storeName, orderQuantities, orderDate);
 
     return file;
+  }
+
+  private void saveOrderToJson(String storeName, List<String> orderQuantities, String orderDate)
+      throws IOException {
+    JSONOrderEntryList entryList = JSONUtil.getEntries(getActivity());
+    JSONOrderEntry entry = new JSONOrderEntry(storeName, orderQuantities, orderDate);
+
+    entryList.addEntry(entry);
+
+    JSONUtil.setEntries(getActivity(), entryList);
   }
 
   @Override
@@ -411,20 +437,23 @@ public class OrderFragment extends BackHandledFragment {
     }
 
     AlertDialog.Builder builder = new Builder(getActivity());
-    builder.setTitle("Cancel Order?");
-    builder.setMessage("Are you sure you want to cancel your order?");
-    builder.setPositiveButton("Cancel Order", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        getFragmentManager().popBackStack();
-        Toast.makeText(getActivity(), "Order canceled.", Toast.LENGTH_SHORT).show();
-      }
-    });
-    builder.setNegativeButton("Go Back", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-      }
-    });
+    builder.setTitle(R.string.dialog_title_cancel_order);
+    builder.setMessage(R.string.dialog_message_cancel_order);
+    builder.setPositiveButton(R.string.dialog_positive_button_cancel_order,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            getFragmentManager().popBackStack();
+            Toast.makeText(getActivity(), R.string.toast_dialog_cancel_order_success,
+                Toast.LENGTH_SHORT).show();
+          }
+        });
+    builder.setNegativeButton(R.string.dialog_negative_button_cancel_order,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+          }
+        });
     builder.show();
 
     return true;
