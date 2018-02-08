@@ -46,6 +46,7 @@
 
   <!--  Layouts:  ViewOrderFragment -->
   <string name="action_bar_title_viewOrderFragment">Order Details</string>
+  <string name="resendButton_text">Resend Order</string>
 
   <!--  Layouts:  RequiredFieldsDialogFragment -->
   <string name="dialog_title_required_fields">Required Fields</string>
@@ -75,11 +76,10 @@
 
   <!--  AlertDialog:  Incomplete Order -->
   <string name="dialog_title_incomplete_order">Incomplete Order</string>
-  <string name="dialog_message_incomplete_order">You\'re about to send an order that isn\'t finished, do you wish to continue?\n\n</string>
-  <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.</string>
-  <string name="dialog_message_incomplete_order_date_empty">- Date is empty.</string>
+  <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t finished, please fix the following:\n\n</string>
+  <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
+  <string name="dialog_message_incomplete_order_date_empty">- Order date is empty.\n</string>
   <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were ordered.</string>
-  <string name="dialog_positive_button_incomplete_order">Continue</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
   <!--  Toasts -->

@@ -20,12 +20,10 @@ public class JSONOrderEntryList {
   }
 
   public void addEntry(JSONOrderEntry entry) {
-    if (!entryExists(entry)) {
-      orderEntries.add(entry);
-    }
+    orderEntries.add(entry);
   }
 
-  private boolean entryExists(JSONOrderEntry testEntry) {
+  public boolean entryExists(JSONOrderEntry testEntry) {
     for (JSONOrderEntry entry : orderEntries) {
       if (testEntry.getStoreName().equals(entry.getStoreName()) &&
           testEntry.getOrderQuantities().equals(entry.getOrderQuantities()) &&

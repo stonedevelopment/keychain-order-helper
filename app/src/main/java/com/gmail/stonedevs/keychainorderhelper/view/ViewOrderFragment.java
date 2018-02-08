@@ -1,6 +1,9 @@
 package com.gmail.stonedevs.keychainorderhelper.view;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
@@ -8,15 +11,24 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.adapter.KeychainAdapter;
 import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
 import com.gmail.stonedevs.keychainorderhelper.model.Order;
+import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
 
 public class ViewOrderFragment extends BackHandledFragment {
@@ -60,20 +72,19 @@ public class ViewOrderFragment extends BackHandledFragment {
     super.onCreate(savedInstanceState);
 
     //  set variables here
-    ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_viewOrderFragment));
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+    //  set title of action bar
     ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_previousOrderFragment));
+        .setActionBarTitle(getString(R.string.action_bar_title_viewOrderFragment));
 
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_view_order, container, false);
 
-    String storeName, orderDate;
+    final String storeName, orderDate;
     ArrayList<Integer> orderQuantities;
     Integer orderTotal;
 
@@ -142,6 +153,41 @@ public class ViewOrderFragment extends BackHandledFragment {
     TextView textOrderTotal = view.findViewById(R.id.textOrderTotal);
     textOrderTotal.setText(mOrder.getOrderTotalText(getActivity()));
 
+    Button resendButton = view.findViewById(R.id.resendButton);
+    resendButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        AlertDialog.Builder builder = new Builder(getActivity());
+        builder.setTitle(R.string.dialog_title_send_order);
+        builder.setMessage(getString(R.string.dialog_message_send_order));
+        builder.setPositiveButton(R.string.dialog_positive_button_send_order,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                try {
+                  Workbook workbook = WorkbookFactory.create(getActivity().getAssets().open(
+                      getString(R.string.excel_template_filename)));
+
+                  File file = ExcelUtil
+                      .generateExcelFile(getActivity(), workbook, mOrder.getStoreName(),
+                          mOrder.getOrderDate(), mAdapter.getItems());
+
+                  ((MainActivity) getActivity()).sendOrderByEmail(file, mOrder.getStoreName());
+                } catch (IOException | InvalidFormatException | ParseException e) {
+                  e.printStackTrace();
+                }
+              }
+            });
+        builder.setNegativeButton(R.string.dialog_negative_button_send_order,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                //  do nothing, allow user to double check order.
+              }
+            });
+        builder.show();
+      }
+    });
     return view;
   }
 

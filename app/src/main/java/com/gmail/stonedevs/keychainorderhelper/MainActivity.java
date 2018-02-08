@@ -3,15 +3,20 @@ package com.gmail.stonedevs.keychainorderhelper;
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment.BackHandlerInterface;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements BackHandlerInterface,
     OnBackStackChangedListener {
@@ -125,6 +130,29 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     return false;
   }
 
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    switch (requestCode) {
+      case R.string.intent_request_code_send_order_by_email:
+        Toast
+            .makeText(this, R.string.toast_intent_send_order_by_email_success,
+                Toast.LENGTH_SHORT)
+            .show();
+
+        //  get path of sent excel file from intent bundle
+        Uri path = data.getParcelableExtra(Intent.EXTRA_STREAM);
+
+        //  attempt to delete temp file
+        Util.deleteTempFile(path);
+
+        //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
+        closeFragment();
+        break;
+    }
+  }
+
   void displayHomeUpButton() {
     boolean canGoBack = getFragmentManager().getBackStackEntryCount() > 0;
     getSupportActionBar().setDisplayHomeAsUpEnabled(canGoBack);
@@ -132,6 +160,56 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
 
   public void setActionBarTitle(String title) {
     getSupportActionBar().setTitle(title);
+  }
+
+  public void sendOrderByEmail(File file, String storeName) {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
+        getString(R.string.pref_key_rep_territory));
+
+    Uri path = Uri.fromFile(file);
+    Intent intent = new Intent(Intent.ACTION_SEND);
+
+    // set the type to 'email'
+    intent.setType("vnd.android.cursor.dir/email");
+
+    //  set email address from preferences
+    String sendtoEmail = getString(R.string.pref_default_value_sendto_email);
+    String to[] = {sendtoEmail};
+    intent.putExtra(Intent.EXTRA_EMAIL, to);
+
+    // the attachment
+    intent.putExtra(Intent.EXTRA_STREAM, path);
+
+    // the mail subject
+    String subject = String
+        .format(getString(R.string.string_format_email_subject), repTerritory, storeName);
+    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+
+    //  the mail body
+    String body = String
+        .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
+    intent.putExtra(Intent.EXTRA_TEXT, body);
+
+    //  send email!
+    if (BuildConfig.DEBUG) {
+      //  attempt to delete temp file from path used with intent
+      Util.deleteTempFile(file);
+
+      //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
+      closeFragment();
+    } else {
+      Intent chooser = Intent
+          .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+
+      if (intent.resolveActivity(getPackageManager()) != null) {
+        startActivityForResult(chooser, R.string.intent_request_code_send_order_by_email);
+      }
+    }
+  }
+
+  public void closeFragment() {
+    getFragmentManager().popBackStack();
   }
 
   public void replaceFragmentWithPopAnimation(Fragment fragment) {

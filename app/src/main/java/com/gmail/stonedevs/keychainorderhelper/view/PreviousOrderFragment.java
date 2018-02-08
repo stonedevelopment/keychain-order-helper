@@ -49,13 +49,16 @@ public class PreviousOrderFragment extends BackHandledFragment implements
     super.onCreate(savedInstanceState);
 
     //  set variable values here
-    ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_previousOrderFragment));
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+
+    //  set title of action bar
+    ((MainActivity) getActivity())
+        .setActionBarTitle(getString(R.string.action_bar_title_previousOrderFragment));
+
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_view_order_list, container, false);
 
@@ -102,7 +105,6 @@ public class PreviousOrderFragment extends BackHandledFragment implements
 
     return view;
   }
-
 
   @Override
   public void onSaveInstanceState(Bundle outState) {

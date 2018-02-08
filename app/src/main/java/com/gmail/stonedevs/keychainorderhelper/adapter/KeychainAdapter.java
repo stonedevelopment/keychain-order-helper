@@ -47,6 +47,10 @@ public class KeychainAdapter extends RecyclerView.Adapter<KeychainViewHolder> {
     return mItems.get(position);
   }
 
+  public List<Keychain> getItems() {
+    return mItems;
+  }
+
   public void bindItems(List<Keychain> items) {
     mItems.clear();
     mItems.addAll(items);

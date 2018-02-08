@@ -1,8 +1,8 @@
 package com.gmail.stonedevs.keychainorderhelper.model.json;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.Order;
 import java.util.ArrayList;
-import java.util.List;
 
 @JsonPropertyOrder({"storeName", "orderDate", "orderQuantities", "orderTotal"})
 public class JSONOrderEntry {
@@ -13,6 +13,11 @@ public class JSONOrderEntry {
   private Integer orderTotal;
 
   public JSONOrderEntry() {
+  }
+
+  public JSONOrderEntry(Order order) {
+    this(order.getStoreName(), order.getOrderDate(), order.getOrderQuantities(),
+        order.getOrderTotal());
   }
 
   public JSONOrderEntry(String storeName, String orderDate, ArrayList<Integer> orderQuantities,

@@ -3,13 +3,24 @@ package com.gmail.stonedevs.keychainorderhelper.util;
 import static com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment.TAG;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
+import com.gmail.stonedevs.keychainorderhelper.model.Order;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -107,5 +118,87 @@ public class ExcelUtil {
       cell = sheet.getRow(row).createCell(col);
     }
     return cell;
+  }
+
+  public static File generateExcelFile(Context c, Workbook workbook, String storeName,
+      String orderDate,
+      List<Keychain> items)
+      throws IOException, InvalidFormatException, ParseException {
+    Sheet sheet = workbook.getSheetAt(0);
+
+    //  Write Store Name and Number.
+    String[] storeNameCellLocations = c.getResources()
+        .getStringArray(R.array.excel_cell_locations_store_number);
+    for (String cellLocation : storeNameCellLocations) {
+      getCellByAddress(sheet, cellLocation).setCellValue(storeName);
+    }
+
+    //  Write Rep Name.
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(c);
+    String repName = prefs.getString(c.getString(R.string.pref_key_rep_name),
+        c.getString(R.string.pref_error_default_value_rep_name));
+    String repTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory),
+        c.getString(R.string.pref_error_default_value_rep_territory));
+    String[] repNameCellLocations = c.getResources()
+        .getStringArray(R.array.excel_cell_locations_rep_name);
+    for (String cellLocation : repNameCellLocations) {
+      String repFormat = String
+          .format(c.getString(R.string.string_format_repName_repTerritory), repName, repTerritory);
+      getCellByAddress(sheet, cellLocation).setCellValue(repFormat);
+    }
+
+    //  Write Current Date.
+    String[] dateCellLocations = c.getResources()
+        .getStringArray(R.array.excel_cell_locations_order_date);
+    for (String cellLocation : dateCellLocations) {
+      getCellByAddress(sheet, cellLocation).setCellValue(orderDate);
+    }
+
+    Integer orderTotal = 0;
+    ArrayList<Integer> orderQuantities = new ArrayList<>(0);
+    for (int i = 0; i < items.size(); i++) {
+      Keychain item = items.get(i);
+
+      if (item != null) {
+        CellAddress cellAddress = item.getQuantityLocation();
+        int rowIndex = cellAddress.getRow();
+        int columnIndex = cellAddress.getColumn();
+
+        Row row = sheet.getRow(rowIndex);
+        Cell cell = row.getCell(columnIndex);
+        if (cell == null) {
+          cell = row.createCell(columnIndex, CellType.BLANK);
+        }
+
+        if (item.getQuantity() > 0) {
+          cell.setCellValue(item.getQuantity());
+        } else {
+          cell.setCellValue("");
+        }
+
+        Integer quantity = item.getQuantity();
+        orderQuantities.add(quantity);
+        orderTotal += quantity;
+      }
+    }
+
+    SimpleDateFormat format = new SimpleDateFormat(c.getString(R.string.string_date_layout),
+        Locale.getDefault());
+    Date layoutDateFormat = format.parse(orderDate);
+
+    format = new SimpleDateFormat(c.getString(R.string.string_date_filename), Locale.getDefault());
+    String filenameDateFormat = format.format(layoutDateFormat);
+
+    File file = new File(c.getExternalFilesDir(null),
+        String.format(c.getString(R.string.string_format_filename), repTerritory.toLowerCase(),
+            storeName.toLowerCase(), filenameDateFormat));
+    FileOutputStream out = new FileOutputStream(file);
+    workbook.write(out);
+    out.close();
+
+    //  save to orders.json
+    JSONUtil.saveOrderToJson(c, new Order(storeName, orderDate, orderQuantities, orderTotal));
+
+    return file;
   }
 }

@@ -1,21 +1,14 @@
 package com.gmail.stonedevs.keychainorderhelper.view;
 
-import static com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil.getCellByAddress;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,24 +23,14 @@ import com.gmail.stonedevs.keychainorderhelper.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.adapter.ClickableKeychainAdapter;
 import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
-import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrderEntry;
-import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrderEntryList;
-import com.gmail.stonedevs.keychainorderhelper.util.JSONUtil;
+import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
@@ -55,6 +38,9 @@ import org.apache.poi.ss.util.CellAddress;
 public class NewOrderFragment extends BackHandledFragment {
 
   public static final String TAG = NewOrderFragment.class.getSimpleName();
+
+  private String mStoreName;
+  private String mOrderDate;
 
   private EditText mEditStoreName;
   private EditText mEditOrderDate;
@@ -79,32 +65,34 @@ public class NewOrderFragment extends BackHandledFragment {
     super.onCreate(savedInstanceState);
 
     //  set variables here
-    ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_newOrderFragment));
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
 
+    //  set title of action bar
+    ((MainActivity) getActivity())
+        .setActionBarTitle(getString(R.string.action_bar_title_newOrderFragment));
+
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
     String defaultStoreName = BuildConfig.DEBUG ? "Store Name 1" : "";
-    String defaultOrderDate = BuildConfig.DEBUG ? Util.getFormattedDateForLayout() : "";
+    String defaultOrderDate = Util.getFormattedDateForLayout();
 
-    String storeName = defaultStoreName;
-    String orderDate = defaultOrderDate;
-    ArrayList<Integer> quantityCellValues = new ArrayList<>(0);
+    mStoreName = defaultStoreName;
+    mOrderDate = defaultOrderDate;
+    ArrayList<Integer> orderQuantities = new ArrayList<>(0);
 
     if (savedInstanceState != null) {
-      storeName = savedInstanceState
+      mStoreName = savedInstanceState
           .getString(getString(R.string.bundle_key_NewOrderFragment_store_name),
               defaultStoreName);
-      orderDate = savedInstanceState
+      mOrderDate = savedInstanceState
           .getString(getString(R.string.bundle_key_NewOrderFragment_order_date),
               defaultOrderDate);
-      quantityCellValues = savedInstanceState
+      orderQuantities = savedInstanceState
           .getIntegerArrayList(
               getString(R.string.bundle_key_NewOrderFragment_quantity_cell_values));
     }
@@ -123,14 +111,11 @@ public class NewOrderFragment extends BackHandledFragment {
     };
 
     mEditStoreName = view.findViewById(R.id.editStoreName);
-    mEditStoreName.setText(storeName);
+    mEditStoreName.setText(mStoreName);
     mEditStoreName.setOnFocusChangeListener(onEditTextFocusChangeListener);
 
     mEditOrderDate = view.findViewById(R.id.editOrderDate);
-    if (orderDate.isEmpty()) {
-      orderDate = Util.getFormattedDateForLayout();
-    }
-    mEditOrderDate.setText(orderDate);
+    mEditOrderDate.setText(mOrderDate);
     mEditOrderDate.setOnFocusChangeListener(onEditTextFocusChangeListener);
 
     mRecyclerView = view.findViewById(R.id.listRecyclerView);
@@ -149,9 +134,9 @@ public class NewOrderFragment extends BackHandledFragment {
 
     //  if quantity cell values persisted through saveInstanceState, fill quantities
     //  else, fill with default 0
-    if (quantityCellValues != null && quantityCellValues.size() == names.length) {
+    if (orderQuantities != null && orderQuantities.size() == names.length) {
       for (int i = 0; i < names.length; i++) {
-        int quantity = quantityCellValues.get(i);
+        int quantity = orderQuantities.get(i);
         items.add(new Keychain(names[i], quantity, new CellAddress(addresses[i])));
       }
     } else {
@@ -221,17 +206,6 @@ public class NewOrderFragment extends BackHandledFragment {
           builder.setMessage(
               getString(R.string.dialog_message_incomplete_order)
                   + messageFormat);
-          builder.setPositiveButton(R.string.dialog_positive_button_incomplete_order,
-              new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                  try {
-                    sendOrderByEmail(generateExcelFile());
-                  } catch (IOException | InvalidFormatException | ParseException e) {
-                    e.printStackTrace();
-                  }
-                }
-              });
           builder.setNegativeButton(R.string.dialog_negative_button_incomplete_order,
               new DialogInterface.OnClickListener() {
                 @Override
@@ -249,7 +223,7 @@ public class NewOrderFragment extends BackHandledFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                   try {
-                    sendOrderByEmail(generateExcelFile());
+                    sendOrderByEmail();
                   } catch (IOException | InvalidFormatException | ParseException e) {
                     e.printStackTrace();
                   }
@@ -272,7 +246,6 @@ public class NewOrderFragment extends BackHandledFragment {
     return view;
   }
 
-
   @Override
   public void onSaveInstanceState(Bundle outState) {
     outState
@@ -288,12 +261,25 @@ public class NewOrderFragment extends BackHandledFragment {
     super.onSaveInstanceState(outState);
   }
 
+  private void sendOrderByEmail()
+      throws IOException, InvalidFormatException, ParseException {
+    Workbook workbook = WorkbookFactory.create(getActivity().getAssets().open(
+        getString(R.string.excel_template_filename)));
+
+    File file = ExcelUtil
+        .generateExcelFile(getActivity(), workbook, mStoreName, mOrderDate, mAdapter.getItems());
+
+    ((MainActivity) getActivity()).sendOrderByEmail(file, mStoreName);
+  }
+
   private void resetOrder() {
     //  reset store name
-    mEditStoreName.setText(null);
+    mStoreName = "";
+    mEditStoreName.setText(mStoreName);
 
     //  reset date
-    mEditOrderDate.setText(Util.getFormattedDateForLayout());
+    mOrderDate = Util.getFormattedDateForLayout();
+    mEditOrderDate.setText(mOrderDate);
 
     //  reset cell values
     for (int i = 0; i < mAdapter.getItemCount(); i++) {
@@ -303,182 +289,6 @@ public class NewOrderFragment extends BackHandledFragment {
       }
     }
     mAdapter.notifyDataSetChanged();
-  }
-
-  private void sendOrderByEmail(File file) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    String storeName = mEditStoreName.getText().toString();
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
-        getString(R.string.pref_key_rep_territory));
-
-    Uri path = Uri.fromFile(file);
-    Intent intent = new Intent(Intent.ACTION_SEND);
-
-    // set the type to 'email'
-    intent.setType("vnd.android.cursor.dir/email");
-
-    //  set email address from preferences
-    String sendtoEmail = getString(R.string.pref_default_value_sendto_email);
-    String to[] = {sendtoEmail};
-    intent.putExtra(Intent.EXTRA_EMAIL, to);
-
-    // the attachment
-    intent.putExtra(Intent.EXTRA_STREAM, path);
-
-    // the mail subject
-    String subject = String
-        .format(getString(R.string.string_format_email_subject), repTerritory, storeName);
-    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-
-    //  the mail body
-    String body = String
-        .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
-    intent.putExtra(Intent.EXTRA_TEXT, body);
-
-    //  send email!
-    if (BuildConfig.DEBUG) {
-      //  attempt to delete temp file from path used with intent
-      deleteTempFile(path);
-
-      //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
-      closeFragment();
-    } else {
-      Intent chooser = Intent
-          .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-      if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-        startActivityForResult(chooser, R.string.intent_request_code_send_order_by_email);
-      }
-    }
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    switch (requestCode) {
-      case R.string.intent_request_code_send_order_by_email:
-        Toast
-            .makeText(getActivity(), R.string.toast_intent_send_order_by_email_success,
-                Toast.LENGTH_SHORT)
-            .show();
-
-        //  get path of sent excel file from intent bundle
-        Uri path = data.getParcelableExtra(Intent.EXTRA_STREAM);
-
-        //  attempt to delete temp file
-        deleteTempFile(path);
-
-        //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
-        closeFragment();
-        break;
-    }
-  }
-
-  private void deleteTempFile(Uri path) {
-    File file = new File(path.toString());
-    if (file.delete()) {
-      Log.d(TAG, "sendOrderByEmail: onActivityResult: file deleted successfully.");
-    } else {
-      Log.d(TAG,
-          "sendOrderByEmail: onActivityResult: file was not deleted successfully. Uri Path: "
-              + path.toString());
-    }
-  }
-
-  private File generateExcelFile() throws IOException, InvalidFormatException, ParseException {
-    Workbook workbook = WorkbookFactory.create(getActivity().getAssets().open(
-        getString(R.string.excel_template_filename)));
-
-    Sheet sheet = workbook.getSheetAt(0);
-
-    //  Write Store Name and Number.
-    String storeName = mEditStoreName.getText().toString();
-    String[] storeNameCellLocations = getResources()
-        .getStringArray(R.array.excel_cell_locations_store_number);
-    for (String cellLocation : storeNameCellLocations) {
-      getCellByAddress(sheet, cellLocation).setCellValue(storeName);
-    }
-
-    //  Write Rep Name.
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    String repName = prefs.getString(getString(R.string.pref_key_rep_name),
-        getString(R.string.pref_error_default_value_rep_name));
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
-        getString(R.string.pref_error_default_value_rep_territory));
-    String[] repNameCellLocations = getResources()
-        .getStringArray(R.array.excel_cell_locations_rep_name);
-    for (String cellLocation : repNameCellLocations) {
-      String repFormat = String
-          .format(getString(R.string.string_format_repName_repTerritory), repName, repTerritory);
-      getCellByAddress(sheet, cellLocation).setCellValue(repFormat);
-    }
-
-    //  Write Current Date.
-    String orderDate = mEditOrderDate.getText().toString();
-    String[] dateCellLocations = getResources()
-        .getStringArray(R.array.excel_cell_locations_order_date);
-    for (String cellLocation : dateCellLocations) {
-      getCellByAddress(sheet, cellLocation).setCellValue(orderDate);
-    }
-
-    Integer orderTotal = 0;
-    ArrayList<Integer> orderQuantities = new ArrayList<>(0);
-    for (int i = 0; i < mAdapter.getItemCount(); i++) {
-      Keychain item = mAdapter.getItem(i);
-      if (item != null) {
-        CellAddress cellAddress = item.getQuantityLocation();
-        int rowIndex = cellAddress.getRow();
-        int columnIndex = cellAddress.getColumn();
-
-        Row row = sheet.getRow(rowIndex);
-        Cell cell = row.getCell(columnIndex);
-        if (cell == null) {
-          cell = row.createCell(columnIndex, CellType.BLANK);
-        }
-
-        if (item.getQuantity() > 0) {
-          cell.setCellValue(item.getQuantity());
-        } else {
-          cell.setCellValue("");
-        }
-
-        Integer quantity = item.getQuantity();
-        orderQuantities.add(quantity);
-        orderTotal += quantity;
-      }
-    }
-
-    SimpleDateFormat format = new SimpleDateFormat(getString(R.string.string_date_layout),
-        Locale.getDefault());
-    Date layoutDateFormat = format.parse(orderDate);
-
-    format = new SimpleDateFormat(getString(R.string.string_date_filename), Locale.getDefault());
-    String filenameDateFormat = format.format(layoutDateFormat);
-
-    File file = new File(getActivity().getExternalFilesDir(null),
-        String.format(getString(R.string.string_format_filename), repTerritory.toLowerCase(),
-            storeName.toLowerCase(), filenameDateFormat));
-    FileOutputStream out = new FileOutputStream(file);
-    workbook.write(out);
-    out.close();
-
-    //  save to orders.json
-    saveOrderToJson(storeName, orderQuantities, orderDate, orderTotal);
-
-    return file;
-  }
-
-  private void saveOrderToJson(String storeName, ArrayList<Integer> orderQuantities,
-      String orderDate,
-      Integer orderTotal)
-      throws IOException {
-    JSONOrderEntryList entryList = JSONUtil.getOrderEntryList(getActivity());
-    JSONOrderEntry entry = new JSONOrderEntry(storeName, orderDate, orderQuantities, orderTotal);
-
-    entryList.addEntry(entry);
-
-    JSONUtil.setOrderEntryList(getActivity(), entryList);
   }
 
   @Override
