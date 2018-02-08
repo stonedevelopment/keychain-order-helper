@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <PreferenceCategory
+    android:title="@string/pref_header_title_required_fields"/>
+  <EditTextPreference
+    android:key="@string/pref_key_rep_name"
+    android:selectAllOnFocus="true"
+    android:singleLine="true"
+    android:summary="@string/pref_description_rep_name"
+    android:title="@string/pref_title_rep_name"/>
+  <EditTextPreference
+    android:key="@string/pref_key_rep_territory"
+    android:selectAllOnFocus="true"
+    android:singleLine="true"
+    android:summary="@string/pref_description_rep_territory"
+    android:title="@string/pref_title_rep_territory"/>
+
+  <!--<PreferenceCategory-->
+    <!--android:title="@string/pref_header_title_adjustable_fields"/>-->
+  <!--<EditTextPreference-->
+    <!--android:defaultValue="@string/pref_title_default_order_quantity"-->
+    <!--android:key="@string/pref_key_default_order_quantity"-->
+    <!--android:selectAllOnFocus="true"-->
+    <!--android:singleLine="true"-->
+    <!--android:summary="@string/pref_description_default_order_quantity"-->
+    <!--android:title="@string/pref_title_default_order_quantity"/>-->
+  <!--<EditTextPreference-->
+    <!--android:defaultValue="@string/pref_default_value_sendto_email"-->
+    <!--android:key="@string/pref_key_sendto_email"-->
+    <!--android:selectAllOnFocus="true"-->
+    <!--android:singleLine="true"-->
+    <!--android:summary="@string/pref_description_sendto_email"-->
+    <!--android:title="@string/pref_title_sendto_email"/>-->
+
+</PreferenceScreen>

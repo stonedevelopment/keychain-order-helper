@@ -1,0 +1,642 @@
+<resources>
+  <string name="app_name">Lanyard Keychain Order Helper</string>
+  <string name="action_settings">Settings</string>
+  <string name="title_activity_settings">Settings</string>
+
+  <string name="intent_title_send_order_by_email">Send Order</string>
+  <string name="intent_request_code_send_order_by_email">intent_request_code_send_order_by_email</string>
+
+  <string name="bundle_key_store_name">bundle_key_store_name</string>
+  <string name="bundle_key_order_date">bundle_key_order_date</string>
+  <string name="bundle_key_quantity_cell_values">bundle_key_quantity_cell_values</string>
+
+  <!--  Strings related to Layouts -->
+
+  <!--  MainActivityFragment -->
+  <string name="logoImage_SRP_contentDescription">Logo for SRP Companies</string>
+  <string name="logoImage_TheNamePeople">Logo of The Name People</string>
+  <string name="orderButton_text">Order Keychains</string>
+  <string name="viewButton_text">View Previous Orders</string>
+  <string name="generateButton_text">DEBUG: Generate</string>
+  <string name="settingsButton_text">Settings</string>
+
+  <!--  OrderFragment -->
+  <string name="storeNameText_hint">Store Name</string>
+  <string name="dateText_hint">Date</string>
+  <string name="resetButton_text">Reset Order</string>
+  <string name="sendButton_text">Send Order</string>
+
+  <!--  Strings related to Settings -->
+
+  <!--  Required Fields -->
+  <string name="pref_header_title_required_fields">Required Fields</string>
+
+  <!--  Required Fields: Rep Name -->
+  <string name="pref_key_rep_name">pref_key_rep_name</string>
+  <string name="pref_title_rep_name">Rep Name</string>
+  <string name="pref_description_rep_name">Your name (ex: Chuck Norris), used in order forms.</string>
+
+  <!--  Required Fields: Rep Territory -->
+  <string name="pref_key_rep_territory">pref_key_territory</string>
+  <string name="pref_title_rep_territory">Rep Territory</string>
+  <string name="pref_description_rep_territory">Your territory (ex: LIT3), used in order forms.</string>
+
+  <!--  Adjustable Fields -->
+  <string name="pref_header_title_adjustable_fields">Adjustable Fields</string>
+
+  <!--&lt;!&ndash;  Adjustable Fields: Default Order Quantity &ndash;&gt;-->
+  <!--<string name="pref_key_default_order_quantity">pref_key_default_order_quantity</string>-->
+  <!--<string name="pref_title_default_order_quantity">Default Order Quantity</string>-->
+  <!--<string name="pref_description_default_order_quantity">Quantity used to when clicking a keychain name.</string>-->
+  <!--<string name="pref_default_value_default_order_quantity">4</string>-->
+
+  <!--&lt;!&ndash;  Adjustable Fields: SendTo Email &ndash;&gt;-->
+  <!--<string name="pref_key_sendto_email">pref_key_sendto_email</string>-->
+  <!--<string name="pref_title_sendto_email">Keychain Order Email</string>-->
+  <!--<string name="pref_description_sendto_email">Email used when sending orders. Do not change unless requested to do so.</string>-->
+
+  <!--  String formats -->
+  <!--  String formats: Filename (Ex: lanyard_keychain_order-lit3-big_red_148-20180205.xls) -->
+  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
+
+  <!--  String formats: Compressed Date (Ex: 20180205) -->
+  <string name="string_format_date_layout">%1$d/%2$d/%3$d</string>
+  <string name="string_date_layout">MM/dd/yyyy</string>
+
+  <!--  String formats: Compressed Date (Ex: 20180205) -->
+  <string name="string_format_date_filename">%1$d%2$d%3$d</string>
+  <string name="string_date_filename">yyyyMMdd</string>
+
+  <!--  String formats: Rep Name/Rep Territory (Ex: Jared Stone/LIT3) -->
+  <string name="string_format_repName_repTerritory">%1$s/%2$s</string>
+
+  <!--  String formats: Email Subject (Ex: LIT3 - Big Red 139) -->
+  <string name="string_format_email_subject">%1$s - %2$s</string>
+
+  <!--  String formats: String-Array Item (Ex: <item>string</item>) -->
+  <string name="string_format_stringarray_item">&lt;item>%1$s&lt;/item></string>
+
+  <!--  Strings related to Excel -->
+
+  <string name="excel_template_filename">template.xls</string>
+  <string name="editName_hint">Name</string>
+  <string name="editTerritory_hint">Territory</string>
+  <string name="textMessage_text">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory (ex: LIT3). If you ever need to change any of these, you can do so by clicking on Settings on the main screen.</string>
+
+  <string-array name="excel_cell_values_names">
+    <item>Army</item>
+    <item>Air Force</item>
+    <item>Marines</item>
+    <item>Navy</item>
+    <item>USA</item>
+    <item>#1 Dad</item>
+    <item>#1 Nurse</item>
+    <item>#1 Teacher</item>
+    <item>#1 Mom</item>
+    <item>☺☺☺☺☺☺</item>
+    <item>Amazing</item>
+    <item>Awesome</item>
+    <item>Bad Boy</item>
+    <item>Bad Girl</item>
+    <item>Retired/other</item>
+    <item>Best Friend</item>
+    <item>Born 2B Wild</item>
+    <item>Boss</item>
+    <item>"Daddy’s Girl"</item>
+    <item>Diva</item>
+    <item>Girls Rule</item>
+    <item>God Is Love</item>
+    <item>Hottie</item>
+    <item>"I’m Not Sorry"</item>
+    <item>I ♥ My Aunt</item>
+    <item>I ♥ Basketball</item>
+    <item>I ♥ Bingo</item>
+    <item>I ♥ Dancing</item>
+    <item>I ♥ Fishing</item>
+    <item>I ♥ Golf</item>
+    <item>I ♥ Grandma</item>
+    <item>I ♥ Grandpa</item>
+    <item>I ♥ My Horse</item>
+    <item>I ♥ Jesus</item>
+    <item>I ♥ My Cat</item>
+    <item>I ♥ My Dog</item>
+    <item>I ♥ Soccer</item>
+    <item>I ♥ Baseball</item>
+    <item>I ♥ Football</item>
+    <item>I ♥ Hip Hop</item>
+    <item>Juicy</item>
+    <item>"Mom’s Taxi"</item>
+    <item>Mr. Fix It</item>
+    <item>My Keys</item>
+    <item>Old Fart</item>
+    <item>OMG</item>
+    <item>Precious</item>
+    <item>Princess</item>
+    <item>Sassy</item>
+    <item>Sexy</item>
+    <item>Sexy Mama</item>
+    <item>Spoiled</item>
+    <item>Stressed Out</item>
+    <item>Taken</item>
+    <item>U Go Girl</item>
+    <item>Whatever</item>
+    <item>Wild Thing</item>
+    <item>Wild &amp; Free</item>
+    <item>WWJD</item>
+    <item>Aaron</item>
+    <item>Abby</item>
+    <item>Alex</item>
+    <item>Alexis</item>
+    <item>Allison</item>
+    <item>Alyssa</item>
+    <item>Amanda</item>
+    <item>Amber</item>
+    <item>Amy</item>
+    <item>Andrea</item>
+    <item>Andrew</item>
+    <item>Angela</item>
+    <item>Angie</item>
+    <item>Ann</item>
+    <item>Anna</item>
+    <item>Anthony</item>
+    <item>April</item>
+    <item>Ashley</item>
+    <item>Austin</item>
+    <item>Barbara</item>
+    <item>Becky</item>
+    <item>Beth</item>
+    <item>Betty</item>
+    <item>Bill</item>
+    <item>Brandon</item>
+    <item>Breanna</item>
+    <item>Brenda</item>
+    <item>Brian</item>
+    <item>Brittany</item>
+    <item>Brooke</item>
+    <item>Caitlin</item>
+    <item>Cameron</item>
+    <item>Carol</item>
+    <item>Carolyn</item>
+    <item>Catherine</item>
+    <item>Cathy</item>
+    <item>Charlene</item>
+    <item>Charles</item>
+    <item>Charlotte</item>
+    <item>Chelsea</item>
+    <item>Cheryl</item>
+    <item>Chris</item>
+    <item>Christian</item>
+    <item>Christina</item>
+    <item>Christine</item>
+    <item>Christopher</item>
+    <item>Cindy</item>
+    <item>Cody</item>
+    <item>Courtney</item>
+    <item>Cynthia</item>
+    <item>Daniel</item>
+    <item>Danielle</item>
+    <item>David</item>
+    <item>Deanna</item>
+    <item>Debbie</item>
+    <item>Denise</item>
+    <item>Diana</item>
+    <item>Diane</item>
+    <item>Donna</item>
+    <item>Dylan</item>
+    <item>Elizabeth</item>
+    <item>Emily</item>
+    <item>Emma</item>
+    <item>Eric</item>
+    <item>Erica</item>
+    <item>Erin</item>
+    <item>Ethan</item>
+    <item>Frank</item>
+    <item>Gabriella</item>
+    <item>Gary</item>
+    <item>Gina</item>
+    <item>Grace</item>
+    <item>Greg</item>
+    <item>Haley</item>
+    <item>Hannah</item>
+    <item>Heather</item>
+    <item>Holly</item>
+    <item>Jack</item>
+    <item>Jackie</item>
+    <item>Jacqueline</item>
+    <item>James</item>
+    <item>Jamie</item>
+    <item>Janet</item>
+    <item>Jasmine</item>
+    <item>Jason</item>
+    <item>Jeff</item>
+    <item>Jennifer</item>
+    <item>Jenny</item>
+    <item>Jessica</item>
+    <item>Joan</item>
+    <item>Joe</item>
+    <item>John</item>
+    <item>Jonathan</item>
+    <item>Jordan</item>
+    <item>Joseph</item>
+    <item>Joshua</item>
+    <item>Joyce</item>
+    <item>Judy</item>
+    <item>Julia</item>
+    <item>Julie</item>
+    <item>Justin</item>
+    <item>Kaitlyn</item>
+    <item>Karen</item>
+    <item>Katelyn</item>
+    <item>Kathy</item>
+    <item>Katie</item>
+    <item>Kayla</item>
+    <item>Kelly</item>
+    <item>Kelsey</item>
+    <item>Ken</item>
+    <item>Kevin</item>
+    <item>Kim</item>
+    <item>Kimberly</item>
+    <item>Kyle</item>
+    <item>Laura</item>
+    <item>Lauren</item>
+    <item>Leah</item>
+    <item>Leslie</item>
+    <item>Linda</item>
+    <item>Lisa</item>
+    <item>Logan</item>
+    <item>Lori</item>
+    <item>Lynn</item>
+    <item>Mackenzie</item>
+    <item>Madison</item>
+    <item>Mandy</item>
+    <item>Maria</item>
+    <item>Marie</item>
+    <item>Mary</item>
+    <item>Matthew</item>
+    <item>Megan</item>
+    <item>Melissa</item>
+    <item>Michael</item>
+    <item>Michelle</item>
+    <item>Miranda</item>
+    <item>Molly</item>
+    <item>Morgan</item>
+    <item>Nancy</item>
+    <item>Natalie</item>
+    <item>Nathan</item>
+    <item>Nicholas</item>
+    <item>Nicole</item>
+    <item>Olivia</item>
+    <item>Paige</item>
+    <item>Pam</item>
+    <item>Pat</item>
+    <item>Patricia</item>
+    <item>Patrick</item>
+    <item>Paul</item>
+    <item>Rachel</item>
+    <item>Rebecca</item>
+    <item>Renee</item>
+    <item>Richard</item>
+    <item>Rita</item>
+    <item>Robert</item>
+    <item>Ryan</item>
+    <item>Sabrina</item>
+    <item>Sam</item>
+    <item>Samantha</item>
+    <item>Sandra</item>
+    <item>Sandy</item>
+    <item>Sara</item>
+    <item>Sarah</item>
+    <item>Savannah</item>
+    <item>Scott</item>
+    <item>Shane</item>
+    <item>Shannon</item>
+    <item>Sharon</item>
+    <item>Shawn</item>
+    <item>Shelby</item>
+    <item>Shirley</item>
+    <item>Stephanie</item>
+    <item>Steve</item>
+    <item>Sue</item>
+    <item>Susan</item>
+    <item>Sydney</item>
+    <item>Sylvia</item>
+    <item>Tammy</item>
+    <item>Tara</item>
+    <item>Taylor</item>
+    <item>Terri</item>
+    <item>Theresa</item>
+    <item>Tiffany</item>
+    <item>Tim</item>
+    <item>Tina</item>
+    <item>Tony</item>
+    <item>Tracey</item>
+    <item>Tyler</item>
+    <item>Valerie</item>
+    <item>Veronica</item>
+    <item>Vicki</item>
+    <item>Victoria</item>
+    <item>Zachary</item>
+  </string-array>
+
+  <!--  Cell Locations -->
+  <string-array name="excel_cell_locations_store_number">
+    <item>H8</item>
+    <item>H67</item>
+  </string-array>
+
+  <string-array name="excel_cell_locations_rep_name">
+    <item>H9</item>
+    <item>H68</item>
+  </string-array>
+
+  <string-array name="excel_cell_locations_order_date">
+    <item>H10</item>
+    <item>H69</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_1_page_1">
+    <item>C14</item>
+    <item>C55</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_2_page_1">
+    <item>F14</item>
+    <item>F55</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_3_page_1">
+    <item>I14</item>
+    <item>I55</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_1_page_2">
+    <item>C73</item>
+    <item>C114</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_2_page_2">
+    <item>F73</item>
+    <item>F114</item>
+  </string-array>
+
+  <string-array name="excel_cell_location_range_section_3_page_2">
+    <item>I73</item>
+    <item>I114</item>
+  </string-array>
+
+  <string-array name="excel_cell_locations_quantities">
+    <item>C14</item>
+    <item>C15</item>
+    <item>C16</item>
+    <item>C17</item>
+    <item>C18</item>
+    <item>C19</item>
+    <item>C20</item>
+    <item>C21</item>
+    <item>C22</item>
+    <item>C23</item>
+    <item>C24</item>
+    <item>C25</item>
+    <item>C26</item>
+    <item>C27</item>
+    <item>C28</item>
+    <item>C29</item>
+    <item>C30</item>
+    <item>C31</item>
+    <item>C32</item>
+    <item>C33</item>
+    <item>C34</item>
+    <item>C35</item>
+    <item>C36</item>
+    <item>C37</item>
+    <item>C38</item>
+    <item>C39</item>
+    <item>C40</item>
+    <item>C41</item>
+    <item>C42</item>
+    <item>C43</item>
+    <item>C44</item>
+    <item>C45</item>
+    <item>C46</item>
+    <item>C47</item>
+    <item>C48</item>
+    <item>C49</item>
+    <item>C50</item>
+    <item>C51</item>
+    <item>C52</item>
+    <item>C53</item>
+    <item>C54</item>
+    <item>C55</item>
+    <item>F14</item>
+    <item>F15</item>
+    <item>F16</item>
+    <item>F17</item>
+    <item>F18</item>
+    <item>F19</item>
+    <item>F20</item>
+    <item>F21</item>
+    <item>F22</item>
+    <item>F23</item>
+    <item>F24</item>
+    <item>F25</item>
+    <item>F26</item>
+    <item>F27</item>
+    <item>F28</item>
+    <item>F29</item>
+    <item>F30</item>
+    <item>F31</item>
+    <item>F32</item>
+    <item>F33</item>
+    <item>F34</item>
+    <item>F35</item>
+    <item>F36</item>
+    <item>F37</item>
+    <item>F38</item>
+    <item>F39</item>
+    <item>F40</item>
+    <item>F41</item>
+    <item>F42</item>
+    <item>F43</item>
+    <item>F44</item>
+    <item>F45</item>
+    <item>F46</item>
+    <item>F47</item>
+    <item>F48</item>
+    <item>F49</item>
+    <item>F50</item>
+    <item>F51</item>
+    <item>F52</item>
+    <item>F53</item>
+    <item>F54</item>
+    <item>F55</item>
+    <item>I14</item>
+    <item>I15</item>
+    <item>I16</item>
+    <item>I17</item>
+    <item>I18</item>
+    <item>I19</item>
+    <item>I20</item>
+    <item>I21</item>
+    <item>I22</item>
+    <item>I23</item>
+    <item>I24</item>
+    <item>I25</item>
+    <item>I26</item>
+    <item>I27</item>
+    <item>I28</item>
+    <item>I29</item>
+    <item>I30</item>
+    <item>I31</item>
+    <item>I32</item>
+    <item>I33</item>
+    <item>I34</item>
+    <item>I35</item>
+    <item>I36</item>
+    <item>I37</item>
+    <item>I38</item>
+    <item>I39</item>
+    <item>I40</item>
+    <item>I41</item>
+    <item>I42</item>
+    <item>I43</item>
+    <item>I44</item>
+    <item>I45</item>
+    <item>I46</item>
+    <item>I47</item>
+    <item>I48</item>
+    <item>I49</item>
+    <item>I50</item>
+    <item>I51</item>
+    <item>I52</item>
+    <item>I53</item>
+    <item>I54</item>
+    <item>I55</item>
+    <item>C73</item>
+    <item>C74</item>
+    <item>C75</item>
+    <item>C76</item>
+    <item>C77</item>
+    <item>C78</item>
+    <item>C79</item>
+    <item>C80</item>
+    <item>C81</item>
+    <item>C82</item>
+    <item>C83</item>
+    <item>C84</item>
+    <item>C85</item>
+    <item>C86</item>
+    <item>C87</item>
+    <item>C88</item>
+    <item>C89</item>
+    <item>C90</item>
+    <item>C91</item>
+    <item>C92</item>
+    <item>C93</item>
+    <item>C94</item>
+    <item>C95</item>
+    <item>C96</item>
+    <item>C97</item>
+    <item>C98</item>
+    <item>C99</item>
+    <item>C100</item>
+    <item>C101</item>
+    <item>C102</item>
+    <item>C103</item>
+    <item>C104</item>
+    <item>C105</item>
+    <item>C106</item>
+    <item>C107</item>
+    <item>C108</item>
+    <item>C109</item>
+    <item>C110</item>
+    <item>C111</item>
+    <item>C112</item>
+    <item>C113</item>
+    <item>C114</item>
+    <item>F73</item>
+    <item>F74</item>
+    <item>F75</item>
+    <item>F76</item>
+    <item>F77</item>
+    <item>F78</item>
+    <item>F79</item>
+    <item>F80</item>
+    <item>F81</item>
+    <item>F82</item>
+    <item>F83</item>
+    <item>F84</item>
+    <item>F85</item>
+    <item>F86</item>
+    <item>F87</item>
+    <item>F88</item>
+    <item>F89</item>
+    <item>F90</item>
+    <item>F91</item>
+    <item>F92</item>
+    <item>F93</item>
+    <item>F94</item>
+    <item>F95</item>
+    <item>F96</item>
+    <item>F97</item>
+    <item>F98</item>
+    <item>F99</item>
+    <item>F100</item>
+    <item>F101</item>
+    <item>F102</item>
+    <item>F103</item>
+    <item>F104</item>
+    <item>F105</item>
+    <item>F106</item>
+    <item>F107</item>
+    <item>F108</item>
+    <item>F109</item>
+    <item>F110</item>
+    <item>F111</item>
+    <item>F112</item>
+    <item>F113</item>
+    <item>F114</item>
+    <item>I73</item>
+    <item>I74</item>
+    <item>I75</item>
+    <item>I76</item>
+    <item>I77</item>
+    <item>I78</item>
+    <item>I79</item>
+    <item>I80</item>
+    <item>I81</item>
+    <item>I82</item>
+    <item>I83</item>
+    <item>I84</item>
+    <item>I85</item>
+    <item>I86</item>
+    <item>I87</item>
+    <item>I88</item>
+    <item>I89</item>
+    <item>I90</item>
+    <item>I91</item>
+    <item>I92</item>
+    <item>I93</item>
+    <item>I94</item>
+    <item>I95</item>
+    <item>I96</item>
+    <item>I97</item>
+    <item>I98</item>
+    <item>I99</item>
+    <item>I100</item>
+    <item>I101</item>
+    <item>I102</item>
+    <item>I103</item>
+    <item>I104</item>
+    <item>I105</item>
+    <item>I106</item>
+    <item>I107</item>
+    <item>I108</item>
+    <item>I109</item>
+    <item>I110</item>
+    <item>I111</item>
+    <item>I112</item>
+    <item>I113</item>
+    <item>I114</item>
+  </string-array>
+
+</resources>

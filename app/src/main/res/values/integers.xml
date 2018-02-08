@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <integer name="excel_min_order_quantity_value">4</integer>
+  <integer name="excel_max_order_quantity_value">6</integer>
+</resources>
