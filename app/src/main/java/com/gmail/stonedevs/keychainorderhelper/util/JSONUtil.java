@@ -3,13 +3,13 @@ package com.gmail.stonedevs.keychainorderhelper.util;
 import android.content.Context;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.json.JSONOrderEntryList;
+import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrderEntryList;
 import java.io.File;
 import java.io.IOException;
 
 public class JSONUtil {
 
-  public static JSONOrderEntryList getEntries(Context c) throws IOException {
+  public static JSONOrderEntryList getOrderEntryList(Context c) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
 
     File file = new File(c.getExternalFilesDir(null),
@@ -22,7 +22,7 @@ public class JSONUtil {
     return mapper.readValue(file, JSONOrderEntryList.class);
   }
 
-  public static void setEntries(Context c, JSONOrderEntryList entryList) throws IOException {
+  public static void setOrderEntryList(Context c, JSONOrderEntryList entryList) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
 
     File file = new File(c.getExternalFilesDir(null),

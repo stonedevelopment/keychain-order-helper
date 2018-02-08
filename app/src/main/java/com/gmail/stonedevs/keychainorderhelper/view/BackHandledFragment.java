@@ -1,7 +1,11 @@
-package com.gmail.stonedevs.keychainorderhelper;
+package com.gmail.stonedevs.keychainorderhelper.view;
 
 import android.app.Fragment;
+import android.app.FragmentManager.OnBackStackChangedListener;
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import com.gmail.stonedevs.keychainorderhelper.MainActivity;
 
 public abstract class BackHandledFragment extends Fragment {
 
@@ -28,6 +32,10 @@ public abstract class BackHandledFragment extends Fragment {
 
     mListener.unsetSelectedFragment();
     mListener = null;
+  }
+
+  public void closeFragment() {
+    getFragmentManager().popBackStack();
   }
 
   public interface BackHandlerInterface {

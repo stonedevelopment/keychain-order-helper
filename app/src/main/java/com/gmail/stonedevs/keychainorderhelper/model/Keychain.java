@@ -1,9 +1,9 @@
-package com.gmail.stonedevs.keychainorderhelper;
+package com.gmail.stonedevs.keychainorderhelper.model;
 
 import android.support.annotation.NonNull;
 import org.apache.poi.ss.util.CellAddress;
 
-public class OrderItem {
+public class Keychain {
 
   @NonNull
   private final String name;
@@ -13,7 +13,7 @@ public class OrderItem {
   @NonNull
   private final CellAddress quantityLocation;
 
-  OrderItem(@NonNull String name, int quantity, @NonNull CellAddress quantityLocation) {
+  public Keychain(@NonNull String name, int quantity, @NonNull CellAddress quantityLocation) {
     this.name = name;
     this.quantity = quantity;
     this.quantityLocation = quantityLocation;
@@ -24,16 +24,16 @@ public class OrderItem {
     return name;
   }
 
-  int getQuantity() {
+  public int getQuantity() {
     return quantity;
   }
 
-  void setQuantity(int quantity) {
+  public void setQuantity(int quantity) {
     this.quantity = quantity;
   }
 
   @NonNull
-  CellAddress getQuantityLocation() {
+  public CellAddress getQuantityLocation() {
     return quantityLocation;
   }
 }

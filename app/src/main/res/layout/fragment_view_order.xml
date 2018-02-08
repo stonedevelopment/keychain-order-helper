@@ -1,0 +1,96 @@
+<android.support.constraint.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context="com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment">
+
+  <TextView
+    android:id="@+id/textStoreName"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:ems="10"
+    android:textAlignment="center"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintEnd_toStartOf="@+id/guideline"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="Store Name 1"/>
+
+  <TextView
+    android:id="@+id/textOrderDate"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:ems="10"
+    android:textAlignment="center"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="@+id/guideline"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="02/08/2018"/>
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/listRecyclerView"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:headerDividersEnabled="false"
+    android:scrollbars="vertical"
+    app:layout_constraintBottom_toTopOf="@+id/textOrderTotal"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/textStoreName"
+    tools:listitem="@layout/list_item_keychain"/>
+
+  <android.support.constraint.Guideline
+    android:id="@+id/guideline"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.5"/>
+  <TextView
+    android:id="@+id/textOrderTotal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="8dp"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    tools:text="165 keychains"/>
+
+  <!--<Button-->
+    <!--android:id="@+id/resetButton"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/resetButton_text"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/sendButton"/>-->
+
+  <!--<Button-->
+    <!--android:id="@+id/sendButton"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/sendButton_text"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"/>-->
+
+</android.support.constraint.ConstraintLayout>

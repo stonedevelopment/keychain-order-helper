@@ -4,7 +4,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="com.gmail.stonedevs.keychainorderhelper.OrderFragment">
+  tools:context="com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment">
 
   <EditText
     android:id="@+id/editStoreName"
@@ -16,6 +16,9 @@
     android:ems="10"
     android:hint="@string/storeNameText_hint"
     android:inputType="textCapWords"
+    android:selectAllOnFocus="true"
+    android:singleLine="true"
+    android:textAlignment="center"
     app:layout_constraintEnd_toStartOf="@+id/guideline"
     app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="parent"
@@ -31,12 +34,15 @@
     android:ems="10"
     android:hint="@string/dateText_hint"
     android:inputType="date"
+    android:selectAllOnFocus="true"
+    android:singleLine="true"
+    android:textAlignment="center"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="@+id/guideline"
     app:layout_constraintTop_toTopOf="parent"/>
 
   <android.support.v7.widget.RecyclerView
-    android:id="@+id/orderRecyclerView"
+    android:id="@+id/listRecyclerView"
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:layout_marginTop="8dp"
@@ -50,7 +56,7 @@
     app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/editStoreName"
-    tools:listitem="@layout/list_item_order"/>
+    tools:listitem="@layout/list_item_keychain"/>
 
   <android.support.constraint.Guideline
     android:id="@+id/guideline"
@@ -64,10 +70,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:text="@string/resetButton_text"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintEnd_toStartOf="@+id/sendButton"/>
 
   <Button
     android:id="@+id/sendButton"

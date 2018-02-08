@@ -1,8 +1,8 @@
-package com.gmail.stonedevs.keychainorderhelper;
+package com.gmail.stonedevs.keychainorderhelper.model.listener;
 
 import android.view.View;
 
-public interface OnOrderItemClickListener {
+public interface OnRecyclerViewItemClickListener {
 
   void onClick(View view, int position);
 

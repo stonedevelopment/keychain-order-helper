@@ -1,6 +1,6 @@
 package com.gmail.stonedevs.keychainorderhelper.util;
 
-import static com.gmail.stonedevs.keychainorderhelper.OrderFragment.TAG;
+import static com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment.TAG;
 
 import android.content.Context;
 import android.util.Log;
@@ -87,7 +87,7 @@ public class ExcelUtil {
     Log.d(TAG, "GenerateStringArrayFormat: " + line);
   }
 
-  CellRangeAddress getCellRangeAddress(Context c, int arrayResource) {
+  public CellRangeAddress getCellRangeAddress(Context c, int arrayResource) {
     String[] range = c.getResources().getStringArray(arrayResource);
     CellAddress firstCellAddress = new CellAddress(range[0]);
     CellAddress lastCellAddress = new CellAddress(range[1]);

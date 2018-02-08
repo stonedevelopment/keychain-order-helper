@@ -1,9 +1,10 @@
-package com.gmail.stonedevs.keychainorderhelper;
+package com.gmail.stonedevs.keychainorderhelper.view;
 
 import static com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil.getCellByAddress;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,15 +15,23 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.gmail.stonedevs.keychainorderhelper.json.JSONOrderEntry;
-import com.gmail.stonedevs.keychainorderhelper.json.JSONOrderEntryList;
+import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
+import com.gmail.stonedevs.keychainorderhelper.MainActivity;
+import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.adapter.ClickableKeychainAdapter;
+import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
+import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrderEntry;
+import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrderEntryList;
 import com.gmail.stonedevs.keychainorderhelper.util.JSONUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import java.io.File;
@@ -43,25 +52,23 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
 
-public class OrderFragment extends BackHandledFragment {
+public class NewOrderFragment extends BackHandledFragment {
 
-  public static final String TAG = OrderFragment.class.getSimpleName();
+  public static final String TAG = NewOrderFragment.class.getSimpleName();
 
   private EditText mEditStoreName;
   private EditText mEditOrderDate;
 
   private RecyclerView mRecyclerView;
-  private OrderAdapter mAdapter;
+  private ClickableKeychainAdapter mAdapter;
   private LinearLayoutManager mLayoutManager;
 
-  private boolean mSentEmail;
-
-  public OrderFragment() {
+  public NewOrderFragment() {
     // Required empty public constructor
   }
 
-  public static OrderFragment newInstance() {
-    OrderFragment fragment = new OrderFragment();
+  public static NewOrderFragment newInstance() {
+    NewOrderFragment fragment = new NewOrderFragment();
     Bundle args = new Bundle();
     fragment.setArguments(args);
     return fragment;
@@ -71,15 +78,17 @@ public class OrderFragment extends BackHandledFragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    //  reset sent email toggle
-    mSentEmail = false;
+    //  set variables here
+    ((MainActivity) getActivity())
+        .setActionBarTitle(getString(R.string.action_bar_title_newOrderFragment));
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+
     // Inflate the layout for this fragment
-    View view = inflater.inflate(R.layout.fragment_order, container, false);
+    View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
     String defaultStoreName = BuildConfig.DEBUG ? "Store Name 1" : "";
     String defaultOrderDate = BuildConfig.DEBUG ? Util.getFormattedDateForLayout() : "";
@@ -90,23 +99,41 @@ public class OrderFragment extends BackHandledFragment {
 
     if (savedInstanceState != null) {
       storeName = savedInstanceState
-          .getString(getString(R.string.bundle_key_orderFragment_savedInstanceState_store_name), defaultStoreName);
+          .getString(getString(R.string.bundle_key_NewOrderFragment_store_name),
+              defaultStoreName);
       orderDate = savedInstanceState
-          .getString(getString(R.string.bundle_key_orderFragment_savedInstanceState_order_date), defaultOrderDate);
+          .getString(getString(R.string.bundle_key_NewOrderFragment_order_date),
+              defaultOrderDate);
       quantityCellValues = savedInstanceState
-          .getIntegerArrayList(getString(R.string.bundle_key_orderFragment_savedInstanceState_quantity_cell_values));
+          .getIntegerArrayList(
+              getString(R.string.bundle_key_NewOrderFragment_quantity_cell_values));
     }
+
+    OnFocusChangeListener onEditTextFocusChangeListener = new OnFocusChangeListener() {
+      @Override
+      public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus) {
+          InputMethodManager mImMan = (InputMethodManager) getContext()
+              .getSystemService(Context.INPUT_METHOD_SERVICE);
+          if (mImMan != null) {
+            mImMan.hideSoftInputFromWindow(mEditStoreName.getWindowToken(), 0);
+          }
+        }
+      }
+    };
 
     mEditStoreName = view.findViewById(R.id.editStoreName);
     mEditStoreName.setText(storeName);
+    mEditStoreName.setOnFocusChangeListener(onEditTextFocusChangeListener);
 
     mEditOrderDate = view.findViewById(R.id.editOrderDate);
     if (orderDate.isEmpty()) {
       orderDate = Util.getFormattedDateForLayout();
     }
     mEditOrderDate.setText(orderDate);
+    mEditOrderDate.setOnFocusChangeListener(onEditTextFocusChangeListener);
 
-    mRecyclerView = view.findViewById(R.id.orderRecyclerView);
+    mRecyclerView = view.findViewById(R.id.listRecyclerView);
 
     mLayoutManager = new LinearLayoutManager(getActivity());
     mRecyclerView.setLayoutManager(mLayoutManager);
@@ -116,7 +143,7 @@ public class OrderFragment extends BackHandledFragment {
     mRecyclerView.addItemDecoration(dividerItemDecoration);
 
     //  Populate names by string-array
-    List<OrderItem> items = new ArrayList<>(0);
+    List<Keychain> items = new ArrayList<>(0);
     String[] names = getResources().getStringArray(R.array.excel_cell_values_names);
     String[] addresses = getResources().getStringArray(R.array.excel_cell_locations_quantities);
 
@@ -125,15 +152,15 @@ public class OrderFragment extends BackHandledFragment {
     if (quantityCellValues != null && quantityCellValues.size() == names.length) {
       for (int i = 0; i < names.length; i++) {
         int quantity = quantityCellValues.get(i);
-        items.add(new OrderItem(names[i], quantity, new CellAddress(addresses[i])));
+        items.add(new Keychain(names[i], quantity, new CellAddress(addresses[i])));
       }
     } else {
       for (int i = 0; i < names.length; i++) {
-        items.add(new OrderItem(names[i], 0, new CellAddress(addresses[i])));
+        items.add(new Keychain(names[i], 0, new CellAddress(addresses[i])));
       }
     }
 
-    mAdapter = new OrderAdapter(getActivity());
+    mAdapter = new ClickableKeychainAdapter(getActivity());
     mAdapter.bindItems(items);
 
     mRecyclerView.setAdapter(mAdapter);
@@ -169,7 +196,7 @@ public class OrderFragment extends BackHandledFragment {
       public void onClick(View v) {
         final boolean isStoreNameEmpty = mEditStoreName.getText().toString().isEmpty();
         final boolean isDateEmpty = mEditOrderDate.getText().toString().isEmpty();
-        final boolean areCellsEmpty = areCellsEmpty();
+        final boolean areCellsEmpty = mAdapter.areItemQuantitiesEmpty();
 
         if (isStoreNameEmpty || isDateEmpty || areCellsEmpty) {
           List<String> messages = new ArrayList<>(0);
@@ -209,27 +236,38 @@ public class OrderFragment extends BackHandledFragment {
               new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                  if (isStoreNameEmpty) {
-                    mEditStoreName.requestFocus();
-                  } else if (isDateEmpty) {
-                    mEditOrderDate.requestFocus();
-                  } else if (areCellsEmpty) {
-                    Toast.makeText(getContext(),
-                        R.string.toast_dialog_incomplete_order_keychains_empty,
-                        Toast.LENGTH_SHORT).show();
-                  }
+                  //  do nothing, allow user to fix issue, no need to hold their hand.
                 }
               });
           builder.show();
         } else {
-          try {
-            sendOrderByEmail(generateExcelFile());
-          } catch (IOException | InvalidFormatException | ParseException e) {
-            e.printStackTrace();
-          }
+          AlertDialog.Builder builder = new Builder(getActivity());
+          builder.setTitle(R.string.dialog_title_send_order);
+          builder.setMessage(getString(R.string.dialog_message_send_order));
+          builder.setPositiveButton(R.string.dialog_positive_button_send_order,
+              new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  try {
+                    sendOrderByEmail(generateExcelFile());
+                  } catch (IOException | InvalidFormatException | ParseException e) {
+                    e.printStackTrace();
+                  }
+                }
+              });
+          builder.setNegativeButton(R.string.dialog_negative_button_send_order,
+              new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  //  do nothing, allow user to double check order.
+                }
+              });
+          builder.show();
         }
       }
     });
+
+    mRecyclerView.requestFocus();
 
     return view;
   }
@@ -238,39 +276,16 @@ public class OrderFragment extends BackHandledFragment {
   @Override
   public void onSaveInstanceState(Bundle outState) {
     outState
-        .putString(getString(R.string.bundle_key_orderFragment_savedInstanceState_store_name), mEditStoreName.getText().toString());
+        .putString(getString(R.string.bundle_key_NewOrderFragment_store_name),
+            mEditStoreName.getText().toString());
     outState
-        .putString(getString(R.string.bundle_key_orderFragment_savedInstanceState_order_date), mEditOrderDate.getText().toString());
-    outState.putIntegerArrayList(getString(R.string.bundle_key_orderFragment_savedInstanceState_quantity_cell_values),
-        (ArrayList<Integer>) getQuantityCellValues());
+        .putString(getString(R.string.bundle_key_NewOrderFragment_order_date),
+            mEditOrderDate.getText().toString());
+    outState.putIntegerArrayList(
+        getString(R.string.bundle_key_NewOrderFragment_quantity_cell_values),
+        mAdapter.getItemQuantities());
 
     super.onSaveInstanceState(outState);
-  }
-
-  private List<Integer> getQuantityCellValues() {
-    List<Integer> values = new ArrayList<>();
-
-    for (int i = 0; i < mAdapter.getItemCount(); i++) {
-      OrderItem item = mAdapter.getItem(i);
-      if (item != null) {
-        values.add(item.getQuantity());
-      }
-    }
-
-    return values;
-  }
-
-  private boolean areCellsEmpty() {
-    for (int i = 0; i < mAdapter.getItemCount(); i++) {
-      OrderItem item = mAdapter.getItem(i);
-      if (item != null) {
-        if (item.getQuantity() > 0) {
-          return false;
-        }
-      }
-    }
-
-    return true;
   }
 
   private void resetOrder() {
@@ -282,50 +297,59 @@ public class OrderFragment extends BackHandledFragment {
 
     //  reset cell values
     for (int i = 0; i < mAdapter.getItemCount(); i++) {
-      OrderItem item = mAdapter.getItem(i);
+      Keychain item = mAdapter.getItem(i);
       if (item != null) {
         item.setQuantity(0);
       }
     }
     mAdapter.notifyDataSetChanged();
-
-    //  reset sent email value
-    mSentEmail = false;
   }
 
   private void sendOrderByEmail(File file) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
     String storeName = mEditStoreName.getText().toString();
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
+    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
+        getString(R.string.pref_key_rep_territory));
 
     Uri path = Uri.fromFile(file);
-    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+    Intent intent = new Intent(Intent.ACTION_SEND);
 
     // set the type to 'email'
-    emailIntent.setType("vnd.android.cursor.dir/email");
+    intent.setType("vnd.android.cursor.dir/email");
 
     //  set email address from preferences
     String sendtoEmail = getString(R.string.pref_default_value_sendto_email);
     String to[] = {sendtoEmail};
-    emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+    intent.putExtra(Intent.EXTRA_EMAIL, to);
 
     // the attachment
-    emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+    intent.putExtra(Intent.EXTRA_STREAM, path);
 
     // the mail subject
     String subject = String
         .format(getString(R.string.string_format_email_subject), repTerritory, storeName);
-    emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
     //  the mail body
     String body = String
         .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
-    emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+    intent.putExtra(Intent.EXTRA_TEXT, body);
 
     //  send email!
-//    startActivityForResult(
-//        Intent.createChooser(emailIntent, getString(R.string.intent_title_send_order_by_email)),
-//        R.string.intent_request_code_send_order_by_email);
+    if (BuildConfig.DEBUG) {
+      //  attempt to delete temp file from path used with intent
+      deleteTempFile(path);
+
+      //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
+      closeFragment();
+    } else {
+      Intent chooser = Intent
+          .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+
+      if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+        startActivityForResult(chooser, R.string.intent_request_code_send_order_by_email);
+      }
+    }
   }
 
   @Override
@@ -335,10 +359,30 @@ public class OrderFragment extends BackHandledFragment {
     switch (requestCode) {
       case R.string.intent_request_code_send_order_by_email:
         Toast
-            .makeText(getActivity(), R.string.toast_send_order_by_email_success, Toast.LENGTH_SHORT)
+            .makeText(getActivity(), R.string.toast_intent_send_order_by_email_success,
+                Toast.LENGTH_SHORT)
             .show();
-        mSentEmail = true;
+
+        //  get path of sent excel file from intent bundle
+        Uri path = data.getParcelableExtra(Intent.EXTRA_STREAM);
+
+        //  attempt to delete temp file
+        deleteTempFile(path);
+
+        //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
+        closeFragment();
         break;
+    }
+  }
+
+  private void deleteTempFile(Uri path) {
+    File file = new File(path.toString());
+    if (file.delete()) {
+      Log.d(TAG, "sendOrderByEmail: onActivityResult: file deleted successfully.");
+    } else {
+      Log.d(TAG,
+          "sendOrderByEmail: onActivityResult: file was not deleted successfully. Uri Path: "
+              + path.toString());
     }
   }
 
@@ -358,8 +402,10 @@ public class OrderFragment extends BackHandledFragment {
 
     //  Write Rep Name.
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-    String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
+    String repName = prefs.getString(getString(R.string.pref_key_rep_name),
+        getString(R.string.pref_error_default_value_rep_name));
+    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
+        getString(R.string.pref_error_default_value_rep_territory));
     String[] repNameCellLocations = getResources()
         .getStringArray(R.array.excel_cell_locations_rep_name);
     for (String cellLocation : repNameCellLocations) {
@@ -376,9 +422,10 @@ public class OrderFragment extends BackHandledFragment {
       getCellByAddress(sheet, cellLocation).setCellValue(orderDate);
     }
 
-    List<String> orderQuantities = new ArrayList<>(0);
+    Integer orderTotal = 0;
+    ArrayList<Integer> orderQuantities = new ArrayList<>(0);
     for (int i = 0; i < mAdapter.getItemCount(); i++) {
-      OrderItem item = mAdapter.getItem(i);
+      Keychain item = mAdapter.getItem(i);
       if (item != null) {
         CellAddress cellAddress = item.getQuantityLocation();
         int rowIndex = cellAddress.getRow();
@@ -396,46 +443,46 @@ public class OrderFragment extends BackHandledFragment {
           cell.setCellValue("");
         }
 
-        orderQuantities.add(String.valueOf(item.getQuantity()));
+        Integer quantity = item.getQuantity();
+        orderQuantities.add(quantity);
+        orderTotal += quantity;
       }
     }
 
     SimpleDateFormat format = new SimpleDateFormat(getString(R.string.string_date_layout),
         Locale.getDefault());
-    Date newDate = format.parse(orderDate);
+    Date layoutDateFormat = format.parse(orderDate);
 
     format = new SimpleDateFormat(getString(R.string.string_date_filename), Locale.getDefault());
-    String filenameDate = format.format(newDate);
+    String filenameDateFormat = format.format(layoutDateFormat);
 
     File file = new File(getActivity().getExternalFilesDir(null),
         String.format(getString(R.string.string_format_filename), repTerritory.toLowerCase(),
-            storeName.toLowerCase(), filenameDate));
+            storeName.toLowerCase(), filenameDateFormat));
     FileOutputStream out = new FileOutputStream(file);
     workbook.write(out);
     out.close();
 
     //  save to orders.json
-    saveOrderToJson(storeName, orderQuantities, orderDate);
+    saveOrderToJson(storeName, orderQuantities, orderDate, orderTotal);
 
     return file;
   }
 
-  private void saveOrderToJson(String storeName, List<String> orderQuantities, String orderDate)
+  private void saveOrderToJson(String storeName, ArrayList<Integer> orderQuantities,
+      String orderDate,
+      Integer orderTotal)
       throws IOException {
-    JSONOrderEntryList entryList = JSONUtil.getEntries(getActivity());
-    JSONOrderEntry entry = new JSONOrderEntry(storeName, orderQuantities, orderDate);
+    JSONOrderEntryList entryList = JSONUtil.getOrderEntryList(getActivity());
+    JSONOrderEntry entry = new JSONOrderEntry(storeName, orderDate, orderQuantities, orderTotal);
 
     entryList.addEntry(entry);
 
-    JSONUtil.setEntries(getActivity(), entryList);
+    JSONUtil.setOrderEntryList(getActivity(), entryList);
   }
 
   @Override
   public boolean onBackPressed() {
-    if (mSentEmail) {
-      return false;
-    }
-
     AlertDialog.Builder builder = new Builder(getActivity());
     builder.setTitle(R.string.dialog_title_cancel_order);
     builder.setMessage(R.string.dialog_message_cancel_order);
@@ -443,7 +490,7 @@ public class OrderFragment extends BackHandledFragment {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            getFragmentManager().popBackStack();
+            closeFragment();
             Toast.makeText(getActivity(), R.string.toast_dialog_cancel_order_success,
                 Toast.LENGTH_SHORT).show();
           }
@@ -452,6 +499,7 @@ public class OrderFragment extends BackHandledFragment {
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
+            //  do nothing, allow the user to continue their order.
           }
         });
     builder.show();

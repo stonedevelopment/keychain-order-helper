@@ -1,13 +1,20 @@
 package com.gmail.stonedevs.keychainorderhelper;
 
+import android.app.Fragment;
+import android.app.FragmentManager.OnBackStackChangedListener;
+import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.gmail.stonedevs.keychainorderhelper.BackHandledFragment.BackHandlerInterface;
+import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment;
+import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment.BackHandlerInterface;
 
-public class MainActivity extends AppCompatActivity implements BackHandlerInterface {
+public class MainActivity extends AppCompatActivity implements BackHandlerInterface,
+    OnBackStackChangedListener {
 
   public static final String TAG = MainActivity.class.getSimpleName();
 
@@ -19,6 +26,27 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     setContentView(R.layout.activity_main);
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
+
+    getFragmentManager().addOnBackStackChangedListener(this);
+    displayHomeUpButton();
+
+    //  Set default value if debugging
+    if (BuildConfig.DEBUG) {
+      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+      String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
+      String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
+
+      if (repName.isEmpty()) {
+        prefs.edit().putString(getString(R.string.pref_key_rep_name),
+            getString(R.string.pref_debug_default_value_rep_name)).apply();
+      }
+
+      if (repTerritory.isEmpty()) {
+        prefs.edit().putString(getString(R.string.pref_key_rep_territory),
+            getString(R.string.pref_debug_default_value_rep_territory)).apply();
+      }
+    }
 
     // Check that the activity is using the layout version with
     // the fragment_container FrameLayout
@@ -81,5 +109,37 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
   @Override
   public void unsetSelectedFragment() {
     mSelectedFragment = null;
+  }
+
+  @Override
+  public void onBackStackChanged() {
+    displayHomeUpButton();
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    if (mSelectedFragment == null || !mSelectedFragment.onBackPressed()) {
+      super.onBackPressed();
+      return true;
+    }
+    return false;
+  }
+
+  void displayHomeUpButton() {
+    boolean canGoBack = getFragmentManager().getBackStackEntryCount() > 0;
+    getSupportActionBar().setDisplayHomeAsUpEnabled(canGoBack);
+  }
+
+  public void setActionBarTitle(String title) {
+    getSupportActionBar().setTitle(title);
+  }
+
+  public void replaceFragmentWithPopAnimation(Fragment fragment) {
+    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    transaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_left,
+        R.animator.slide_out_right, R.animator.slide_in_right);
+    transaction.replace(R.id.fragment_container, fragment, fragment.getTag());
+    transaction.addToBackStack(null);
+    transaction.commit();
   }
 }

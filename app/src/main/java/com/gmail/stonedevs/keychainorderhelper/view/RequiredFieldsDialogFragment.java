@@ -1,4 +1,4 @@
-package com.gmail.stonedevs.keychainorderhelper;
+package com.gmail.stonedevs.keychainorderhelper.view;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.gmail.stonedevs.keychainorderhelper.R;
 
 public class RequiredFieldsDialogFragment extends DialogFragment {
 
@@ -27,7 +28,7 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
     Bundle bundle = getArguments();
 
     AlertDialog.Builder builder = new Builder(getActivity());
-    builder.setTitle("Required Fields");
+    builder.setTitle(R.string.dialog_title_required_fields);
 
     LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -44,32 +45,37 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
 
     builder.setView(inflateView);
 
-    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        String nameText = editName.getText().toString();
-        String territoryText = editTerritory.getText().toString();
+    builder.setPositiveButton(R.string.dialog_positive_button_required_fields,
+        new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            String nameText = editName.getText().toString();
+            String territoryText = editTerritory.getText().toString();
 
-        if (!nameText.isEmpty() && !territoryText.isEmpty()) {
-          //  save to preferences
-          SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-          prefs.edit()
-              .putString(getContext().getString(R.string.pref_key_rep_name), nameText)
-              .apply();
-          prefs.edit()
-              .putString(getContext().getString(R.string.pref_key_rep_territory), territoryText)
-              .apply();
-
-          Toast.makeText(getContext(), "Settings saved successfully.", Toast.LENGTH_SHORT).show();
-        } else {
-          Toast
-              .makeText(getContext(), "Settings not saved successfully, open Settings to complete.",
-                  Toast.LENGTH_LONG)
-              .show();
-        }
-      }
-    });
+            if (!nameText.isEmpty() && !territoryText.isEmpty()) {
+              //  save to preferences
+              saveRequiredFields(nameText, territoryText);
+              Toast.makeText(getContext(), R.string.toast_dialog_required_fields_success,
+                  Toast.LENGTH_SHORT).show();
+            } else {
+              Toast
+                  .makeText(getContext(), R.string.toast_dialog_required_fields_fail,
+                      Toast.LENGTH_LONG)
+                  .show();
+            }
+          }
+        });
 
     return builder.create();
+  }
+
+  void saveRequiredFields(String name, String territory) {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    prefs.edit()
+        .putString(getContext().getString(R.string.pref_key_rep_name), name)
+        .apply();
+    prefs.edit()
+        .putString(getContext().getString(R.string.pref_key_rep_territory), territory)
+        .apply();
   }
 }

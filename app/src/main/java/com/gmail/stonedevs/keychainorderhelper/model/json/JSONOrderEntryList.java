@@ -1,4 +1,4 @@
-package com.gmail.stonedevs.keychainorderhelper.json;
+package com.gmail.stonedevs.keychainorderhelper.model.json;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,12 @@ public class JSONOrderEntryList {
     //  blank constructor required
   }
 
-  public JSONOrderEntryList(List<JSONOrderEntry> orderEntries) {
-    this.orderEntries.clear();
-    this.orderEntries.addAll(orderEntries);
-  }
-
   public List<JSONOrderEntry> getOrderEntries() {
     return orderEntries;
   }
 
-  public void setOrderEntries(
-      List<JSONOrderEntry> orderEntries) {
-    this.orderEntries.clear();
-    this.orderEntries.addAll(orderEntries);
+  public JSONOrderEntry getEntry(int position) {
+    return orderEntries.get(position);
   }
 
   public void addEntry(JSONOrderEntry entry) {

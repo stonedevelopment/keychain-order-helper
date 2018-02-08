@@ -4,31 +4,9 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
-  android:background="@drawable/gradient_background"
   android:layout_height="match_parent"
+  android:background="@drawable/gradient_background"
   tools:context="com.gmail.stonedevs.keychainorderhelper.MainActivityFragment">
-
-  <ImageView
-    android:id="@+id/logoImage_SRP"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:contentDescription="@string/logoImage_SRP_contentDescription"
-    android:src="@drawable/logo_srp_companies"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
-
-  <ImageView
-    android:id="@+id/logoImage_TheNamePeople"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:contentDescription="@string/logoImage_TheNamePeople"
-    android:src="@drawable/logo_thenamepeople"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/logoImage_SRP"/>
 
   <Button
     android:id="@+id/orderButton"
@@ -38,12 +16,12 @@
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
     android:text="@string/orderButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/viewButton"
+    app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"/>
 
   <Button
-    android:id="@+id/viewButton"
+    android:id="@+id/viewOrderButton"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="24dp"
@@ -78,5 +56,69 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"/>
+
+  <android.support.constraint.Guideline
+    android:id="@+id/leftGuideline"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.25"/>
+  <android.support.constraint.Guideline
+    android:id="@+id/rightGuideline"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.75"/>
+  <LinearLayout
+    android:id="@+id/constraintLayout"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toTopOf="@+id/orderButton"
+    app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
+    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintStart_toStartOf="@+id/leftGuideline"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0">
+
+    <ImageView
+      android:id="@+id/logoImage_Pugs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:adjustViewBounds="true"
+      android:contentDescription="@string/logoImage_SRP_contentDescription"
+      android:src="@drawable/logo_pugs"/>
+    <ImageView
+      android:id="@+id/logoImage_SRP"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:adjustViewBounds="true"
+      android:contentDescription="@string/logoImage_SRP_contentDescription"
+      android:src="@drawable/logo_srp_companies"/>
+    <ImageView
+      android:id="@+id/logoImage_TheNamePeople"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:adjustViewBounds="true"
+      android:contentDescription="@string/logoImage_TheNamePeople"
+      android:src="@drawable/logo_thenamepeople"
+      android:visibility="gone"/>
+  </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
