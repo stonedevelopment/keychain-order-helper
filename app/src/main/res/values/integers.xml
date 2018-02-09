@@ -2,4 +2,6 @@
 <resources>
   <integer name="excel_min_order_quantity_value">4</integer>
   <integer name="excel_max_order_quantity_value">6</integer>
+
+  <integer name="intent_request_code_send_order_by_email">100</integer>
 </resources>

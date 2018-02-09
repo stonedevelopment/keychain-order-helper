@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -12,7 +13,9 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.text.InputType;
 import android.view.MenuItem;
+import android.widget.EditText;
 import java.util.Objects;
 
 /**
@@ -173,12 +176,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       addPreferencesFromResource(R.xml.pref_main);
       setHasOptionsMenu(true);
 
+      EditTextPreference editRepNamePref = (EditTextPreference) findPreference(
+          getString(R.string.pref_key_rep_name));
+      EditText editRepName = editRepNamePref.getEditText();
+      editRepName.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+
+      EditTextPreference editRepTerritoryPref = (EditTextPreference) findPreference(
+          getString(R.string.pref_key_rep_territory));
+      EditText editRepTerritory = editRepTerritoryPref.getEditText();
+      editRepTerritory.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+
       // Bind the summaries of EditText/List/Dialog/Ringtone preferences
       // to their values. When their values change, their summaries are
       // updated to reflect the new value, per the Android Design
       // guidelines.
-      bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_rep_name)));
-      bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_rep_territory)));
+      bindPreferenceSummaryToValue(editRepNamePref);
+      bindPreferenceSummaryToValue(editRepTerritoryPref);
     }
 
     @Override

@@ -12,15 +12,27 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
 public class RequiredFieldsDialogFragment extends DialogFragment {
 
   public static final String TAG = RequiredFieldsDialogFragment.class.getSimpleName();
 
+  private OnRequiredFieldsCheckListener mListener;
+
+  public interface OnRequiredFieldsCheckListener {
+
+    void onSuccess(int resourceId);
+
+    void onFail(int resourceId);
+  }
+
   public RequiredFieldsDialogFragment() {
     //  Empty constructor required for DialogFragment
+  }
+
+  public void setListener(OnRequiredFieldsCheckListener listener) {
+    mListener = listener;
   }
 
   @Override
@@ -52,16 +64,17 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
             String nameText = editName.getText().toString();
             String territoryText = editTerritory.getText().toString();
 
-            if (!nameText.isEmpty() && !territoryText.isEmpty()) {
-              //  save to preferences
-              saveRequiredFields(nameText, territoryText);
-              Toast.makeText(getContext(), R.string.toast_dialog_required_fields_success,
-                  Toast.LENGTH_SHORT).show();
+            saveRequiredFields(nameText, territoryText);
+            if (nameText.isEmpty() && territoryText.isEmpty()) {
+              mListener.onFail(R.string.toast_dialog_required_fields_fail);
             } else {
-              Toast
-                  .makeText(getContext(), R.string.toast_dialog_required_fields_fail,
-                      Toast.LENGTH_LONG)
-                  .show();
+              if (nameText.isEmpty()) {
+                mListener.onFail(R.string.toast_dialog_required_fields_rep_name_empty);
+              } else if (territoryText.isEmpty()) {
+                mListener.onFail(R.string.toast_dialog_required_fields_rep_territory_empty);
+              } else {
+                mListener.onSuccess(R.string.toast_dialog_required_fields_success);
+              }
             }
           }
         });
@@ -69,13 +82,24 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
     return builder.create();
   }
 
-  void saveRequiredFields(String name, String territory) {
+  @Override
+  public void onCancel(DialogInterface dialog) {
+    mListener.onFail(R.string.toast_dialog_required_fields_fail);
+  }
+
+  void saveRequiredFields(String repName, String repTerritory) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-    prefs.edit()
-        .putString(getContext().getString(R.string.pref_key_rep_name), name)
-        .apply();
-    prefs.edit()
-        .putString(getContext().getString(R.string.pref_key_rep_territory), territory)
-        .apply();
+
+    if (!repName.isEmpty()) {
+      prefs.edit()
+          .putString(getContext().getString(R.string.pref_key_rep_name), repName)
+          .apply();
+    }
+
+    if (!repTerritory.isEmpty()) {
+      prefs.edit()
+          .putString(getContext().getString(R.string.pref_key_rep_territory), repTerritory)
+          .apply();
+    }
   }
 }

@@ -1,5 +1,7 @@
 package com.gmail.stonedevs.keychainorderhelper;
 
+import static android.content.Intent.EXTRA_STREAM;
+
 import android.app.Fragment;
 import android.app.FragmentManager.OnBackStackChangedListener;
 import android.app.FragmentTransaction;
@@ -23,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
 
   public static final String TAG = MainActivity.class.getSimpleName();
 
+  private static final int REQUEST_CODE_ACTION_SEND = 100;
+  private File mSendOrderByEmailFile;
+
   private BackHandledFragment mSelectedFragment;
 
   @Override
@@ -36,22 +41,22 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     displayHomeUpButton();
 
     //  Set default value if debugging
-    if (BuildConfig.DEBUG) {
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-      String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
-      String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
-
-      if (repName.isEmpty()) {
-        prefs.edit().putString(getString(R.string.pref_key_rep_name),
-            getString(R.string.pref_debug_default_value_rep_name)).apply();
-      }
-
-      if (repTerritory.isEmpty()) {
-        prefs.edit().putString(getString(R.string.pref_key_rep_territory),
-            getString(R.string.pref_debug_default_value_rep_territory)).apply();
-      }
-    }
+//    if (BuildConfig.DEBUG) {
+//      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//
+//      String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
+//      String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
+//
+//      if (repName.isEmpty()) {
+//        prefs.edit().putString(getString(R.string.pref_key_rep_name),
+//            getString(R.string.pref_debug_default_value_rep_name)).apply();
+//      }
+//
+//      if (repTerritory.isEmpty()) {
+//        prefs.edit().putString(getString(R.string.pref_key_rep_territory),
+//            getString(R.string.pref_debug_default_value_rep_territory)).apply();
+//      }
+//    }
 
     // Check that the activity is using the layout version with
     // the fragment_container FrameLayout
@@ -135,17 +140,15 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     super.onActivityResult(requestCode, resultCode, data);
 
     switch (requestCode) {
-      case R.string.intent_request_code_send_order_by_email:
-        Toast
-            .makeText(this, R.string.toast_intent_send_order_by_email_success,
-                Toast.LENGTH_SHORT)
+      case REQUEST_CODE_ACTION_SEND:
+        Toast.makeText(this, R.string.toast_intent_send_order_by_email_success, Toast.LENGTH_SHORT)
             .show();
 
-        //  get path of sent excel file from intent bundle
-        Uri path = data.getParcelableExtra(Intent.EXTRA_STREAM);
-
         //  attempt to delete temp file
-        Util.deleteTempFile(path);
+        if (mSendOrderByEmailFile != null) {
+          Util.deleteTempFile(mSendOrderByEmailFile);
+          mSendOrderByEmailFile = null;
+        }
 
         //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
         closeFragment();
@@ -167,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
         getString(R.string.pref_key_rep_territory));
 
-    Uri path = Uri.fromFile(file);
     Intent intent = new Intent(Intent.ACTION_SEND);
 
     // set the type to 'email'
@@ -179,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
     // the attachment
-    intent.putExtra(Intent.EXTRA_STREAM, path);
+    Uri path = Uri.fromFile(file);
+    intent.putExtra(EXTRA_STREAM, path);
 
     // the mail subject
     String subject = String
@@ -192,19 +195,12 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     intent.putExtra(Intent.EXTRA_TEXT, body);
 
     //  send email!
-    if (BuildConfig.DEBUG) {
-      //  attempt to delete temp file from path used with intent
-      Util.deleteTempFile(file);
+    Intent chooser = Intent
+        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
 
-      //  order was sent, saved, and temp file was deleted: close fragment, go to main menu
-      closeFragment();
-    } else {
-      Intent chooser = Intent
-          .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-      if (intent.resolveActivity(getPackageManager()) != null) {
-        startActivityForResult(chooser, R.string.intent_request_code_send_order_by_email);
-      }
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      mSendOrderByEmailFile = file;
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
     }
   }
 

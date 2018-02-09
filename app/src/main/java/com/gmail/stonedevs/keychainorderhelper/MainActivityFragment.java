@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.PreviousOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
 
 public class MainActivityFragment extends Fragment {
 
@@ -23,7 +25,6 @@ public class MainActivityFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.app_name));
-    ((MainActivity) getActivity()).getSupportActionBar().setElevation(0);
 
     View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -42,6 +43,18 @@ public class MainActivityFragment extends Fragment {
         //  else, send user to order fragment, they followed instructions.
         if (repName.isEmpty() || repTerritory.isEmpty()) {
           RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
+          dialogFragment.setListener(new OnRequiredFieldsCheckListener() {
+            @Override
+            public void onSuccess(int resourceId) {
+              Toast.makeText(getContext(), resourceId, Toast.LENGTH_SHORT).show();
+              replaceFragmentWithPopAnimation(NewOrderFragment.newInstance());
+            }
+
+            @Override
+            public void onFail(int resourceId) {
+              Toast.makeText(getContext(), resourceId, Toast.LENGTH_LONG).show();
+            }
+          });
 
           Bundle bundle = new Bundle();
           bundle.putString(getString(R.string.pref_key_rep_name), repName);
