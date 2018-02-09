@@ -158,9 +158,9 @@ public class ViewOrderFragment extends BackHandledFragment {
       @Override
       public void onClick(View v) {
         AlertDialog.Builder builder = new Builder(getActivity());
-        builder.setTitle(R.string.dialog_title_send_order);
-        builder.setMessage(getString(R.string.dialog_message_send_order));
-        builder.setPositiveButton(R.string.dialog_positive_button_send_order,
+        builder.setTitle(R.string.dialog_title_resend_order);
+        builder.setMessage(getString(R.string.dialog_message_resend_order));
+        builder.setPositiveButton(R.string.dialog_positive_button_resend_order,
             new DialogInterface.OnClickListener() {
               @Override
               public void onClick(DialogInterface dialog, int which) {

@@ -13,24 +13,24 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:text="@string/orderButton_text"
     app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
 
   <Button
     android:id="@+id/viewOrderButton"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="24dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:text="@string/viewButton_text"
     app:layout_constraintBottom_toTopOf="@+id/generateButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
 
   <Button
     android:id="@+id/generateButton"
@@ -50,26 +50,14 @@
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:text="@string/settingsButton_text"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
 
-  <android.support.constraint.Guideline
-    android:id="@+id/leftGuideline"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.25"/>
-  <android.support.constraint.Guideline
-    android:id="@+id/rightGuideline"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.75"/>
-  <LinearLayout
+  <android.support.constraint.ConstraintLayout
     android:id="@+id/constraintLayout"
     android:layout_width="0dp"
     android:layout_height="0dp"
@@ -77,36 +65,39 @@
     android:layout_marginBottom="16dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
-    android:orientation="vertical"
     app:layout_constraintBottom_toTopOf="@+id/orderButton"
-    app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
+    app:layout_constraintEnd_toStartOf="@+id/guideline75"
     app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="@+id/leftGuideline"
+    app:layout_constraintStart_toStartOf="@+id/guideline25"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintVertical_bias="0.0">
 
     <ImageView
       android:id="@+id/logoImage_Pugs"
-      android:layout_width="match_parent"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
       android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
       android:adjustViewBounds="true"
       android:contentDescription="@string/logoImage_SRP_contentDescription"
-      android:src="@drawable/logo_pugs"/>
+      android:src="@drawable/logo_pugs"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
     <ImageView
       android:id="@+id/logoImage_SRP"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
+      android:layout_marginTop="16dp"
       android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
       android:adjustViewBounds="true"
       android:contentDescription="@string/logoImage_SRP_contentDescription"
-      android:src="@drawable/logo_srp_companies"/>
+      android:src="@drawable/logo_srp_companies"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/logoImage_Pugs"/>
     <ImageView
       android:id="@+id/logoImage_TheNamePeople"
       android:layout_width="match_parent"
@@ -119,6 +110,31 @@
       android:contentDescription="@string/logoImage_TheNamePeople"
       android:src="@drawable/logo_thenamepeople"
       android:visibility="gone"/>
-  </LinearLayout>
+  </android.support.constraint.ConstraintLayout>
+
+  <android.support.constraint.Guideline
+    android:id="@+id/guideline15"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.15"/>
+  <android.support.constraint.Guideline
+    android:id="@+id/guideline25"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.25"/>
+  <android.support.constraint.Guideline
+    android:id="@+id/guideline75"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.75"/>
+  <android.support.constraint.Guideline
+    android:id="@+id/guideline85"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.85"/>
 
 </android.support.constraint.ConstraintLayout>

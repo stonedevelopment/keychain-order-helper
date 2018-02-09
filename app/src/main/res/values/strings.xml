@@ -62,6 +62,12 @@
   <string name="dialog_positive_button_send_order">Send Order</string>
   <string name="dialog_negative_button_send_order">Go Back</string>
 
+  <!--  AlertDialog:  Resend Order -->
+  <string name="dialog_title_resend_order">Resend Order</string>
+  <string name="dialog_message_resend_order">Are you sure you want to resend this order?</string>
+  <string name="dialog_positive_button_resend_order">Resend Order</string>
+  <string name="dialog_negative_button_resend_order">Go Back</string>
+
   <!--  AlertDialog:  Cancel Order -->
   <string name="dialog_title_cancel_order">Cancel Order</string>
   <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>

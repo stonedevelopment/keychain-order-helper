@@ -10,12 +10,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
 import com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.PreviousOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment;
-import java.io.IOException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class MainActivityFragment extends Fragment {
 
@@ -26,6 +23,7 @@ public class MainActivityFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.app_name));
+    ((MainActivity) getActivity()).getSupportActionBar().setElevation(0);
 
     View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -43,14 +41,14 @@ public class MainActivityFragment extends Fragment {
         //  if required fields are empty, open dialog for easy editing
         //  else, send user to order fragment, they followed instructions.
         if (repName.isEmpty() || repTerritory.isEmpty()) {
-            RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
+          RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
 
-            Bundle bundle = new Bundle();
-            bundle.putString(getString(R.string.pref_key_rep_name), repName);
-            bundle.putString(getString(R.string.pref_key_rep_territory), repTerritory);
-            dialogFragment.setArguments(bundle);
+          Bundle bundle = new Bundle();
+          bundle.putString(getString(R.string.pref_key_rep_name), repName);
+          bundle.putString(getString(R.string.pref_key_rep_territory), repTerritory);
+          dialogFragment.setArguments(bundle);
 
-            dialogFragment.show(getFragmentManager(), dialogFragment.getTag());
+          dialogFragment.show(getFragmentManager(), dialogFragment.getTag());
         } else {
           replaceFragmentWithPopAnimation(NewOrderFragment.newInstance());
         }
