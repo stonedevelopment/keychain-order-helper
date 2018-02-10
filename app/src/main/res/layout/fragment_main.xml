@@ -8,55 +8,6 @@
   android:background="@drawable/gradient_background"
   tools:context="com.gmail.stonedevs.keychainorderhelper.MainActivityFragment">
 
-  <Button
-    android:id="@+id/orderButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/orderButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
-  <Button
-    android:id="@+id/viewOrderButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="24dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/viewButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/generateButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
-  <Button
-    android:id="@+id/generateButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:text="@string/generateButton_text"
-    android:visibility="gone"
-    app:layout_constraintBottom_toTopOf="@+id/settingsButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
-
-  <Button
-    android:id="@+id/settingsButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/settingsButton_text"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
   <android.support.constraint.ConstraintLayout
     android:id="@+id/constraintLayout"
     android:layout_width="0dp"
@@ -111,6 +62,68 @@
       android:src="@drawable/logo_thenamepeople"
       android:visibility="gone"/>
   </android.support.constraint.ConstraintLayout>
+
+  <Button
+    android:id="@+id/orderButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/orderButton_text"
+    app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+
+  <Button
+    android:id="@+id/viewOrderButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="24dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/viewButton_text"
+    app:layout_constraintBottom_toTopOf="@+id/generateButton"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+
+  <Button
+    android:id="@+id/generateButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/generateButton_text"
+    android:visibility="gone"
+    app:layout_constraintBottom_toTopOf="@+id/crashButton"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+
+  <Button
+    android:id="@+id/crashButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/crashButton_text"
+    android:visibility="gone"
+    app:layout_constraintBottom_toTopOf="@+id/settingsButton"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+
+  <Button
+    android:id="@+id/settingsButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/settingsButton_text"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
 
   <android.support.constraint.Guideline
     android:id="@+id/guideline15"

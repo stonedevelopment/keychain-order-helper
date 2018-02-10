@@ -1,20 +1,24 @@
 package com.gmail.stonedevs.keychainorderhelper;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
+import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
 import com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.PreviousOrderFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
+import java.io.IOException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public class MainActivityFragment extends Fragment {
 
@@ -35,13 +39,13 @@ public class MainActivityFragment extends Fragment {
       public void onClick(View v) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
-        String repTerritory = prefs
+        String prefRepName = prefs.getString(getString(R.string.pref_key_rep_name), "");
+        String prefRepTerritory = prefs
             .getString(getString(R.string.pref_key_rep_territory), "");
 
         //  if required fields are empty, open dialog for easy editing
         //  else, send user to order fragment, they followed instructions.
-        if (repName.isEmpty() || repTerritory.isEmpty()) {
+        if (prefRepName.isEmpty() || prefRepTerritory.isEmpty()) {
           RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
           dialogFragment.setListener(new OnRequiredFieldsCheckListener() {
             @Override
@@ -57,11 +61,15 @@ public class MainActivityFragment extends Fragment {
           });
 
           Bundle bundle = new Bundle();
-          bundle.putString(getString(R.string.pref_key_rep_name), repName);
-          bundle.putString(getString(R.string.pref_key_rep_territory), repTerritory);
+          bundle.putString(getString(R.string.pref_key_rep_name),
+              BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_name)
+                  : "");
+          bundle.putString(getString(R.string.pref_key_rep_territory),
+              BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_territory)
+                  : "");
           dialogFragment.setArguments(bundle);
 
-          dialogFragment.show(getFragmentManager(), dialogFragment.getTag());
+          dialogFragment.show(getActivity().getSupportFragmentManager(), dialogFragment.getTag());
         } else {
           replaceFragmentWithPopAnimation(NewOrderFragment.newInstance());
         }
@@ -77,21 +85,33 @@ public class MainActivityFragment extends Fragment {
       }
     });
 
-//    Button generateButton = view.findViewById(R.id.generateButton);
-//    if (BuildConfig.DEBUG) {
-//      generateButton.setVisibility(View.VISIBLE);
-//      generateButton.setOnClickListener(new OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//          //  Generate
-//          try {
-//            ExcelUtil.GenerateStringArrayFormat(getActivity());
-//          } catch (InvalidFormatException | IOException e) {
-//            e.printStackTrace();
-//          }
-//        }
-//      });
-//    }
+    Button crashButton = view.findViewById(R.id.crashButton);
+    if (BuildConfig.DEBUG) {
+      crashButton.setVisibility(View.VISIBLE);
+      crashButton.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          //  Crash!
+          Crashlytics.getInstance().crash();
+        }
+      });
+    }
+
+    Button generateButton = view.findViewById(R.id.generateButton);
+    if (BuildConfig.DEBUG) {
+      generateButton.setVisibility(View.VISIBLE);
+      generateButton.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          //  Generate
+          try {
+            ExcelUtil.GenerateStringArrayFormat(getActivity());
+          } catch (InvalidFormatException | IOException e) {
+            e.printStackTrace();
+          }
+        }
+      });
+    }
 
     Button settingsButton = view.findViewById(R.id.settingsButton);
     settingsButton.setOnClickListener(new OnClickListener() {

@@ -1,7 +1,7 @@
 package com.gmail.stonedevs.keychainorderhelper.view;
 
-import android.app.Fragment;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import com.gmail.stonedevs.keychainorderhelper.MainActivity;
 
 public abstract class BackHandledFragment extends Fragment {

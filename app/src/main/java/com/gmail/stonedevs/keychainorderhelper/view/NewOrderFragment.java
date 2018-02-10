@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.adapter.ClickableKeychainAdapter;
@@ -79,8 +80,8 @@ public class NewOrderFragment extends BackHandledFragment {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
-    String defaultStoreName = "";
-//    String defaultStoreName = BuildConfig.DEBUG ? "Store Name 1" : "";
+    String defaultStoreName =
+        BuildConfig.DEBUG ? getString(R.string.storeNameText_debug_default_value) : "";
     String defaultOrderDate = Util.getFormattedDateForLayout();
 
     mStoreName = defaultStoreName;

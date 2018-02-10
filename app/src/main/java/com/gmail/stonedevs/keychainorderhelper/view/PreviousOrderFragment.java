@@ -2,9 +2,9 @@ package com.gmail.stonedevs.keychainorderhelper.view;
 
 import static com.gmail.stonedevs.keychainorderhelper.view.ViewOrderFragment.TAG;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;

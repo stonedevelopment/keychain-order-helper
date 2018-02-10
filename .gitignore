@@ -35,3 +35,6 @@ proguard/
 
 # Secret Files
 secrets.xml
+
+# Google Files
+google-services.json

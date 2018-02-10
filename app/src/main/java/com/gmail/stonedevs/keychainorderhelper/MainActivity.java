@@ -2,14 +2,14 @@ package com.gmail.stonedevs.keychainorderhelper;
 
 import static android.content.Intent.EXTRA_STREAM;
 
-import android.app.Fragment;
-import android.app.FragmentManager.OnBackStackChangedListener;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -37,26 +37,8 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
-    getFragmentManager().addOnBackStackChangedListener(this);
+    getSupportFragmentManager().addOnBackStackChangedListener(this);
     displayHomeUpButton();
-
-    //  Set default value if debugging
-//    if (BuildConfig.DEBUG) {
-//      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//
-//      String repName = prefs.getString(getString(R.string.pref_key_rep_name), "");
-//      String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory), "");
-//
-//      if (repName.isEmpty()) {
-//        prefs.edit().putString(getString(R.string.pref_key_rep_name),
-//            getString(R.string.pref_debug_default_value_rep_name)).apply();
-//      }
-//
-//      if (repTerritory.isEmpty()) {
-//        prefs.edit().putString(getString(R.string.pref_key_rep_territory),
-//            getString(R.string.pref_debug_default_value_rep_territory)).apply();
-//      }
-//    }
 
     // Check that the activity is using the layout version with
     // the fragment_container FrameLayout
@@ -77,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
       fragment.setArguments(getIntent().getExtras());
 
       // Add the fragment to the 'fragment_container' FrameLayout
-      getFragmentManager().beginTransaction()
+      getSupportFragmentManager().beginTransaction()
           .add(R.id.fragment_container, fragment).commit();
     }
   }
@@ -157,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
   }
 
   void displayHomeUpButton() {
-    boolean canGoBack = getFragmentManager().getBackStackEntryCount() > 0;
+    boolean canGoBack = getSupportFragmentManager().getBackStackEntryCount() > 0;
     getSupportActionBar().setDisplayHomeAsUpEnabled(canGoBack);
   }
 
@@ -176,7 +158,9 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     intent.setType("vnd.android.cursor.dir/email");
 
     //  set email address from preferences
-    String sendtoEmail = getString(R.string.pref_default_value_sendto_email);
+    String sendtoEmail =
+        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_sendto_email)
+            : getString(R.string.pref_default_value_sendto_email);
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
@@ -195,21 +179,23 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     intent.putExtra(Intent.EXTRA_TEXT, body);
 
     //  send email!
-    Intent chooser = Intent
-        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+    Intent chooser = Intent.createChooser(intent, getString(R.string.intent_title_send_order_by_email));
 
     if (intent.resolveActivity(getPackageManager()) != null) {
       mSendOrderByEmailFile = file;
       startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      Toast.makeText(this, R.string.toast_intent_send_order_by_email_no_supported_apps,
+          Toast.LENGTH_LONG).show();
     }
   }
 
   public void closeFragment() {
-    getFragmentManager().popBackStack();
+    getSupportFragmentManager().popBackStack();
   }
 
   public void replaceFragmentWithPopAnimation(Fragment fragment) {
-    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
     transaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_out_left,
         R.animator.slide_out_right, R.animator.slide_in_right);
     transaction.replace(R.id.fragment_container, fragment, fragment.getTag());
