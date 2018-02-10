@@ -67,16 +67,19 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
             String territoryText = editTerritory.getText().toString();
 
             saveRequiredFields(nameText, territoryText);
-            if (nameText.isEmpty() && territoryText.isEmpty()) {
-              mListener.onFail(R.string.toast_dialog_required_fields_fail);
-            } else {
-              if (nameText.isEmpty()) {
-                mListener.onFail(R.string.toast_dialog_required_fields_rep_name_empty);
-              } else if (territoryText.isEmpty()) {
-                mListener.onFail(R.string.toast_dialog_required_fields_rep_territory_empty);
+
+            if (nameText.isEmpty() || territoryText.isEmpty()) {
+              if (nameText.isEmpty() && territoryText.isEmpty()) {
+                mListener.onFail(R.string.toast_dialog_required_fields_fail);
               } else {
-                mListener.onSuccess(R.string.toast_dialog_required_fields_success);
+                if (nameText.isEmpty()) {
+                  mListener.onFail(R.string.toast_dialog_required_fields_rep_name_empty);
+                } else {
+                  mListener.onFail(R.string.toast_dialog_required_fields_rep_territory_empty);
+                }
               }
+            } else {
+              mListener.onSuccess(R.string.toast_dialog_required_fields_success);
             }
           }
         });
@@ -92,16 +95,11 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
   void saveRequiredFields(String repName, String repTerritory) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-    if (!repName.isEmpty()) {
-      prefs.edit()
-          .putString(getContext().getString(R.string.pref_key_rep_name), repName)
-          .apply();
-    }
-
-    if (!repTerritory.isEmpty()) {
-      prefs.edit()
-          .putString(getContext().getString(R.string.pref_key_rep_territory), repTerritory)
-          .apply();
-    }
+    prefs.edit()
+        .putString(getContext().getString(R.string.pref_key_rep_name), repName)
+        .apply();
+    prefs.edit()
+        .putString(getContext().getString(R.string.pref_key_rep_territory), repTerritory)
+        .apply();
   }
 }

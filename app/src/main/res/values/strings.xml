@@ -703,5 +703,5 @@
 
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
-  <string name="toast_intent_send_order_by_email_no_supported_apps">There are no email apps configured on this device. Try again once this is completed.</string>
+  <string name="toast_intent_send_order_by_email_no_supported_apps">There are no email apps configured on this device. Your order was saved; resend once this is completed.</string>
 </resources>

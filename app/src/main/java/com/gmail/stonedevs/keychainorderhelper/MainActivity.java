@@ -179,12 +179,14 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
     intent.putExtra(Intent.EXTRA_TEXT, body);
 
     //  send email!
-    Intent chooser = Intent.createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+    Intent chooser = Intent
+        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
 
     if (intent.resolveActivity(getPackageManager()) != null) {
       mSendOrderByEmailFile = file;
       startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
     } else {
+      closeFragment();
       Toast.makeText(this, R.string.toast_intent_send_order_by_email_no_supported_apps,
           Toast.LENGTH_LONG).show();
     }

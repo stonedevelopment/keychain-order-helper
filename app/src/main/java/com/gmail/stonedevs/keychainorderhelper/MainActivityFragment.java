@@ -63,10 +63,10 @@ public class MainActivityFragment extends Fragment {
           Bundle bundle = new Bundle();
           bundle.putString(getString(R.string.pref_key_rep_name),
               BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_name)
-                  : "");
+                  : prefRepName);
           bundle.putString(getString(R.string.pref_key_rep_territory),
               BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_territory)
-                  : "");
+                  : prefRepTerritory);
           dialogFragment.setArguments(bundle);
 
           dialogFragment.show(getActivity().getSupportFragmentManager(), dialogFragment.getTag());
