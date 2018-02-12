@@ -9,13 +9,18 @@
 
     <variable
       name="viewModel"
-      type="com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderViewModel"/>
+      type="com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailViewModel"/>
+
+    <variable
+      name="listener"
+      type="com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailUserInteractionListener"/>
+
   </data>
 
   <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.neworder.NewOrderFragment">
+    tools:context=".ui.orderdetail.OrderDetailFragment">
 
     <ProgressBar
       android:id="@+id/progressLoadingData"
@@ -41,42 +46,38 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
-      <EditText
-        android:id="@+id/editStoreName"
+      <TextView
+        android:id="@+id/textStoreName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="@string/editStoreName_hint"
-        android:inputType="textCapWords"
-        android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:text="@{viewModel.storeName}"
+        android:text="@{viewModel.order.getStoreName()}"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Store Name 1"/>
 
-      <EditText
-        android:id="@+id/editOrderDate"
+      <TextView
+        android:id="@+id/textOrderDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:hint="@string/editOrderDate_hint"
-        android:inputType="date"
-        android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:text="@{DateUtil.getFormattedDateForLayout(viewModel.orderDate)}"
+        android:text="@{DateUtil.getFormattedDateForLayout(viewModel.order.getOrderDate())}"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="02/02/2018"/>
 
       <android.support.v7.widget.RecyclerView
         android:id="@+id/listRecyclerView"
@@ -92,7 +93,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editStoreName"
+        app:layout_constraintTop_toBottomOf="@+id/textStoreName"
         tools:listitem="@layout/list_item_keychain"/>
 
       <android.support.constraint.Guideline
@@ -103,26 +104,18 @@
         app:layout_constraintGuide_percent="0.5"/>
 
       <Button
-        android:id="@+id/resetOrderButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/buttonReset_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonResend"/>
-
-      <Button
         android:id="@+id/buttonResend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/buttonSend_text"
+        android:onClick="@{() -> listener.onResendOrder(viewModel.order)}"
+        android:text="@string/buttonResend_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 
   </android.support.constraint.ConstraintLayout>
+
 </layout>

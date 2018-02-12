@@ -103,50 +103,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     });
   }
 
-//  public void sendOrderByEmail(File file, String storeName) {
-//    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-//    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
-//        getString(R.string.pref_key_rep_territory));
-//
-//    Intent intent = new Intent(Intent.ACTION_SEND);
-//
-//    // set the type to 'email'
-//    intent.setType("vnd.android.cursor.dir/email");
-//
-//    //  set email address from preferences
-//    String sendtoEmail =
-//        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_sendto_email)
-//            : getString(R.string.pref_default_value_sendto_email);
-//    String to[] = {sendtoEmail};
-//    intent.putExtra(Intent.EXTRA_EMAIL, to);
-//
-//    // the attachment
-//    Uri path = Uri.fromFile(file);
-//    intent.putExtra(EXTRA_STREAM, path);
-//
-//    // the mail subject
-//    String subject = String
-//        .format(getString(R.string.string_format_email_subject), repTerritory, storeName);
-//    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-//
-//    //  the mail body
-//    String body = String
-//        .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
-//    intent.putExtra(Intent.EXTRA_TEXT, body);
-//
-//    //  send email!
-//    Intent chooser = Intent
-//        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-//
-//    if (intent.resolveActivity(getPackageManager()) != null) {
-//      mSendOrderByEmailFile = file;
-//      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-//    } else {
-//      closeFragment();
-//      Toast.makeText(this, R.string.toast_intent_send_order_by_email_no_supported_apps,
-//          Toast.LENGTH_LONG).show();
-//    }
-//  }
 
 //  public void replaceFragmentWithPopAnimation(Fragment fragment) {
 //    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

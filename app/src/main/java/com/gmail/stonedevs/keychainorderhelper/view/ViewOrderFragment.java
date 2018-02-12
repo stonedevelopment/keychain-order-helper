@@ -63,7 +63,7 @@ public class ViewOrderFragment extends BackHandledFragment {
       Bundle savedInstanceState) {
     //  set title of action bar
     ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_viewOrderFragment));
+        .setActionBarTitle(getString(R.string.action_bar_title_orderDetailFragment));
 
     // Inflate the layout for this fragment
     mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_order, container, false);

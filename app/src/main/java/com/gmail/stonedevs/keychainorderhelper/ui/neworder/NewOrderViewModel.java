@@ -24,7 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
@@ -42,7 +42,7 @@ public class NewOrderViewModel extends AndroidViewModel implements DataSource.Lo
 
   public final ObservableBoolean dataLoading = new ObservableBoolean();
 
-  private final SnackbarMessage mSnackbarText = new SnackbarMessage();
+  private final SnackBarMessage mSnackbarText = new SnackBarMessage();
 
   private final SingleLiveEvent<Void> mOrderUpdated = new SingleLiveEvent<>();
 
@@ -114,7 +114,7 @@ public class NewOrderViewModel extends AndroidViewModel implements DataSource.Lo
     }
   }
 
-  SnackbarMessage getSnackBarMessage() {
+  SnackBarMessage getSnackBarMessage() {
     return mSnackbarText;
   }
 

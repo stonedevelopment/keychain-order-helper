@@ -4,10 +4,11 @@ import static com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment.TAG;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.databinding.ObservableList;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.KeychainEntity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class ExcelUtil {
 
   public static File generateExcelFile(Context c, Workbook workbook, String storeName,
       Date orderDate,
-      List<Keychain> items)
+      ObservableList<KeychainEntity> items)
       throws IOException, InvalidFormatException, ParseException {
     Sheet sheet = workbook.getSheetAt(0);
 
@@ -156,7 +157,7 @@ public class ExcelUtil {
     Integer orderTotal = 0;
     ArrayList<Integer> orderQuantities = new ArrayList<>(0);
     for (int i = 0; i < items.size(); i++) {
-      Keychain item = items.get(i);
+      KeychainEntity item = items.get(i);
 
       if (item != null) {
         CellAddress cellAddress = item.getQuantityLocation();

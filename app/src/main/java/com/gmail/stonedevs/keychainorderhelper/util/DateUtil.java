@@ -16,6 +16,10 @@ public class DateUtil {
     return new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(date);
   }
 
+  public static String getFormattedTimeForLayout(Date date) {
+    return new SimpleDateFormat("hh:mma", Locale.getDefault()).format(date);
+  }
+
   public static String getFormattedDateForFilename(Date date) {
     return new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(date);
   }

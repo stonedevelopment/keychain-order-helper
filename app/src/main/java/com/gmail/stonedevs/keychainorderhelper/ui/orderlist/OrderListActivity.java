@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
+package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -26,44 +27,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
-/**
- * Displays the New Order screen.
- */
-public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator {
+public class OrderListActivity extends AppCompatActivity implements OrderListNavigator {
 
-  public static final int REQUEST_CODE = 1;
-
-  public static final int RESULT_OK = 1;
-
-  @Override
-  public boolean onSupportNavigateUp() {
-    //  todo: check for if order was saved or not.
-    onBackPressed();
-    return true;
-  }
-
-  @Override
-  public void onOrderSaved() {
-    //  order was saved successfully, now to send it via email
-    setResult(RESULT_OK);
-    finish();
-  }
-
-  @Override
-  public void onOrderSent() {
-
-  }
+  private OrderListViewModel mViewModel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_new_order);
+    setContentView(R.layout.activity_order_list);
 
     setupActionBar();
 
     setupViewFragment();
+
+    setupViewModel();
 
     subscribeToNavigationChanges();
   }
@@ -80,45 +60,49 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   private void setupViewFragment() {
-    NewOrderFragment fragment = obtainViewFragment();
+    OrderListFragment fragment = obtainViewFragment();
 
     ActivityUtils
         .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
-  private void subscribeToNavigationChanges() {
-    NewOrderViewModel viewModel = obtainViewModel(this);
+  private void setupViewModel() {
+    mViewModel = obtainViewModel(this);
+  }
 
-    //  This activity observes the navigation events in the ViewModel
-    viewModel.getOrderUpdatedEvent().observe(this, new Observer<Void>() {
+  private void subscribeToNavigationChanges() {
+    mViewModel.getOpenOrderEvent().observe(this, new Observer<String>() {
       @Override
-      public void onChanged(@Nullable Void aVoid) {
-        NewOrderActivity.this.onOrderSaved();
+      public void onChanged(@Nullable String orderId) {
+        if (orderId != null) {
+          openOrderDetails(orderId);
+        }
       }
     });
   }
 
-  public static NewOrderViewModel obtainViewModel(FragmentActivity activity) {
+  public static OrderListViewModel obtainViewModel(FragmentActivity activity) {
     // Use a Factory to inject dependencies into the ViewModel
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
-    return ViewModelProviders.of(activity, factory).get(NewOrderViewModel.class);
+    return ViewModelProviders.of(activity, factory).get(OrderListViewModel.class);
   }
 
-  private NewOrderFragment obtainViewFragment() {
-    NewOrderFragment fragment = (NewOrderFragment) getSupportFragmentManager()
+  private OrderListFragment obtainViewFragment() {
+    OrderListFragment fragment = (OrderListFragment) getSupportFragmentManager()
         .findFragmentById(R.id.fragment_container);
 
     if (fragment == null) {
-      fragment = NewOrderFragment.createInstance();
-
-      Bundle args = new Bundle();
-      args.putString(getString(R.string.bundle_key_order_id),
-          getIntent().getStringExtra(getString(R.string.bundle_key_order_id)));
-
-      fragment.setArguments(args);
+      fragment = OrderListFragment.createInstance();
     }
 
     return fragment;
+  }
+
+  @Override
+  public void openOrderDetails(String orderId) {
+    Intent intent = new Intent(this, OrderDetailActivity.class);
+    intent.putExtra(getString(R.string.bundle_key_order_id), orderId);
+    startActivityForResult(intent, OrderDetailActivity.REQUEST_CODE);
   }
 }

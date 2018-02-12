@@ -14,54 +14,50 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
+package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
-import com.gmail.stonedevs.keychainorderhelper.databinding.FragmentNewOrderBinding;
+import com.gmail.stonedevs.keychainorderhelper.databinding.FragmentOrderListBinding;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import java.util.ArrayList;
 
 /**
- * Main UI for the New Order screen. Users can enter a store name, order date, and click on the list
- * to adjust quantities of keychains.
+ * A simple {@link Fragment} subclass.
  */
-public class NewOrderFragment extends Fragment {
+public class OrderListFragment extends Fragment {
 
-  private NewOrderViewModel mViewModel;
+  private OrderListViewModel mViewModel;
 
-  private FragmentNewOrderBinding mBinding;
+  private FragmentOrderListBinding mBinding;
 
-  public NewOrderFragment() {
+  public OrderListFragment() {
     // Required empty public constructor
   }
 
-  public static NewOrderFragment createInstance() {
-    return new NewOrderFragment();
+  public static OrderListFragment createInstance() {
+    return new OrderListFragment();
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+    mBinding = FragmentOrderListBinding.inflate(inflater, container, false);
 
-    View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
-
-    if (mBinding == null) {
-      mBinding = FragmentNewOrderBinding.bind(rootView);
-    }
-
-    mViewModel = NewOrderActivity.obtainViewModel(getActivity());
+    mViewModel = OrderListActivity.obtainViewModel(getActivity());
 
     mBinding.setViewModel(mViewModel);
 
-    setHasOptionsMenu(false);
-    setRetainInstance(false);
+    //  for future use, set menu options
+    //  setHasOptionsMenu(true);
 
     return mBinding.getRoot();
   }
@@ -70,12 +66,18 @@ public class NewOrderFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    setupActionBar();
-
     setupSnackBar();
 
-    loadData();
+    setupAdapter();
   }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    mViewModel.start();
+  }
+
 
   private void setupSnackBar() {
     mViewModel.getSnackBarMessage().observe(this, new SnackbarObserver() {
@@ -86,23 +88,11 @@ public class NewOrderFragment extends Fragment {
     });
   }
 
-  /**
-   * For future use, when we add editing functionality to this activity.
-   */
-  private void setupActionBar() {
-    /*
-     ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+  private void setupAdapter() {
+    RecyclerView recyclerView = mBinding.listRecyclerView;
 
-     if (actionBar == null) {
-     return;
-     }
+    OrderListAdapter adapter = new OrderListAdapter(mViewModel, new ArrayList<Order>(0));
 
-     actionBar.setTitle(R.string.action_bar_title_newOrderFragment);
-     */
-  }
-
-  private void loadData() {
-    //  Tell ViewModel that it's a new order.
-    mViewModel.start(null);
+    recyclerView.setAdapter(adapter);
   }
 }

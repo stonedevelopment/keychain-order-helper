@@ -43,13 +43,13 @@
   <string name="buttonSend_text">Send Order</string>
   <string name="snackbar_new_order_incomplete_order">Your order isn\'t complete.</string>
 
-  <!--  LayoutOrderListFragmentment -->
-  <string name="action_bar_title_previousOrderFragment">Previous Orders</string>
+  <!--  Layout OrderListFragment -->
+  <string name="action_bar_title_orderListFragment">Previous Orders</string>
   <string name="textView_previousOrderFragment_noOrders_text">There are no orders.</string>
 
-  <!--  Layouts:  ViewOrderFragment -->
-  <string name="action_bar_title_viewOrderFragment">Order Details</string>
-  <string name="resendButton_text">Resend Order</string>
+  <!--  Layouts:  OrderDetailFragment -->
+  <string name="action_bar_title_orderDetailFragment">Order Details</string>
+  <string name="buttonResend_text">Resend Order</string>
 
   <!--  Layouts:  RequiredFieldsDialogFragment -->
   <string name="dialog_title_required_fields">Required Fields</string>
@@ -707,8 +707,5 @@
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
   <string name="toast_intent_send_order_by_email_no_supported_apps">There are no email apps configured on this device. Your order was saved; resend once this is completed.</string>
-
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
   <string name="snackbar_message_coming_soon">Coming soon!</string>
 </resources>

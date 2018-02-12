@@ -59,7 +59,7 @@ public class OrderListFragment extends BackHandledFragment implements
 
     //  set title of action bar
     ((MainActivity) getActivity())
-        .setActionBarTitle(getString(R.string.action_bar_title_previousOrderFragment));
+        .setActionBarTitle(getString(R.string.action_bar_title_orderListFragment));
 
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_view_order_list, container, false);

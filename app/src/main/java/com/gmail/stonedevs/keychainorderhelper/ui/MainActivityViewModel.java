@@ -21,7 +21,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 /**
@@ -30,7 +30,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-  private final SnackbarMessage mSnackbarText = new SnackbarMessage();
+  private final SnackBarMessage mSnackbarText = new SnackBarMessage();
 
   private final SingleLiveEvent<Void> mNewOrderEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mViewOrdersEvent = new SingleLiveEvent<>();
@@ -40,7 +40,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     super(application);
   }
 
-  SnackbarMessage getSnackbarMessage() {
+  SnackBarMessage getSnackbarMessage() {
     return mSnackbarText;
   }
 

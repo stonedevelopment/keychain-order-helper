@@ -32,7 +32,7 @@ import com.crashlytics.android.Crashlytics;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
 import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment;

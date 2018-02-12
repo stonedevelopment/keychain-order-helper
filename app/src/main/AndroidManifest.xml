@@ -29,7 +29,17 @@
         android:name="android.support.PARENT_ACTIVITY"
         android:value="com.gmail.stonedevs.keychainorderhelper.ui.MainActivity"/>
     </activity>
-    <activity android:name=".ui.neworder.NewOrderActivity">
+    <activity
+      android:label="@string/action_bar_title_newOrderFragment"
+      android:name=".ui.neworder.NewOrderActivity">
+    </activity>
+    <activity
+      android:label="@string/action_bar_title_orderListFragment"
+      android:name=".ui.orderlist.OrderListActivity">
+    </activity>
+    <activity
+      android:label="@string/action_bar_title_orderDetailFragment"
+      android:name=".ui.orderdetail.OrderDetailActivity">
     </activity>
   </application>
 

@@ -28,7 +28,7 @@
   <android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.neworder.NewOrderActivity">
+    tools:context=".ui.orderlist.OrderListActivity">
 
     <android.support.design.widget.AppBarLayout
       android:layout_width="match_parent"
@@ -44,7 +44,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_new_order"/>
+    <include layout="@layout/content_order_list"/>
 
   </android.support.design.widget.CoordinatorLayout>
 
