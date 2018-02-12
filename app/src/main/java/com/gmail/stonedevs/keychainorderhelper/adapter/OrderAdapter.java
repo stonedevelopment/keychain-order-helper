@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.adapter.OrderAdapter.PreviousOrderHolder;
-import com.gmail.stonedevs.keychainorderhelper.model.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderAdapter extends RecyclerView.Adapter<PreviousOrderHolder> {
 
@@ -22,6 +24,46 @@ public class OrderAdapter extends RecyclerView.Adapter<PreviousOrderHolder> {
   private final OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener;
 
   private final List<Order> mItems;
+
+  public OrderAdapter(Context c, OnRecyclerViewItemClickListener listener) {
+    mItems = new ArrayList<>(0);
+    mContext = c;
+
+    mOnRecyclerViewItemClickListener = listener;
+  }
+
+  @Override
+  public PreviousOrderHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    View v = LayoutInflater.from(parent.getContext())
+        .inflate(R.layout.list_item_order, parent, false);
+
+    return new PreviousOrderHolder(v, mOnRecyclerViewItemClickListener);
+  }
+
+  @Override
+  public void onBindViewHolder(PreviousOrderHolder holder, int position) {
+    Order item = mItems.get(position);
+    holder.bindItem(getContext(), item);
+  }
+
+  @Override
+  public int getItemCount() {
+    return mItems.size();
+  }
+
+  private Context getContext() {
+    return mContext;
+  }
+
+  public Order getItem(int position) {
+    return mItems.get(position);
+  }
+
+  public void bindItems(List<Order> items) {
+    mItems.clear();
+    mItems.addAll(items);
+    notifyDataSetChanged();
+  }
 
   public static class PreviousOrderHolder extends RecyclerView.ViewHolder implements
       OnClickListener,
@@ -48,7 +90,9 @@ public class OrderAdapter extends RecyclerView.Adapter<PreviousOrderHolder> {
 
     void bindItem(Context c, Order item) {
       mStoreNameText.setText(item.getStoreName());
-      mOrderDateText.setText(item.getOrderDate());
+      mOrderDateText.setText(
+          item.getOrderDateText(new SimpleDateFormat(c.getString(R.string.string_date_layout),
+              Locale.getDefault())));
       mOrderTotalText.setText(item.getOrderTotalText(c));
     }
 
@@ -61,45 +105,5 @@ public class OrderAdapter extends RecyclerView.Adapter<PreviousOrderHolder> {
     public boolean onLongClick(View v) {
       return mOnRecyclerViewItemClickListener.onLongClick(v, getAdapterPosition());
     }
-  }
-
-  public OrderAdapter(Context c, OnRecyclerViewItemClickListener listener) {
-    mItems = new ArrayList<>(0);
-    mContext = c;
-
-    mOnRecyclerViewItemClickListener = listener;
-  }
-
-  private Context getContext() {
-    return mContext;
-  }
-
-  public Order getItem(int position) {
-    return mItems.get(position);
-  }
-
-  public void bindItems(List<Order> items) {
-    mItems.clear();
-    mItems.addAll(items);
-    notifyDataSetChanged();
-  }
-
-  @Override
-  public PreviousOrderHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.list_item_order, parent, false);
-
-    return new PreviousOrderHolder(v, mOnRecyclerViewItemClickListener);
-  }
-
-  @Override
-  public void onBindViewHolder(PreviousOrderHolder holder, int position) {
-    Order item = mItems.get(position);
-    holder.bindItem(getContext(), item);
-  }
-
-  @Override
-  public int getItemCount() {
-    return mItems.size();
   }
 }

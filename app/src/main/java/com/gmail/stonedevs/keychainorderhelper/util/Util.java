@@ -1,6 +1,6 @@
 package com.gmail.stonedevs.keychainorderhelper.util;
 
-import static com.gmail.stonedevs.keychainorderhelper.MainActivity.TAG;
+import static com.gmail.stonedevs.keychainorderhelper.ui.MainActivity.TAG;
 
 import android.net.Uri;
 import android.util.Log;

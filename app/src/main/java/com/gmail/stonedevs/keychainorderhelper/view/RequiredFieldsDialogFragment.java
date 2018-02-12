@@ -19,6 +19,9 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
 
   public static final String TAG = RequiredFieldsDialogFragment.class.getSimpleName();
 
+  private static final String KEY_REP_NAME = "rep_name";
+  private static final String KEY_REP_TERRITORY = "rep_territory";
+
   private OnRequiredFieldsCheckListener mListener;
 
   public interface OnRequiredFieldsCheckListener {
@@ -30,6 +33,12 @@ public class RequiredFieldsDialogFragment extends DialogFragment {
 
   public RequiredFieldsDialogFragment() {
     //  Empty constructor required for DialogFragment
+  }
+
+  public static RequiredFieldsDialogFragment createInstance(Bundle args) {
+    RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
+    dialogFragment.setArguments(args);
+    return dialogFragment;
   }
 
   public void setListener(OnRequiredFieldsCheckListener listener) {

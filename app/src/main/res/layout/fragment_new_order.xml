@@ -1,88 +1,128 @@
-<android.support.constraint.ConstraintLayout
+<layout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context="com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment">
+  xmlns:tools="http://schemas.android.com/tools">
 
-  <EditText
-    android:id="@+id/editStoreName"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:ems="10"
-    android:hint="@string/storeNameText_hint"
-    android:inputType="textCapWords"
-    android:selectAllOnFocus="true"
-    android:singleLine="true"
-    android:textAlignment="center"
-    app:layout_constraintEnd_toStartOf="@+id/guideline"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+  <data>
+    <import type="android.view.View"/>
+    <import type="com.gmail.stonedevs.keychainorderhelper.util.DateUtil"/>
 
-  <EditText
-    android:id="@+id/editOrderDate"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:ems="10"
-    android:hint="@string/dateText_hint"
-    android:inputType="date"
-    android:selectAllOnFocus="true"
-    android:singleLine="true"
-    android:textAlignment="center"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/guideline"
-    app:layout_constraintTop_toTopOf="parent"/>
+    <variable
+      name="viewModel"
+      type="com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderViewModel"/>
+  </data>
 
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/listRecyclerView"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="4dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:headerDividersEnabled="false"
-    android:scrollbars="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/sendButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/editStoreName"
-    tools:listitem="@layout/list_item_keychain"/>
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.neworder.NewOrderActivity">
 
-  <android.support.constraint.Guideline
-    android:id="@+id/guideline"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.5"/>
+    <ProgressBar
+      android:id="@+id/progressLoadingData"
+      style="?android:attr/progressBarStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:visibility="@{viewModel.dataLoading ? View.VISIBLE : View.GONE}"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
 
-  <Button
-    android:id="@+id/resetButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/resetButton_text"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toStartOf="@+id/sendButton"/>
+    <android.support.constraint.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="@{viewModel.dataLoading ? View.GONE : View.VISIBLE}"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
 
-  <Button
-    android:id="@+id/sendButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/sendButton_text"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"/>
+      <EditText
+        android:id="@+id/editStoreName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="@string/editStoreName_hint"
+        android:inputType="textCapWords"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:text="@{viewModel.storeName}"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-</android.support.constraint.ConstraintLayout>
+      <EditText
+        android:id="@+id/editOrderDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:hint="@string/editOrderDate_hint"
+        android:inputType="date"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:text="@{DateUtil.getFormattedDateForLayout(viewModel.orderDate)}"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+      <android.support.v7.widget.RecyclerView
+        android:id="@+id/listRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:headerDividersEnabled="false"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/sendOrderButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editStoreName"
+        tools:listitem="@layout/list_item_keychain"/>
+
+      <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+      <Button
+        android:id="@+id/resetOrderButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/buttonReset_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sendOrderButton"/>
+
+      <Button
+        android:id="@+id/sendOrderButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/buttonSend_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+  </android.support.constraint.ConstraintLayout>
+</layout>

@@ -1,29 +1,38 @@
 package com.gmail.stonedevs.keychainorderhelper.db.dao;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderEntity;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import java.util.List;
 
 @Dao
 public interface OrderDao {
 
   @Query("select * from OrderEntity "
-      + "where id = :id")
-  OrderEntity get(String id);
+      + "where mId = :id")
+  Order get(String id);
 
   @Query("select * from OrderEntity "
-      + "order by orderDate desc")
-  List<OrderEntity> getAll();
+      + "order by mOrderDate desc")
+  List<Order> getAll();
 
-  @Insert
-  void insert(OrderEntity orderEntity);
+  @Insert(onConflict = REPLACE)
+  void insert(Order order);
 
-  @Insert
-  void insert(OrderEntity... orderEntities);
+  @Insert(onConflict = REPLACE)
+  void insert(List<Order> orders);
 
   @Update
-  void update(OrderEntity orderEntity);
+  void update(Order order);
+
+  @Delete
+  void delete();
+
+  @Delete
+  void delete(Order order);
 }

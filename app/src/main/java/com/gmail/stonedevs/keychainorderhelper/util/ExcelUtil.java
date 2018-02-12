@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.model.Keychain;
-import com.gmail.stonedevs.keychainorderhelper.model.Order;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -121,7 +120,7 @@ public class ExcelUtil {
   }
 
   public static File generateExcelFile(Context c, Workbook workbook, String storeName,
-      String orderDate,
+      Date orderDate,
       List<Keychain> items)
       throws IOException, InvalidFormatException, ParseException {
     Sheet sheet = workbook.getSheetAt(0);
@@ -182,12 +181,9 @@ public class ExcelUtil {
       }
     }
 
-    SimpleDateFormat format = new SimpleDateFormat(c.getString(R.string.string_date_layout),
+    SimpleDateFormat format = new SimpleDateFormat(c.getString(R.string.string_date_filename),
         Locale.getDefault());
-    Date layoutDateFormat = format.parse(orderDate);
-
-    format = new SimpleDateFormat(c.getString(R.string.string_date_filename), Locale.getDefault());
-    String filenameDateFormat = format.format(layoutDateFormat);
+    String filenameDateFormat = format.format(orderDate);
 
     File file = new File(c.getExternalFilesDir(null),
         String.format(c.getString(R.string.string_format_filename), repTerritory.toLowerCase(),
@@ -195,9 +191,6 @@ public class ExcelUtil {
     FileOutputStream out = new FileOutputStream(file);
     workbook.write(out);
     out.close();
-
-    //  save to orders.json
-    JSONUtil.saveOrderToJson(c, new Order(storeName, orderDate, orderQuantities, orderTotal));
 
     return file;
   }

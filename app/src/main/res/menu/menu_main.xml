@@ -1,6 +1,6 @@
 <menu
   xmlns:tools="http://schemas.android.com/tools"
-  tools:context="com.gmail.stonedevs.keychainorderhelper.MainActivity">
+  tools:context="com.gmail.stonedevs.keychainorderhelper.ui.MainActivity">
   <!--<item-->
   <!--android:id="@+id/action_settings"-->
   <!--android:title="@string/action_settings"-->

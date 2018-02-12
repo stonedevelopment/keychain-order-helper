@@ -1,105 +1,103 @@
-<android.support.constraint.ConstraintLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context="com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment">
+  xmlns:tools="http://schemas.android.com/tools">
+  <data>
+    <import type="com.gmail.stonedevs.keychainorderhelper.viewmodel.OrderViewModel"/>
+    <import type="com.gmail.stonedevs.keychainorderhelper.db.entity.Order"/>
+    <import type="com.gmail.stonedevs.keychainorderhelper.util.DateUtil"/>
 
-  <Button
-    android:id="@+id/resendButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/resendButton_text"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"/>
-  <TextView
-    android:id="@+id/textStoreName"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:ems="10"
-    android:textAlignment="center"
-    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-    app:layout_constraintEnd_toStartOf="@+id/guideline"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:text="Store Name 1"/>
+    <variable
+      name="boundOrder"
+      type="com.gmail.stonedevs.keychainorderhelper.db.entity.Order"/>
+  </data>
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gmail.stonedevs.keychainorderhelper.view.NewOrderFragment">
 
-  <TextView
-    android:id="@+id/textOrderDate"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:ems="10"
-    android:textAlignment="center"
-    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/guideline"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:text="02/08/2018"/>
 
-  <android.support.v7.widget.RecyclerView
-    android:id="@+id/listRecyclerView"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:headerDividersEnabled="false"
-    android:scrollbars="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/resendButton"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/textStoreName"
-    tools:listitem="@layout/list_item_keychain"/>
+    <TextView
+      android:id="@+id/editStoreName"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:ems="10"
+      android:text="@{boundOrder.storeName}"
+      android:textAlignment="center"
+      android:textAppearance="@android:style/TextAppearance.Material.Medium"
+      app:layout_constraintEnd_toStartOf="@+id/guideline"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="Store Name"/>
 
-  <android.support.constraint.Guideline
-    android:id="@+id/guideline"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.5"/>
-  <TextView
-    android:id="@+id/textOrderTotal"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginEnd="8dp"
-    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-    app:layout_constraintBottom_toBottomOf="@+id/resendButton"
-    app:layout_constraintEnd_toStartOf="@+id/resendButton"
-    app:layout_constraintTop_toTopOf="@+id/resendButton"
-    tools:text="165 keychains"/>
+    <TextView
+      android:id="@+id/editOrderDate"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:ems="10"
+      android:text="@{DateUtil.getFormattedDateForLayout(boundOrder.orderDate)}"
+      android:textAlignment="center"
+      android:textAppearance="@android:style/TextAppearance.Material.Medium"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="@+id/guideline"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="Order Date"/>
 
-  <!--<Button-->
-    <!--android:id="@+id/resetButton"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="8dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:text="@string/resetButton_text"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toStartOf="@+id/sendButton"/>-->
+    <TextView
+      android:id="@+id/textOrderTotal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:text="@{@string/string_format_list_item_order_total_text(boundOrder.orderTotal)}"
+      android:textAppearance="@android:style/TextAppearance.Material.Medium"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/editStoreName"
+      tools:text="0 keychains"/>
 
-  <!--<Button-->
-    <!--android:id="@+id/sendButton"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginBottom="8dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:text="@string/sendButton_text"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"/>-->
+    <android.support.constraint.Guideline
+      android:id="@+id/guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.5"/>
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.RecyclerView
+      android:id="@+id/listRecyclerView"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:headerDividersEnabled="false"
+      android:scrollbars="vertical"
+      app:layoutManager="LinearLayoutManager"
+      app:layout_constraintBottom_toTopOf="@+id/resendButton"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textOrderTotal"
+      tools:listitem="@layout/list_item_keychain"/>
+
+    <Button
+      android:id="@+id/resendButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:layout_marginEnd="8dp"
+      android:text="@string/resendButton_text"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"/>
+
+  </android.support.constraint.ConstraintLayout>
+</layout>

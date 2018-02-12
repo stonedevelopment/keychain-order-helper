@@ -17,6 +17,7 @@
   <string name="bundle_key_NewOrderFragment_quantity_cell_values">bundle_key_NewOrderFragment_quantity_cell_values</string>
 
   <!--  Bundle Keys:  ViewOrderFragment -->
+  <string name="bundle_key_order_id">bundle_key_ViewOrderFragment_order_id</string>
   <string name="bundle_key_ViewOrderFragment_store_name">bundle_key_ViewOrderFragment_store_name</string>
   <string name="bundle_key_ViewOrderFragment_order_date">bundle_key_ViewOrderFragment_order_date</string>
   <string name="bundle_key_ViewOrderFragment_order_quantities">bundle_key_ViewOrderFragment_order_quantities</string>
@@ -35,13 +36,14 @@
 
   <!--  Layout NewOrderFragment -->
   <string name="action_bar_title_newOrderFragment">New Keychain Order</string>
-  <string name="storeNameText_hint">Store Name</string>
-  <string name="storeNameText_debug_default_value">Store Name 1</string>
-  <string name="dateText_hint">Date</string>
-  <string name="resetButton_text">Reset</string>
-  <string name="sendButton_text">Send Order</string>
+  <string name="editStoreName_hint">Store Name</string>
+  <string name="editStoreName_debug_default_value">Store Name 1</string>
+  <string name="editOrderDate_hint">Date</string>
+  <string name="buttonReset_text">Reset</string>
+  <string name="buttonSend_text">Send Order</string>
+  <string name="snackbar_new_order_incomplete_order">Your order isn\'t complete.</string>
 
-  <!--  Layouts:  PreviousOrderFragment -->
+  <!--  LayoutOrderListFragmentment -->
   <string name="action_bar_title_previousOrderFragment">Previous Orders</string>
   <string name="textView_previousOrderFragment_noOrders_text">There are no orders.</string>
 
@@ -140,6 +142,7 @@
 
   <!--  String formats: Order list item's total for layout -->
   <string name="string_format_list_item_order_total_text">%1$d keychains</string>
+  <string name="string_format_list_item_order_total_text_data_binding">%d keychains</string>
 
   <!--  Strings related to Excel -->
 
@@ -704,4 +707,8 @@
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
   <string name="toast_intent_send_order_by_email_no_supported_apps">There are no email apps configured on this device. Your order was saved; resend once this is completed.</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="snackbar_message_coming_soon">Coming soon!</string>
 </resources>
