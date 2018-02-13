@@ -26,26 +26,26 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOneCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOrderCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.KeychainEntity;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 
 /**
  * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
  * fragment's action listener.
  */
-public class OrderDetailViewModel extends AndroidViewModel implements LoadOneCallback {
+public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderCallback {
 
-  public ObservableField<Order> order = new ObservableField<>();
+  public final ObservableField<Order> order = new ObservableField<>();
 
-  public ObservableList<KeychainEntity> items = new ObservableArrayList<>();
+  public final ObservableList<OrderItem> items = new ObservableArrayList<>();
 
-  public ObservableBoolean dataLoading = new ObservableBoolean();
+  public final ObservableBoolean dataLoading = new ObservableBoolean();
 
-  private SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Order> mSendOrderCommand = new SingleLiveEvent<>();
 
-  private Repository mRepository;
+  private final Repository mRepository;
 
   private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
 
@@ -56,11 +56,11 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOneCal
     mRepository = repository;
   }
 
-  public SnackBarMessage getSnackBarMessage() {
+  SnackBarMessage getSnackBarMessage() {
     return mSnackBarMessage;
   }
 
-  public SingleLiveEvent<Void> getSendOrderCommand() {
+  SingleLiveEvent<Order> getSendOrderCommand() {
     return mSendOrderCommand;
   }
 
@@ -69,9 +69,13 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOneCal
     return order.get().getId();
   }
 
+  Repository getRepository() {
+    return mRepository;
+  }
+
   public void start(@NonNull String orderId) {
     dataLoading.set(true);
-    mRepository.get(orderId, this);
+    mRepository.getOrder(orderId, this);
   }
 
   public void setOrder(@NonNull Order order) {
@@ -80,10 +84,6 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOneCal
 
   private void showSnackBarMessage(@StringRes Integer message) {
     mSnackBarMessage.setValue(message);
-  }
-
-  public void sendOrder() {
-    mSendOrderCommand.call();
   }
 
   @Override

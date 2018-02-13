@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
   public static final String TAG = MainActivity.class.getSimpleName();
 
+  public static final int REQUEST_CODE = 1;
+
   private MainActivityViewModel mViewModel;
 
   @Override
@@ -54,10 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     //  Use a Factory to inject dependencies into the ViewModel.
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
-    MainActivityViewModel viewModel = ViewModelProviders.of(activity, factory)
-        .get(MainActivityViewModel.class);
-
-    return viewModel;
+    return ViewModelProviders.of(activity, factory).get(MainActivityViewModel.class);
   }
 
   void setupActionBar() {
@@ -102,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
       }
     });
   }
-
 
 //  public void replaceFragmentWithPopAnimation(Fragment fragment) {
 //    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

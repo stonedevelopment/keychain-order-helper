@@ -25,7 +25,7 @@ import android.support.annotation.Nullable;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOrderCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import java.util.Date;
@@ -34,7 +34,7 @@ import java.util.Date;
  * ViewModel for the New Order screen.
  */
 
-public class NewOrderViewModel extends AndroidViewModel implements DataSource.LoadOneCallback {
+public class NewOrderViewModel extends AndroidViewModel implements LoadOrderCallback {
 
   public final ObservableField<String> storeName = new ObservableField<>();
 
@@ -82,7 +82,7 @@ public class NewOrderViewModel extends AndroidViewModel implements DataSource.Lo
     mIsNewOrder = false;
     dataLoading.set(true);
 
-    mRepository.get(orderId, this);
+    mRepository.getOrder(orderId, this);
   }
 
   @Override
@@ -127,7 +127,7 @@ public class NewOrderViewModel extends AndroidViewModel implements DataSource.Lo
   }
 
   private void createOrder(Order newOrder) {
-    mRepository.save(newOrder);
+    mRepository.saveOrder(newOrder);
     mOrderUpdated.call();
   }
 
@@ -136,7 +136,7 @@ public class NewOrderViewModel extends AndroidViewModel implements DataSource.Lo
       throw new RuntimeException("updateOrder() was called, but order is new.");
     }
 
-    mRepository.save(order);
+    mRepository.saveOrder(order);
     mOrderUpdated.call();
   }
 }

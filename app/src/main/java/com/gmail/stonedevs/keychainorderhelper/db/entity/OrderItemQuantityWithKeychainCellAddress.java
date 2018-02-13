@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.util;
+package com.gmail.stonedevs.keychainorderhelper.db.entity;
 
-import android.support.annotation.NonNull;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import android.arch.persistence.room.ColumnInfo;
 
 /**
- * Executor that runs a task on a new background thread.
+ * TODO: Add a class header comment!
  */
-public class DiskIOThreadExecutor implements Executor {
 
-  private final Executor mDiskIO;
+public class OrderItemQuantityWithKeychainCellAddress {
 
-  public DiskIOThreadExecutor() {
-    mDiskIO = Executors.newSingleThreadExecutor();
+  private final Integer quantity;
+
+  @ColumnInfo(name = "cell_address")
+  private final String cellAddress;
+
+  public OrderItemQuantityWithKeychainCellAddress(Integer quantity, String cellAddress) {
+    this.quantity = quantity;
+    this.cellAddress = cellAddress;
   }
 
-  @Override
-  public void execute(@NonNull Runnable command) {
-    mDiskIO.execute(command);
+  public Integer getQuantity() {
+    return quantity;
+  }
+
+  public String getCellAddress() {
+    return cellAddress;
   }
 }

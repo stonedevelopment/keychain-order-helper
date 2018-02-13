@@ -32,39 +32,27 @@
     android:layout_marginBottom="16dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
+    android:visibility="gone"
     app:layout_constraintBottom_toTopOf="@+id/orderButton"
     app:layout_constraintEnd_toStartOf="@+id/guideline75"
-    app:layout_constraintHorizontal_bias="0.0"
+    app:layout_constraintHorizontal_bias="1.0"
     app:layout_constraintStart_toStartOf="@+id/guideline25"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0.0">
+    app:layout_constraintVertical_bias="1.0">
 
-    <ImageView
-      android:id="@+id/logoImage_Pugs"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="8dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
-      android:adjustViewBounds="true"
-      android:contentDescription="@string/logoImage_SRP_contentDescription"
-      android:src="@drawable/logo_pugs"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"/>
-    <ImageView
-      android:id="@+id/logoImage_SRP"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="16dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
-      android:adjustViewBounds="true"
-      android:contentDescription="@string/logoImage_SRP_contentDescription"
-      android:src="@drawable/logo_srp_companies"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/logoImage_Pugs"/>
+    <!--<ImageView-->
+    <!--android:id="@+id/logoImage_Pugs"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:adjustViewBounds="true"-->
+    <!--android:contentDescription="@string/logoImage_SRP_contentDescription"-->
+    <!--android:src="@drawable/logo_pugs"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintStart_toStartOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent"/>-->
     <ImageView
       android:id="@+id/logoImage_TheNamePeople"
       android:layout_width="match_parent"
@@ -79,6 +67,18 @@
       android:visibility="gone"/>
   </android.support.constraint.ConstraintLayout>
 
+  <ImageView
+    android:id="@+id/logoImage_SRP"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:adjustViewBounds="true"
+    android:contentDescription="@string/logoImage_SRP_contentDescription"
+    android:src="@drawable/logo_srp_companies"
+    app:layout_constraintEnd_toStartOf="@+id/guideline85"
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toStartOf="@+id/guideline15"
+    app:layout_constraintTop_toTopOf="parent"/>
   <Button
     android:id="@+id/orderButton"
     android:layout_width="0dp"
@@ -90,7 +90,6 @@
     app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
     app:layout_constraintEnd_toStartOf="@+id/guideline85"
     app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
   <Button
     android:id="@+id/viewOrderButton"
     android:layout_width="0dp"

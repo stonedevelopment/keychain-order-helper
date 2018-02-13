@@ -22,16 +22,16 @@ import com.gmail.stonedevs.keychainorderhelper.db.AppDatabase;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
 import com.gmail.stonedevs.keychainorderhelper.db.LocalDataSource;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.util.AppExecutors;
+import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 
 /**
  * Enables injection of production implementations for
  * {@link DataSource} at compile time.
  */
 
-public class Injection {
+class Injection {
 
-  public static Repository provideRepository(@Nullable Context context) {
+  static Repository provideRepository(@Nullable Context context) {
     AppDatabase database = AppDatabase.getInstance(context);
     return Repository
         .getInstance(LocalDataSource.getInstance(new AppExecutors(), database.orderDao()));

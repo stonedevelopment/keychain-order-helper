@@ -24,6 +24,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderViewModel;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailViewModel;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListViewModel;
 
 /**
  * A creator is used to inject the product ID into the ViewModel
@@ -65,6 +67,14 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     if (modelClass.isAssignableFrom(NewOrderViewModel.class)) {
       //noinspection unchecked
       return (T) new NewOrderViewModel(mApplication, mRepository);
+    }
+    if (modelClass.isAssignableFrom(OrderListViewModel.class)) {
+      //noinspection unchecked
+      return (T) new OrderListViewModel(mApplication, mRepository);
+    }
+    if (modelClass.isAssignableFrom(OrderDetailViewModel.class)) {
+      //noinspection unchecked
+      return (T) new OrderDetailViewModel(mApplication, mRepository);
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());

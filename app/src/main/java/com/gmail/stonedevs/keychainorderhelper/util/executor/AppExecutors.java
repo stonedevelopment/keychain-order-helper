@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.util;
+package com.gmail.stonedevs.keychainorderhelper.util.executor;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -40,7 +40,7 @@ public class AppExecutors {
   private final Executor mainThread;
 
   @VisibleForTesting
-  AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
+  private AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
     this.diskIO = diskIO;
     this.networkIO = networkIO;
     this.mainThread = mainThread;
@@ -64,6 +64,7 @@ public class AppExecutors {
   }
 
   private static class MainThreadExecutor implements Executor {
+
     private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
     @Override

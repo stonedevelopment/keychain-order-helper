@@ -3,7 +3,7 @@ package com.gmail.stonedevs.keychainorderhelper.db.dao;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CellEntity;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
 import java.util.List;
 
 /**
@@ -18,17 +18,17 @@ public interface CellDao {
   @Query("select * from cell "
       + "where mId = :id "
       + "limit 1")
-  CellEntity get(String id);
+  Keychain get(String id);
 
   @Query("select * from cell")
-  List<CellEntity> getAll();
+  List<Keychain> getAll();
 
   @Insert
-  void insert(CellEntity cellEntity);
+  void insert(Keychain keychain);
 
   @Insert
-  void insert(CellEntity... cellEntities);
+  void insert(Keychain... cellEntities);
 
   @Insert
-  void insert(List<CellEntity> cellEntities);
+  void insert(List<Keychain> cellEntities);
 }

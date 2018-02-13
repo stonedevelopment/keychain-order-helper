@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.db.entity;
+
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Relation;
+import java.util.List;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailUserInteractionListener {
+public class OrderWithOrderItems {
 
-  void onResendOrderButtonClick();
+  @Embedded
+  public Order order;
+
+  @Relation(parentColumn = "id",
+      entityColumn = "orderId",
+      entity = OrderItem.class)
+  public List<OrderItem> orderItems;
 }

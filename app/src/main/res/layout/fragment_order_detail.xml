@@ -109,7 +109,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:onClick="@{() -> listener.onResendOrder(viewModel.order)}"
+        android:onClick="@{() -> listener.onResendOrderClick()}"
         android:text="@string/buttonResend_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>

@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.util.executor;
+
+import android.support.annotation.NonNull;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
- * TODO: Add a class header comment!
+ * Executor that runs a task on a new background thread.
  */
+public class DiskIOThreadExecutor implements Executor {
 
-public interface OrderDetailUserInteractionListener {
+  private final Executor mDiskIO;
 
-  void onResendOrderButtonClick();
+  DiskIOThreadExecutor() {
+    mDiskIO = Executors.newSingleThreadExecutor();
+  }
+
+  @Override
+  public void execute(@NonNull Runnable command) {
+    mDiskIO.execute(command);
+  }
 }

@@ -23,11 +23,12 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity(tableName = "orders")
+@Entity
 public class Order {
 
   @NonNull
@@ -36,11 +37,11 @@ public class Order {
   private final String mId;
 
   @Nullable
-  @ColumnInfo(name = "name")
+  @ColumnInfo(name = "store_name")
   private final String mStoreName;
 
   @Nullable
-  @ColumnInfo(name = "date")
+  @ColumnInfo(name = "order_date")
   private final Date mOrderDate;
 
   @Ignore
@@ -96,6 +97,7 @@ public class Order {
 
   @Override
   public String toString() {
-    return "Order for Store Name: " + getStoreName();
+    return "id:" + getId() + ", store_name:" + getStoreName() + ", order_date:" + getOrderDate()
+        + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")";
   }
 }

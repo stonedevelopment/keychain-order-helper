@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
-import com.gmail.stonedevs.keychainorderhelper.util.AppExecutors;
+import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.List;
 
 /**
@@ -50,11 +50,11 @@ public class LocalDataSource implements DataSource {
   }
 
   /**
-   * Note: {@link LoadAllCallback#onDataNotAvailable()} is fired if the database doesn't exist or
+   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if the database doesn't exist or
    * the table is empty.
    */
   @Override
-  public void getAll(@NonNull final LoadAllCallback callback) {
+  public void getAllOrders(@NonNull final LoadAllOrdersCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -77,10 +77,10 @@ public class LocalDataSource implements DataSource {
   }
 
   /**
-   * Note: {@link LoadOneCallback#onDataNotAvailable()} is fired if {@link Order} isn't found.
+   * Note: {@link LoadOrderCallback#onDataNotAvailable()} is fired if {@link Order} isn't found.
    */
   @Override
-  public void get(@NonNull final String orderId, @NonNull final LoadOneCallback callback) {
+  public void getOrder(@NonNull final String orderId, @NonNull final LoadOrderCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -103,7 +103,7 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void save(@NonNull final Order order) {
+  public void saveOrder(@NonNull final Order order) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -115,7 +115,7 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void save(@NonNull final List<Order> orders) {
+  public void saveOrders(@NonNull final List<Order> orders) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -135,7 +135,7 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void delete(@NonNull final String orderId) {
+  public void deleteOrder(@NonNull final String orderId) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -148,7 +148,7 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void deleteAll() {
+  public void deleteAllOrders() {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {

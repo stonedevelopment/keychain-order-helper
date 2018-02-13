@@ -27,16 +27,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
-import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
+import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
-import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.view.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
 import java.io.IOException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -90,14 +89,14 @@ public class MainActivityFragment extends Fragment {
           dialogFragment.setListener(new OnRequiredFieldsCheckListener() {
             @Override
             public void onSuccess(int resourceId) {
-              //  Send a signal to MainActivity that user wants to start new order.
-              Toast.makeText(getContext(), resourceId, Toast.LENGTH_SHORT).show();
+              //  Send a signal to MainActivity that user wants to start new order
+              mViewModel.getSnackbarMessage().setValue(resourceId);
               startNewOrder();
             }
 
             @Override
             public void onFail(int resourceId) {
-              Toast.makeText(getContext(), resourceId, Toast.LENGTH_LONG).show();
+              mViewModel.getSnackbarMessage().setValue(resourceId);
             }
           });
 
@@ -137,7 +136,7 @@ public class MainActivityFragment extends Fragment {
         public void onClick(View v) {
           //  Generate
           try {
-            ExcelUtil.GenerateStringArrayFormat(getActivity());
+            ExcelUtils.GenerateStringArrayFormat(getActivity());
           } catch (InvalidFormatException | IOException e) {
             e.printStackTrace();
           }

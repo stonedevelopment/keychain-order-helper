@@ -30,7 +30,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-  private final SnackBarMessage mSnackbarText = new SnackBarMessage();
+  private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
 
   private final SingleLiveEvent<Void> mNewOrderEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mViewOrdersEvent = new SingleLiveEvent<>();
@@ -41,7 +41,7 @@ public class MainActivityViewModel extends AndroidViewModel {
   }
 
   SnackBarMessage getSnackbarMessage() {
-    return mSnackbarText;
+    return mSnackBarMessage;
   }
 
   SingleLiveEvent<Void> getNewOrderEvent() {
@@ -56,7 +56,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     if (NewOrderActivity.REQUEST_CODE == requestCode) {
       switch (resultCode) {
         case NewOrderActivity.RESULT_OK:
-          mSnackbarText.setValue(R.string.toast_intent_send_order_by_email_success);
+          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
           break;
       }
     }

@@ -53,10 +53,10 @@ public class Repository implements DataSource {
   /**
    * Gets orders from cache or locale data source, whichever is available first.
    *
-   * Note: {@link LoadAllCallback#onDataNotAvailable()} is fired if it fails to get data.
+   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if it fails to get data.
    */
   @Override
-  public void getAll(@NonNull final LoadAllCallback callback) {
+  public void getAllOrders(@NonNull final LoadAllOrdersCallback callback) {
 
     //  respond immediately with cache if available
     if (mCachedOrders != null) {
@@ -65,7 +65,7 @@ public class Repository implements DataSource {
     }
 
     //  query the local storage if available.
-    mLocalDataSource.getAll(new LoadAllCallback() {
+    mLocalDataSource.getAllOrders(new LoadAllOrdersCallback() {
       @Override
       public void onDataLoaded(List<Order> orders) {
         refreshCache(orders);
@@ -84,10 +84,10 @@ public class Repository implements DataSource {
   /**
    * Gets an order from local data source, unless table is new or empty.
    *
-   * Note: {@link LoadAllCallback#onDataNotAvailable()} is fired if it fails to get data.
+   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if it fails to get data.
    */
   @Override
-  public void get(@NonNull String orderId, @NonNull final LoadOneCallback callback) {
+  public void getOrder(@NonNull String orderId, @NonNull final LoadOrderCallback callback) {
     final Order cachedOrder = getOrderById(orderId);
 
     //  respond immediately if cache is available.
@@ -96,7 +96,7 @@ public class Repository implements DataSource {
       return;
     }
 
-    mLocalDataSource.get(orderId, new LoadOneCallback() {
+    mLocalDataSource.getOrder(orderId, new LoadOrderCallback() {
       @Override
       public void onDataLoaded(Order order) {
         //  update cache to keep the ui up to date
@@ -118,8 +118,8 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void save(@NonNull Order order) {
-    mLocalDataSource.save(order);
+  public void saveOrder(@NonNull Order order) {
+    mLocalDataSource.saveOrder(order);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
@@ -129,8 +129,8 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void save(@NonNull List<Order> orders) {
-    mLocalDataSource.save(orders);
+  public void saveOrders(@NonNull List<Order> orders) {
+    mLocalDataSource.saveOrders(orders);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
@@ -147,8 +147,8 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void delete(@NonNull String orderId) {
-    mLocalDataSource.delete(orderId);
+  public void deleteOrder(@NonNull String orderId) {
+    mLocalDataSource.deleteOrder(orderId);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
@@ -158,8 +158,8 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void deleteAll() {
-    mLocalDataSource.deleteAll();
+  public void deleteAllOrders() {
+    mLocalDataSource.deleteAllOrders();
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
@@ -184,8 +184,8 @@ public class Repository implements DataSource {
    * For future use, with remote data source.
    */
   private void refreshLocalDataSource(List<Order> orders) {
-    mLocalDataSource.deleteAll();
-    mLocalDataSource.save(orders);
+    mLocalDataSource.deleteAllOrders();
+    mLocalDataSource.saveOrders(orders);
   }
 
   @Nullable

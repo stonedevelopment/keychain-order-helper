@@ -68,15 +68,6 @@ public class OrderDetailFragment extends Fragment {
 
     mBinding.setViewModel(mViewModel);
 
-    OrderDetailUserInteractionListener listener = new OrderDetailUserInteractionListener() {
-      @Override
-      public void onResendOrder() {
-        mViewModel.sendOrder();
-      }
-    };
-
-    mBinding.setListener(listener);
-
     setHasOptionsMenu(false);
     setRetainInstance(false);
 

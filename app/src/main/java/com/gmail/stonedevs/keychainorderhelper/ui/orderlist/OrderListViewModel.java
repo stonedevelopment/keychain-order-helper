@@ -22,9 +22,10 @@ import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
 import android.support.annotation.NonNull;
+import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllOrdersCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
@@ -67,15 +68,26 @@ public class OrderListViewModel extends AndroidViewModel {
    * For future use, with editing orders on {@link OrderDetailActivity} screen, for now: just
    * viewing details.
    */
+
   void handleActivityResult(int requestCode, int resultCode) {
-    //  do nothing
+    if (OrderDetailActivity.REQUEST_CODE == requestCode) {
+      switch (resultCode) {
+        case OrderDetailActivity.SENT_RESULT_OK:
+          //  send success message
+          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
+          break;
+        case OrderDetailActivity.SENT_RESULT_CANCEL:
+          //  send failed message
+          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_fail);
+      }
+    }
   }
 
-  public void loadData(boolean forceUpdate) {
+  private void loadData(boolean forceUpdate) {
     loadData(forceUpdate, true);
   }
 
-  public void loadData(boolean forceUpdate, final boolean showLoadingUI) {
+  private void loadData(boolean forceUpdate, final boolean showLoadingUI) {
     if (showLoadingUI) {
       dataLoading.set(true);
     }
@@ -84,7 +96,7 @@ public class OrderListViewModel extends AndroidViewModel {
       mRepository.refreshData();
     }
 
-    mRepository.getAll(new LoadAllCallback() {
+    mRepository.getAllOrders(new LoadAllOrdersCallback() {
       @Override
       public void onDataLoaded(List<Order> orders) {
         if (showLoadingUI) {

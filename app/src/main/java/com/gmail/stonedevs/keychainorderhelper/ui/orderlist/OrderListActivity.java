@@ -27,12 +27,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
+import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
 public class OrderListActivity extends AppCompatActivity implements OrderListNavigator {
 
   private OrderListViewModel mViewModel;
+
+  public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,11 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     setupViewModel();
 
     subscribeToNavigationChanges();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    mViewModel.handleActivityResult(requestCode, resultCode);
   }
 
   private void setupActionBar() {

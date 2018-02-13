@@ -12,31 +12,32 @@ import java.util.List;
 
 public interface DataSource {
 
-  interface LoadAllCallback {
-
-    void onDataLoaded(List<Order> orders);
+  interface DataNotAvailableCallback {
 
     void onDataNotAvailable();
   }
 
-  interface LoadOneCallback {
+  interface LoadOrderCallback extends DataNotAvailableCallback {
 
     void onDataLoaded(Order order);
-
-    void onDataNotAvailable();
   }
 
-  void getAll(@NonNull LoadAllCallback callback);
+  interface LoadAllOrdersCallback extends DataNotAvailableCallback {
 
-  void get(@NonNull String orderId, @NonNull LoadOneCallback callback);
+    void onDataLoaded(List<Order> orders);
+  }
 
-  void save(@NonNull Order order);
+  void getAllOrders(@NonNull LoadAllOrdersCallback callback);
 
-  void save(@NonNull List<Order> orders);
+  void getOrder(@NonNull String orderId, @NonNull LoadOrderCallback callback);
+
+  void saveOrder(@NonNull Order order);
+
+  void saveOrders(@NonNull List<Order> orders);
 
   void refreshData();
 
-  void delete(@NonNull String orderId);
+  void deleteOrder(@NonNull String orderId);
 
-  void deleteAll();
+  void deleteAllOrders();
 }

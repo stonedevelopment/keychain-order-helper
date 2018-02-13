@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.db.dao;
+
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Query;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItemQuantityWithKeychainCellAddress;
+import java.util.List;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailUserInteractionListener {
+@Dao
+public interface OrderItemDao {
 
-  void onResendOrderButtonClick();
+  @Query("select orderitem.quantity, keychain.cell_address from orderitem "
+      + "inner join keychain on keychain.id = orderitem.keychain_id "
+      + "where orderitem.order_id = :orderId")
+  List<OrderItemQuantityWithKeychainCellAddress> getOrderItemQuantityWithKeychainCellAddress(
+      String orderId);
 }

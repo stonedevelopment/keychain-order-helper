@@ -16,7 +16,6 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -77,7 +76,6 @@ public class OrderListFragment extends Fragment {
 
     mViewModel.start();
   }
-
 
   private void setupSnackBar() {
     mViewModel.getSnackBarMessage().observe(this, new SnackbarObserver() {

@@ -16,42 +16,30 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import static android.content.Intent.EXTRA_STREAM;
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment.OrderSentListener;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
-import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtil;
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class OrderDetailActivity extends AppCompatActivity implements
     OrderDetailUserInteractionListener {
 
-  public static final int REQUEST_CODE = 1;
-  public static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
+  public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
 
-  public static final int RESULT_OK = RESULT_FIRST_USER;
-  public static final int DELETE_RESULT_OK = RESULT_FIRST_USER + 1;
-  public static final int EDIT_RESULT_OK = RESULT_FIRST_USER + 2;
+  public static final int SENT_RESULT_OK = RESULT_FIRST_USER;
+
+  public static final int SENT_RESULT_CANCEL = RESULT_CANCELED;
 
   private OrderDetailViewModel mViewModel;
 
@@ -64,18 +52,9 @@ public class OrderDetailActivity extends AppCompatActivity implements
 
     setupViewFragment();
 
-    // TODO: 2/12/2018 setupViewModel() to save ViewModel here
+    setupViewModel();
 
     subscribeToNavigationChanges();
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == REQUEST_CODE_ACTION_SEND) {
-
-    }
   }
 
   private void setupActionBar() {
@@ -96,17 +75,21 @@ public class OrderDetailActivity extends AppCompatActivity implements
         .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
+  private void setupViewModel() {
+    mViewModel = obtainViewModel(this);
+  }
+
   /**
    * Detect user interactions.
    */
   private void subscribeToNavigationChanges() {
-    OrderDetailViewModel viewModel = obtainViewModel(this);
-
     //  This event fires when User clicks Resend Order button.
-    viewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
+    mViewModel.getSendOrderCommand().observe(this, new Observer<Order>() {
       @Override
-      public void onChanged(@Nullable Void aVoid) {
-        OrderDetailActivity.this.onResendOrder();
+      public void onChanged(@Nullable Order order) {
+        if (order != null) {
+          onResendOrderButtonClick();
+        }
       }
     });
   }
@@ -133,67 +116,34 @@ public class OrderDetailActivity extends AppCompatActivity implements
   }
 
   @Override
-  public void onResendOrder() {
-    //  resend email
-    try {
-      Workbook workbook = WorkbookFactory.create(getAssets().open(
-          getString(R.string.excel_template_filename)));
+  public void onResendOrderButtonClick() {
+    PrepareIntentDialogFragment dialogFragment = PrepareIntentDialogFragment.createInstance();
 
-      Order order = mViewModel.order.get();
+    dialogFragment.setListener(new OrderSentListener() {
+      @Override
+      public void onOrderSent() {
+        closeWithResult(SENT_RESULT_OK);
+      }
 
-      File file = ExcelUtil
-          .generateExcelFile(this, workbook, order.getStoreName(),
-              order.getOrderDate(), mViewModel.items);
+      @Override
+      public void onOrderNotSent() {
+        mViewModel.getSnackBarMessage().setValue(R.string.snackbar_message_send_order_fail);
+      }
 
-      sendOrderByEmail(file, order.getStoreName());
-    } catch (ParseException | InvalidFormatException | IOException e) {
-      e.printStackTrace();
-    }
+      @Override
+      public void onOrderNotSend_NoAppsForIntent() {
+        mViewModel.getSnackBarMessage()
+            .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
+      }
+    });
+
+    dialogFragment.setRepository(mViewModel.getRepository());
+
+    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
   }
 
-  public void sendOrderByEmail(File file, String storeName) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
-        getString(R.string.pref_key_rep_territory));
-
-    Intent intent = new Intent(Intent.ACTION_SEND);
-
-    // set the type to 'email'
-    intent.setType("vnd.android.cursor.dir/email");
-
-    //  set email address from preferences
-    String sendtoEmail =
-        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_sendto_email)
-            : getString(R.string.pref_default_value_sendto_email);
-    String to[] = {sendtoEmail};
-    intent.putExtra(Intent.EXTRA_EMAIL, to);
-
-    // the attachment
-    Uri path = Uri.fromFile(file);
-    intent.putExtra(EXTRA_STREAM, path);
-
-    // the mail subject
-    String subject = String
-        .format(getString(R.string.string_format_email_subject), repTerritory, storeName);
-    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-
-    //  the mail body
-    String body = String
-        .format(getString(R.string.intent_extra_text_body_send_order_by_email), storeName);
-    intent.putExtra(Intent.EXTRA_TEXT, body);
-
-    //  send email!
-    Intent chooser = Intent
-        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-    if (intent.resolveActivity(getPackageManager()) != null) {
-      mSendOrderByEmailFile = file;
-      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-    } else {
-      closeFragment();
-      Toast.makeText(this, R.string.toast_intent_send_order_by_email_no_supported_apps,
-          Toast.LENGTH_LONG).show();
-    }
+  private void closeWithResult(int resultCode) {
+    setResult(resultCode);
+    finish();
   }
-
 }
