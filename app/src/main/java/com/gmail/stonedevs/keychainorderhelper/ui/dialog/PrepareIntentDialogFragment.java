@@ -313,7 +313,11 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
 
   private void orderSent() {
     //  delete file
-    Util.deleteTempFile(mUri);
+    boolean filedDeleted = Util.deleteTempFile(mUri);
+
+    if (!filedDeleted) {
+      //  alert Firebase of file not being deleted.
+    }
 
     //  tell listener of success
     mListener.onOrderSent();
@@ -324,7 +328,11 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
 
   private void cancelOrder() {
     //  delete file
-    Util.deleteTempFile(mUri);
+    boolean filedDeleted = Util.deleteTempFile(mUri);
+
+    if (!filedDeleted) {
+      //  alert Firebase of file not being deleted.
+    }
 
     //  tell listener of failure
     mListener.onOrderNotSent();
@@ -335,7 +343,11 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
 
   private void cancelOrderWithNoAppsForIntent() {
     //  delete file
-    Util.deleteTempFile(mUri);
+    boolean filedDeleted = Util.deleteTempFile(mUri);
+
+    if (!filedDeleted) {
+      //  alert Firebase of file not being deleted.
+    }
 
     //  tell listener of failure
     mListener.onOrderNotSend_NoAppsForIntent();

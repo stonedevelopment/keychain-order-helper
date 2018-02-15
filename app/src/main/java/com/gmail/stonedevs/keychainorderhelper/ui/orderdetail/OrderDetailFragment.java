@@ -16,10 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -43,15 +40,8 @@ public class OrderDetailFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static OrderDetailFragment createInstance(@NonNull Context context,
-      @NonNull String orderId) {
-    Bundle args = new Bundle();
-    args.putString(context.getString(R.string.bundle_key_order_id), orderId);
-
-    OrderDetailFragment fragment = new OrderDetailFragment();
-    fragment.setArguments(args);
-
-    return fragment;
+  public static OrderDetailFragment createInstance() {
+    return new OrderDetailFragment();
   }
 
   @Override
@@ -92,8 +82,8 @@ public class OrderDetailFragment extends Fragment {
   private void setupSnackBar() {
     mViewModel.getSnackBarMessage().observe(this, new SnackbarObserver() {
       @Override
-      public void onNewMessage(int snackbarMessageResourceId) {
-        SnackbarUtils.showSnackbar(getView(), getString(snackbarMessageResourceId));
+      public void onNewMessage(int resourceId) {
+        SnackbarUtils.showSnackbar(getView(), getString(resourceId));
       }
     });
   }

@@ -13,12 +13,12 @@ import java.util.List;
 @Dao
 public interface OrderDao {
 
-  @Query("select * from OrderEntity "
-      + "where mId = :id")
+  @Query("select * from `order` "
+      + "where id = :id")
   Order get(String id);
 
-  @Query("select * from OrderEntity "
-      + "order by mOrderDate desc")
+  @Query("select * from `order` "
+      + "order by order_date desc")
   List<Order> getAll();
 
   @Insert(onConflict = REPLACE)

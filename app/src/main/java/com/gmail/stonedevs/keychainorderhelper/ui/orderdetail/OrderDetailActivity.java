@@ -35,10 +35,10 @@ import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 public class OrderDetailActivity extends AppCompatActivity implements
     OrderDetailUserInteractionListener {
 
+  private static final String TAG = OrderDetailActivity.class.getSimpleName();
+
   public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
-
   public static final int SENT_RESULT_OK = RESULT_FIRST_USER;
-
   public static final int SENT_RESULT_CANCEL = RESULT_CANCELED;
 
   private OrderDetailViewModel mViewModel;
@@ -72,16 +72,13 @@ public class OrderDetailActivity extends AppCompatActivity implements
     OrderDetailFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
   }
 
   private void setupViewModel() {
     mViewModel = obtainViewModel(this);
   }
 
-  /**
-   * Detect user interactions.
-   */
   private void subscribeToNavigationChanges() {
     //  This event fires when User clicks Resend Order button.
     mViewModel.getSendOrderCommand().observe(this, new Observer<Order>() {
@@ -95,17 +92,28 @@ public class OrderDetailActivity extends AppCompatActivity implements
   }
 
   private OrderDetailFragment obtainViewFragment() {
-    //  Get the requested order id.
-    String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
-
     OrderDetailFragment fragment = (OrderDetailFragment) getSupportFragmentManager()
         .findFragmentById(R.id.fragment_container);
 
     if (fragment == null) {
-      fragment = OrderDetailFragment.createInstance(this, orderId);
+      fragment = OrderDetailFragment.createInstance();
+      fragment.setArguments(obtainArguments());
     }
 
     return fragment;
+  }
+
+  private Bundle obtainArguments() {
+    //  Get the requested order id.
+    String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
+
+    Bundle args = new Bundle();
+    args.putString(getString(R.string.bundle_key_order_id), orderId);
+
+    OrderDetailFragment fragment = new OrderDetailFragment();
+    fragment.setArguments(args);
+
+    return args;
   }
 
   public static OrderDetailViewModel obtainViewModel(FragmentActivity activity) {
@@ -113,6 +121,11 @@ public class OrderDetailActivity extends AppCompatActivity implements
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
     return ViewModelProviders.of(activity, factory).get(OrderDetailViewModel.class);
+  }
+
+  private void closeWithResult(int resultCode) {
+    setResult(resultCode);
+    finish();
   }
 
   @Override
@@ -140,10 +153,5 @@ public class OrderDetailActivity extends AppCompatActivity implements
     dialogFragment.setRepository(mViewModel.getRepository());
 
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
-  }
-
-  private void closeWithResult(int resultCode) {
-    setResult(resultCode);
-    finish();
   }
 }

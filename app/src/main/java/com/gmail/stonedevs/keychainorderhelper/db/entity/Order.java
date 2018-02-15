@@ -22,10 +22,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -36,11 +34,11 @@ public class Order {
   @ColumnInfo(name = "id")
   private final String mId;
 
-  @Nullable
+  @NonNull
   @ColumnInfo(name = "store_name")
   private final String mStoreName;
 
-  @Nullable
+  @NonNull
   @ColumnInfo(name = "order_date")
   private final Date mOrderDate;
 
@@ -49,7 +47,7 @@ public class Order {
     this(UUID.randomUUID().toString(), storeName, orderDate);
   }
 
-  public Order(@NonNull String id, @Nullable String storeName, @Nullable Date orderDate) {
+  public Order(@NonNull String id, @Nullable String storeName, @NonNull Date orderDate) {
     this.mId = id;
     this.mStoreName = storeName;
     this.mOrderDate = orderDate;
@@ -65,34 +63,9 @@ public class Order {
     return mStoreName;
   }
 
-  @Nullable
+  @NonNull
   public Date getOrderDate() {
     return mOrderDate;
-  }
-
-  public boolean isComplete() {
-    return !TextUtils.isEmpty(mStoreName) && mOrderDate != null;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-
-    Order order = (Order) obj;
-    return Objects.equals(getId(), order.getId()) &&
-        Objects.equals(getStoreName(), order.getStoreName()) &&
-        Objects.equals(getOrderDate(), order.getOrderDate());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId(), getStoreName(), getOrderDate());
   }
 
   @Override

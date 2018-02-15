@@ -16,27 +16,30 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
-import com.gmail.stonedevs.keychainorderhelper.databinding.FragmentNewOrderBinding;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 
 /**
- * Main UI for the New Order screen. Users can enter a store name, order date, and click on the list
- * to adjust quantities of keychains.
+ * Main UI for the New Order screen.
+ *
+ * Users can enter a store name, order date, and click on the list to adjust quantities of
+ * keychains.
  */
 public class NewOrderFragment extends Fragment {
 
   private NewOrderViewModel mViewModel;
-
-  private FragmentNewOrderBinding mBinding;
 
   public NewOrderFragment() {
     // Required empty public constructor
@@ -50,59 +53,78 @@ public class NewOrderFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
 
-    View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
-
-    if (mBinding == null) {
-      mBinding = FragmentNewOrderBinding.bind(rootView);
-    }
-
     mViewModel = NewOrderActivity.obtainViewModel(getActivity());
 
-    mBinding.setViewModel(mViewModel);
+    View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
-    setHasOptionsMenu(false);
-    setRetainInstance(false);
+    //  Store Name EditText
+    EditText storeNameEditText = view.findViewById(R.id.storeNameEditText);
+    storeNameEditText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        //  do nothing, for now?
+      }
 
-    return mBinding.getRoot();
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        //  do nothing, for now?
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        mViewModel.updateStoreName(s.toString());
+      }
+    });
+
+    //  Order Date Button
+    Button orderDateButton = view.findViewById(R.id.orderDateButton);
+    orderDateButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        //  Open date picker dialog.
+      }
+    });
+
+    //  todo Keychain List RecyclerView
+
+    //  todo Set Keychain List RecyclerView Adapter
+
+    //  Reset Order Button
+    Button resetButton = view.findViewById(R.id.resetOrderButton);
+    resetButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        //  Get ViewModel's ResetOrderCommand
+        mViewModel.getResetOrderCommand().call();
+      }
+    });
+
+    //  Send Order Button
+    Button sendOrderButton = view.findViewById(R.id.sendOrderButton);
+    sendOrderButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        //  Get ViewModel's SendOrderCommand
+        mViewModel.getSendOrderCommand().call();
+      }
+    });
+
+    return view;
   }
 
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    setupActionBar();
-
-    setupSnackBar();
-
-    loadData();
+    subscribeToSnackBarMessenger();
   }
 
-  private void setupSnackBar() {
-    mViewModel.getSnackBarMessage().observe(this, new SnackbarObserver() {
+  private void subscribeToSnackBarMessenger() {
+    mViewModel.getSnackBarMessenger().observe(this, new SnackbarObserver() {
       @Override
-      public void onNewMessage(int snackbarMessageResourceId) {
-        SnackbarUtils.showSnackbar(getView(), getString(snackbarMessageResourceId));
+      public void onNewMessage(int resourceId) {
+        SnackbarUtils.showSnackbar(getView(), getString(resourceId));
       }
     });
-  }
-
-  /**
-   * For future use, when we add editing functionality to this activity.
-   */
-  private void setupActionBar() {
-    /*
-     ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-     if (actionBar == null) {
-     return;
-     }
-
-     actionBar.setTitle(R.string.action_bar_title_newOrderFragment);
-     */
-  }
-
-  private void loadData() {
-    //  Tell ViewModel that it's a new order.
-    mViewModel.start(null);
   }
 }

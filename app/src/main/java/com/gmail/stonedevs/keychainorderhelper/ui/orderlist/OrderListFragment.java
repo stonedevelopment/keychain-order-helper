@@ -29,9 +29,6 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class OrderListFragment extends Fragment {
 
   private OrderListViewModel mViewModel;
@@ -80,8 +77,8 @@ public class OrderListFragment extends Fragment {
   private void setupSnackBar() {
     mViewModel.getSnackBarMessage().observe(this, new SnackbarObserver() {
       @Override
-      public void onNewMessage(int snackbarMessageResourceId) {
-        SnackbarUtils.showSnackbar(getView(), getString(snackbarMessageResourceId));
+      public void onNewMessage(int resourceId) {
+        SnackbarUtils.showSnackbar(getView(), getString(resourceId));
       }
     });
   }

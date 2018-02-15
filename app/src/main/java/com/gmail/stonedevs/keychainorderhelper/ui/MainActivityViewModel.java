@@ -18,6 +18,8 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
@@ -30,32 +32,72 @@ import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
+  private String mRepName;
+  private String mRepTerritory;
+
   private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
 
-  private final SingleLiveEvent<Void> mNewOrderEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mViewOrdersEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mCheckReadyEvent = new SingleLiveEvent<>();
+
+  //  Commands directed by System
+  private final SingleLiveEvent<Void> mOpenDialogCommand = new SingleLiveEvent<>();
+
+  //  Commands directed by User via on-screen buttons.
+  private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mOrderListCommand = new SingleLiveEvent<>();
 
   public MainActivityViewModel(
       @NonNull Application application) {
     super(application);
+
+    setupDefaultValues(application);
   }
 
-  SnackBarMessage getSnackbarMessage() {
+  String getRepName() {
+    return mRepName;
+  }
+
+  String getRepTerritory() {
+    return mRepTerritory;
+  }
+
+  SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessage;
   }
 
-  SingleLiveEvent<Void> getNewOrderEvent() {
-    return mNewOrderEvent;
+  SingleLiveEvent<Void> getCheckReadyEvent() {
+    return mCheckReadyEvent;
   }
 
-  SingleLiveEvent<Void> getViewOrdersEvent() {
-    return mViewOrdersEvent;
+  SingleLiveEvent<Void> getOpenDialogCommand() {
+    return mOpenDialogCommand;
+  }
+
+  SingleLiveEvent<Void> getNewOrderCommand() {
+    return mNewOrderCommand;
+  }
+
+  SingleLiveEvent<Void> getOrderListCommand() {
+    return mOrderListCommand;
+  }
+
+  boolean isReady() {
+    return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
+  }
+
+  private void setupDefaultValues(Application c) {
+    SharedPreferences prefs = PreferenceManager
+        .getDefaultSharedPreferences(c);
+
+    //  Get saved rep values from SharedPreferences
+    mRepName = prefs.getString(c.getString(R.string.pref_key_rep_name), "");
+    mRepTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory), "");
   }
 
   void handleActivityResult(int requestCode, int resultCode) {
     if (NewOrderActivity.REQUEST_CODE == requestCode) {
       switch (resultCode) {
-        case NewOrderActivity.RESULT_OK:
+        case NewOrderActivity.SENT_RESULT_OK:
           mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
           break;
       }

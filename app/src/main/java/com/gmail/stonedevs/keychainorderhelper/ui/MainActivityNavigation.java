@@ -19,10 +19,11 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
 /**
  * Defines the navigation actions that can be called from the main screen.
  */
-
 public interface MainActivityNavigation {
 
-  void addNewOrder();
+  void startRequiredFieldsDialogFragment();
 
-  void viewOrders();
+  void startNewOrderActivity();
+
+  void startOrderListActivity();
 }

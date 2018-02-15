@@ -54,7 +54,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     holder.bind(order, new OrderListItemClickListener() {
       @Override
       public void onItemClick(Order order) {
-        mViewModel.getOpenOrderEvent().setValue(order.getId());
+        mViewModel.getOrderDetailCommand().setValue(order.getId());
       }
     });
   }

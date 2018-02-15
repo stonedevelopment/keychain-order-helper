@@ -45,15 +45,15 @@ public class OrderListViewModel extends AndroidViewModel {
 
   private final Repository mRepository;
 
-  private final SingleLiveEvent<String> mOpenOrderEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
 
   public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
     mRepository = repository;
   }
 
-  SingleLiveEvent<String> getOpenOrderEvent() {
-    return mOpenOrderEvent;
+  SingleLiveEvent<String> getOrderDetailCommand() {
+    return mOrderDetailCommand;
   }
 
   SnackBarMessage getSnackBarMessage() {

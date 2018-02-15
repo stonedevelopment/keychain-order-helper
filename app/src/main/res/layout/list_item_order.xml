@@ -37,7 +37,7 @@
   <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:onClick="@{() -> listener.onClicked(order)}">
+    android:onClick="@{() -> listener.onItemClick(order)}">
 
     <TextView
       android:id="@+id/textStoreName"
@@ -55,7 +55,7 @@
       tools:text="Store Name 1"/>
 
     <TextView
-      android:id="@+id/textOrderDate"
+      android:id="@+id/orderDateButton"
       android:layout_width="wrap_content"
       android:layout_height="0dp"
       android:layout_marginTop="8dp"
@@ -76,8 +76,8 @@
       android:gravity="center_vertical"
       android:text="@{DateUtil.getFormattedTimeForLayout(order.orderDate)}"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="@+id/textOrderDate"
-      app:layout_constraintTop_toBottomOf="@+id/textOrderDate"
+      app:layout_constraintStart_toStartOf="@+id/orderDateButton"
+      app:layout_constraintTop_toBottomOf="@+id/orderDateButton"
       tools:text="03:30p"/>
 
   </android.support.constraint.ConstraintLayout>

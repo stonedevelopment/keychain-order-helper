@@ -26,34 +26,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
+import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailFragment;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
-/**
- * Displays the New Order screen.
- */
-public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator {
+public class NewOrderActivity extends AppCompatActivity {
 
-  public static final int REQUEST_CODE = 1;
+  private static final String TAG = NewOrderActivity.class.getSimpleName();
 
-  public static final int RESULT_OK = 1;
+  public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
+  public static final int SENT_RESULT_OK = 1;
+
+  private NewOrderViewModel mViewModel;
 
   @Override
   public boolean onSupportNavigateUp() {
     //  todo: check for if order was saved or not.
     onBackPressed();
     return true;
-  }
-
-  @Override
-  public void onOrderSaved() {
-    //  order was saved successfully, now to send it via email
-    setResult(RESULT_OK);
-    finish();
-  }
-
-  @Override
-  public void onOrderSent() {
-
   }
 
   @Override
@@ -64,6 +54,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     setupActionBar();
 
     setupViewFragment();
+
+    setupViewModel();
 
     subscribeToNavigationChanges();
   }
@@ -83,26 +75,30 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     NewOrderFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
+  }
+
+  private void setupViewModel() {
+    mViewModel = obtainViewModel(this);
   }
 
   private void subscribeToNavigationChanges() {
-    NewOrderViewModel viewModel = obtainViewModel(this);
 
-    //  This activity observes the navigation events in the ViewModel
-    viewModel.getOrderUpdatedEvent().observe(this, new Observer<Void>() {
+    mViewModel.getResetOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        NewOrderActivity.this.onOrderSaved();
+        //  Reset order.
+        mViewModel.resetOrder();
       }
     });
-  }
 
-  public static NewOrderViewModel obtainViewModel(FragmentActivity activity) {
-    // Use a Factory to inject dependencies into the ViewModel
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-
-    return ViewModelProviders.of(activity, factory).get(NewOrderViewModel.class);
+    mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        //  Send order.
+        // TODO: 2/14/2018 This should check for validity, trigger failed event if invalid.
+      }
+    });
   }
 
   private NewOrderFragment obtainViewFragment() {
@@ -111,14 +107,29 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
     if (fragment == null) {
       fragment = NewOrderFragment.createInstance();
-
-      Bundle args = new Bundle();
-      args.putString(getString(R.string.bundle_key_order_id),
-          getIntent().getStringExtra(getString(R.string.bundle_key_order_id)));
-
-      fragment.setArguments(args);
+      fragment.setArguments(obtainArguments());
     }
 
     return fragment;
+  }
+
+  private Bundle obtainArguments() {
+    //  Get the requested order id.
+    String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
+
+    Bundle args = new Bundle();
+    args.putString(getString(R.string.bundle_key_order_id), orderId);
+
+    OrderDetailFragment fragment = new OrderDetailFragment();
+    fragment.setArguments(args);
+
+    return args;
+  }
+
+  public static NewOrderViewModel obtainViewModel(FragmentActivity activity) {
+    // Use a Factory to inject dependencies into the ViewModel
+    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+
+    return ViewModelProviders.of(activity, factory).get(NewOrderViewModel.class);
   }
 }

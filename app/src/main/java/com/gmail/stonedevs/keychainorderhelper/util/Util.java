@@ -1,9 +1,6 @@
 package com.gmail.stonedevs.keychainorderhelper.util;
 
-import static com.gmail.stonedevs.keychainorderhelper.ui.MainActivity.TAG;
-
 import android.net.Uri;
-import android.util.Log;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -18,17 +15,11 @@ public class Util {
     return format.format(calendar.getTime());
   }
 
-  public static void deleteTempFile(Uri path) {
-    deleteTempFile(new File(path.toString()));
+  public static boolean deleteTempFile(Uri path) {
+    return deleteTempFile(new File(path.toString()));
   }
 
-  public static void deleteTempFile(File file) {
-    if (file.delete()) {
-      Log.d(TAG, "deleteTempFile: file deleted successfully.");
-    } else {
-      Log.d(TAG,
-          "deleteTempFile: file was not deleted successfully. Uri Path: "
-              + file.getPath());
-    }
+  private static boolean deleteTempFile(File file) {
+    return file.delete();
   }
 }

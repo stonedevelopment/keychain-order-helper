@@ -33,6 +33,8 @@ import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
 public class OrderListActivity extends AppCompatActivity implements OrderListNavigator {
 
+  private static final String TAG = OrderListActivity.class.getSimpleName();
+
   private OrderListViewModel mViewModel;
 
   public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
@@ -71,7 +73,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     OrderListFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
   }
 
   private void setupViewModel() {
@@ -79,7 +81,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   private void subscribeToNavigationChanges() {
-    mViewModel.getOpenOrderEvent().observe(this, new Observer<String>() {
+    mViewModel.getOrderDetailCommand().observe(this, new Observer<String>() {
       @Override
       public void onChanged(@Nullable String orderId) {
         if (orderId != null) {
@@ -89,22 +91,27 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     });
   }
 
-  public static OrderListViewModel obtainViewModel(FragmentActivity activity) {
-    // Use a Factory to inject dependencies into the ViewModel
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-
-    return ViewModelProviders.of(activity, factory).get(OrderListViewModel.class);
-  }
-
   private OrderListFragment obtainViewFragment() {
     OrderListFragment fragment = (OrderListFragment) getSupportFragmentManager()
         .findFragmentById(R.id.fragment_container);
 
     if (fragment == null) {
       fragment = OrderListFragment.createInstance();
+      fragment.setArguments(obtainArguments());
     }
 
     return fragment;
+  }
+
+  private Bundle obtainArguments() {
+    return new Bundle();
+  }
+
+  public static OrderListViewModel obtainViewModel(FragmentActivity activity) {
+    // Use a Factory to inject dependencies into the ViewModel
+    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+
+    return ViewModelProviders.of(activity, factory).get(OrderListViewModel.class);
   }
 
   @Override

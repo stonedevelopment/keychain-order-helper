@@ -24,54 +24,13 @@
   android:background="@drawable/gradient_background"
   tools:context=".ui.MainActivityFragment">
 
-  <android.support.constraint.ConstraintLayout
-    android:id="@+id/constraintLayout"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="16dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:visibility="gone"
-    app:layout_constraintBottom_toTopOf="@+id/orderButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline75"
-    app:layout_constraintHorizontal_bias="1.0"
-    app:layout_constraintStart_toStartOf="@+id/guideline25"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="1.0">
-
-    <!--<ImageView-->
-    <!--android:id="@+id/logoImage_Pugs"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginTop="8dp"-->
-    <!--android:layout_marginStart="8dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:adjustViewBounds="true"-->
-    <!--android:contentDescription="@string/logoImage_SRP_contentDescription"-->
-    <!--android:src="@drawable/logo_pugs"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintStart_toStartOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent"/>-->
-    <ImageView
-      android:id="@+id/logoImage_TheNamePeople"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
-      android:adjustViewBounds="true"
-      android:contentDescription="@string/logoImage_TheNamePeople"
-      android:src="@drawable/logo_thenamepeople"
-      android:visibility="gone"/>
-  </android.support.constraint.ConstraintLayout>
-
   <ImageView
     android:id="@+id/logoImage_SRP"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="24dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
     android:adjustViewBounds="true"
     android:contentDescription="@string/logoImage_SRP_contentDescription"
     android:src="@drawable/logo_srp_companies"
@@ -79,51 +38,27 @@
     app:layout_constraintHorizontal_bias="1.0"
     app:layout_constraintStart_toStartOf="@+id/guideline15"
     app:layout_constraintTop_toTopOf="parent"/>
+
   <Button
-    android:id="@+id/orderButton"
+    android:id="@+id/newOrderButton"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:text="@string/orderButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/viewOrderButton"
+    app:layout_constraintBottom_toTopOf="@+id/orderListButton"
     app:layout_constraintEnd_toStartOf="@+id/guideline85"
     app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+
   <Button
-    android:id="@+id/viewOrderButton"
+    android:id="@+id/orderListButton"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginBottom="24dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:text="@string/viewButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/generateButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
-  <Button
-    android:id="@+id/generateButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/generateButton_text"
-    android:visibility="gone"
-    app:layout_constraintBottom_toTopOf="@+id/crashButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
-
-  <Button
-    android:id="@+id/crashButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/crashButton_text"
-    android:visibility="gone"
     app:layout_constraintBottom_toTopOf="@+id/settingsButton"
     app:layout_constraintEnd_toStartOf="@+id/guideline85"
     app:layout_constraintStart_toStartOf="@+id/guideline15"/>
@@ -146,18 +81,21 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintGuide_percent="0.15"/>
+
   <android.support.constraint.Guideline
     android:id="@+id/guideline25"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintGuide_percent="0.25"/>
+
   <android.support.constraint.Guideline
     android:id="@+id/guideline75"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintGuide_percent="0.75"/>
+
   <android.support.constraint.Guideline
     android:id="@+id/guideline85"
     android:layout_width="wrap_content"

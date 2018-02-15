@@ -66,7 +66,7 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
   public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
     if (modelClass.isAssignableFrom(NewOrderViewModel.class)) {
       //noinspection unchecked
-      return (T) new NewOrderViewModel(mApplication, mRepository);
+      return (T) new NewOrderViewModel(mApplication);
     }
     if (modelClass.isAssignableFrom(OrderListViewModel.class)) {
       //noinspection unchecked
