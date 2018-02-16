@@ -18,6 +18,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
@@ -34,13 +35,14 @@ public class NewOrderViewModel extends AndroidViewModel {
 
   private final ObservableField<String> mObservableStoreName = new ObservableField<>();
   private final ObservableField<Date> mObservableOrderDate = new ObservableField<>();
+  private final ObservableBoolean mObservableDataLoading = new ObservableBoolean();
 
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Commands directed by System
   private final SingleLiveEvent<Void> mOpenDialogCommand = new SingleLiveEvent<>();
 
-  //  Commands directed by User via on-screen buttons.
+  //  Commands directed by User via on-screen interactions.
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
 

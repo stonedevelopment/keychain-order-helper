@@ -19,6 +19,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.SharedPreferences;
+import android.databinding.ObservableBoolean;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
@@ -32,11 +33,13 @@ import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-  private String mRepName;
-  private String mRepTerritory;
+  //  Observable fields
+  private final ObservableBoolean mDataIsLoading = new ObservableBoolean();
 
-  private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
+  //  SnackBar
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
+  //  Events System listens to
   private final SingleLiveEvent<Void> mCheckReadyEvent = new SingleLiveEvent<>();
 
   //  Commands directed by System
@@ -45,6 +48,9 @@ public class MainActivityViewModel extends AndroidViewModel {
   //  Commands directed by User via on-screen buttons.
   private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mOrderListCommand = new SingleLiveEvent<>();
+
+  private String mRepName;
+  private String mRepTerritory;
 
   public MainActivityViewModel(
       @NonNull Application application) {
@@ -62,7 +68,7 @@ public class MainActivityViewModel extends AndroidViewModel {
   }
 
   SnackBarMessage getSnackBarMessenger() {
-    return mSnackBarMessage;
+    return mSnackBarMessenger;
   }
 
   SingleLiveEvent<Void> getCheckReadyEvent() {
@@ -98,7 +104,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     if (NewOrderActivity.REQUEST_CODE == requestCode) {
       switch (resultCode) {
         case NewOrderActivity.SENT_RESULT_OK:
-          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
+          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
           break;
       }
     }

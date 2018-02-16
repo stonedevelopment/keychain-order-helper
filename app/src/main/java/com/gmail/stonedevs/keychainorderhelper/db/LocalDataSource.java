@@ -19,8 +19,10 @@ package com.gmail.stonedevs.keychainorderhelper.db;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,8 +52,8 @@ public class LocalDataSource implements DataSource {
   }
 
   /**
-   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if the database doesn't exist or
-   * the table is empty.
+   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if the database doesn't exist
+   * or the table is empty.
    */
   @Override
   public void getAllOrders(@NonNull final LoadAllOrdersCallback callback) {
@@ -60,13 +62,20 @@ public class LocalDataSource implements DataSource {
       public void run() {
         final List<Order> orders = mOrderDao.getAll();
 
+        final List<CompleteOrder> completeOrders = new ArrayList<>(0);
+        for (Order order : orders) {
+          //  todo get extended data per order, add to complete order.
+
+          completeOrders.add(new CompleteOrder(order));
+        }
+
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
           public void run() {
             if (orders.isEmpty()) {
               callback.onDataNotAvailable();
             } else {
-              callback.onDataLoaded(orders);
+              callback.onDataLoaded(completeOrders);
             }
           }
         });
@@ -80,11 +89,14 @@ public class LocalDataSource implements DataSource {
    * Note: {@link LoadOrderCallback#onDataNotAvailable()} is fired if {@link Order} isn't found.
    */
   @Override
-  public void getOrder(@NonNull final String orderId, @NonNull final LoadOrderCallback callback) {
+  public void getOrder(@NonNull final String orderId,
+      @NonNull final LoadOrderCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         final Order order = mOrderDao.get(orderId);
+
+        //  todo get extended order data, add to complete order.
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
@@ -92,7 +104,7 @@ public class LocalDataSource implements DataSource {
             if (order == null) {
               callback.onDataNotAvailable();
             } else {
-              callback.onDataLoaded(order);
+              callback.onDataLoaded(new CompleteOrder(order));
             }
           }
         });
@@ -103,11 +115,13 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void saveOrder(@NonNull final Order order) {
+  public void saveOrder(@NonNull final CompleteOrder completeOrder) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        mOrderDao.insert(order);
+        mOrderDao.insert(completeOrder.getOrder());
+
+        //  todo insert extended data
       }
     };
 
@@ -115,11 +129,15 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void saveOrders(@NonNull final List<Order> orders) {
+  public void saveOrders(@NonNull final List<CompleteOrder> completeOrders) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        mOrderDao.insert(orders);
+        for (CompleteOrder completeOrder : completeOrders) {
+          mOrderDao.insert(completeOrder.getOrder());
+
+          //  todo insert extended data
+        }
       }
     };
 
@@ -135,12 +153,11 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void deleteOrder(@NonNull final String orderId) {
+  public void deleteOrder(@NonNull final CompleteOrder completeOrder) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        Order order = mOrderDao.get(orderId);
-        mOrderDao.delete(order);
+        mOrderDao.delete(completeOrder.getOrder());
       }
     };
 

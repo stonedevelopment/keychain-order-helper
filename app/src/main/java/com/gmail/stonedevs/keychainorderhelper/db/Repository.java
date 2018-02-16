@@ -2,7 +2,7 @@ package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ public class Repository implements DataSource {
 
   private final DataSource mLocalDataSource;
 
-  private Map<String, Order> mCachedOrders;
+  private Map<String, CompleteOrder> mCachedOrders;
 
   /**
    * Used to prevent direct instantiation, see {@link #getInstance(DataSource)}.
@@ -67,7 +67,7 @@ public class Repository implements DataSource {
     //  query the local storage if available.
     mLocalDataSource.getAllOrders(new LoadAllOrdersCallback() {
       @Override
-      public void onDataLoaded(List<Order> orders) {
+      public void onDataLoaded(List<CompleteOrder> orders) {
         refreshCache(orders);
 
         callback.onDataLoaded(new ArrayList<>(mCachedOrders.values()));
@@ -87,8 +87,8 @@ public class Repository implements DataSource {
    * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if it fails to get data.
    */
   @Override
-  public void getOrder(@NonNull String orderId, @NonNull final LoadOrderCallback callback) {
-    final Order cachedOrder = getOrderById(orderId);
+  public void getOrder(@NonNull final String orderId, @NonNull final LoadOrderCallback callback) {
+    final CompleteOrder cachedOrder = getCachedOrderById(orderId);
 
     //  respond immediately if cache is available.
     if (cachedOrder != null) {
@@ -98,13 +98,13 @@ public class Repository implements DataSource {
 
     mLocalDataSource.getOrder(orderId, new LoadOrderCallback() {
       @Override
-      public void onDataLoaded(Order order) {
+      public void onDataLoaded(CompleteOrder order) {
         //  update cache to keep the ui up to date
         if (mCachedOrders == null) {
           mCachedOrders = new LinkedHashMap<>();
         }
 
-        mCachedOrders.put(order.getId(), order);
+        mCachedOrders.put(orderId, order);
 
         callback.onDataLoaded(order);
       }
@@ -118,26 +118,26 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void saveOrder(@NonNull Order order) {
+  public void saveOrder(@NonNull CompleteOrder order) {
     mLocalDataSource.saveOrder(order);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
     }
 
-    mCachedOrders.put(order.getId(), order);
+    mCachedOrders.put(order.getOrderId(), order);
   }
 
   @Override
-  public void saveOrders(@NonNull List<Order> orders) {
+  public void saveOrders(@NonNull List<CompleteOrder> orders) {
     mLocalDataSource.saveOrders(orders);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
     }
 
-    for (Order order : orders) {
-      mCachedOrders.put(order.getId(), order);
+    for (CompleteOrder order : orders) {
+      mCachedOrders.put(order.getOrderId(), order);
     }
   }
 
@@ -147,13 +147,13 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void deleteOrder(@NonNull String orderId) {
-    mLocalDataSource.deleteOrder(orderId);
+  public void deleteOrder(@NonNull CompleteOrder order) {
+    mLocalDataSource.deleteOrder(order);
 
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
     } else {
-      mCachedOrders.remove(orderId);
+      mCachedOrders.remove(order.getOrderId());
     }
   }
 
@@ -168,28 +168,28 @@ public class Repository implements DataSource {
     mCachedOrders.clear();
   }
 
-  private void refreshCache(List<Order> orders) {
+  private void refreshCache(List<CompleteOrder> orders) {
     if (mCachedOrders == null) {
       mCachedOrders = new LinkedHashMap<>();
     }
 
     mCachedOrders.clear();
 
-    for (Order order : orders) {
-      mCachedOrders.put(order.getId(), order);
+    for (CompleteOrder order : orders) {
+      mCachedOrders.put(order.getOrderId(), order);
     }
   }
 
   /**
    * For future use, with remote data source.
    */
-  private void refreshLocalDataSource(List<Order> orders) {
+  private void refreshLocalDataSource(List<CompleteOrder> orders) {
     mLocalDataSource.deleteAllOrders();
     mLocalDataSource.saveOrders(orders);
   }
 
   @Nullable
-  private Order getOrderById(@NonNull String orderId) {
+  private CompleteOrder getCachedOrderById(@NonNull String orderId) {
     if (mCachedOrders == null || mCachedOrders.isEmpty()) {
       return null;
     } else {

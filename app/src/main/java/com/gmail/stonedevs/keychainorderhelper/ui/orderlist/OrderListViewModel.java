@@ -72,11 +72,11 @@ public class OrderListViewModel extends AndroidViewModel {
   void handleActivityResult(int requestCode, int resultCode) {
     if (OrderDetailActivity.REQUEST_CODE == requestCode) {
       switch (resultCode) {
-        case OrderDetailActivity.SENT_RESULT_OK:
+        case OrderDetailActivity.RESULT_SENT_OK:
           //  send success message
           mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
           break;
-        case OrderDetailActivity.SENT_RESULT_CANCEL:
+        case OrderDetailActivity.RESULT_SENT_CANCEL:
           //  send failed message
           mSnackBarMessage.setValue(R.string.snackbar_message_send_order_fail);
       }

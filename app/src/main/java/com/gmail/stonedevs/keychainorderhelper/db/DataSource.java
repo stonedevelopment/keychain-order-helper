@@ -1,7 +1,7 @@
 package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import java.util.List;
 
 /**
@@ -19,25 +19,25 @@ public interface DataSource {
 
   interface LoadOrderCallback extends DataNotAvailableCallback {
 
-    void onDataLoaded(Order order);
+    void onDataLoaded(CompleteOrder order);
   }
 
   interface LoadAllOrdersCallback extends DataNotAvailableCallback {
 
-    void onDataLoaded(List<Order> orders);
+    void onDataLoaded(List<CompleteOrder> orders);
   }
 
   void getAllOrders(@NonNull LoadAllOrdersCallback callback);
 
   void getOrder(@NonNull String orderId, @NonNull LoadOrderCallback callback);
 
-  void saveOrder(@NonNull Order order);
+  void saveOrder(@NonNull CompleteOrder order);
 
-  void saveOrders(@NonNull List<Order> orders);
+  void saveOrders(@NonNull List<CompleteOrder> orders);
 
   void refreshData();
 
-  void deleteOrder(@NonNull String orderId);
+  void deleteOrder(@NonNull CompleteOrder order);
 
   void deleteAllOrders();
 }

@@ -32,18 +32,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOrderCallback;
-import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -55,8 +51,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  * will dismiss when complete to allow calling Activity to start email intent for result
  */
 
-public class PrepareIntentDialogFragment extends DialogFragment implements
-    LoadOrderCallback {
+public class PrepareIntentDialogFragment extends DialogFragment {
 
   private static final String TAG = PrepareIntentDialogFragment.class.getSimpleName();
 
@@ -64,25 +59,9 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
 
   private OrderSentListener mListener;
 
-  private Repository mRepository;
-
-  private String mOrderId;
-
-  private Order mOrder;
+  private CompleteOrder mOrder;
 
   private Uri mUri;
-
-  @Override
-  public void onDataLoaded(Order order) {
-    mOrder = order;
-
-    startPreparationsIfReady();
-  }
-
-  @Override
-  public void onDataNotAvailable() {
-    //  something happened where data did not arrive as planned.
-  }
 
   public interface OrderSentListener {
 
@@ -109,9 +88,6 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
   @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    Bundle args = getArguments();
-    mOrderId = args.getString(getString(R.string.bundle_key_order_id));
-
     AlertDialog.Builder builder = new Builder(getActivity(),
         R.layout.dialog_prepare_email_intent);
 
@@ -122,8 +98,7 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    //  get order from repository
-    mRepository.getOrder(mOrderId, this);
+    prepareOrderToSend();
   }
 
   @Override
@@ -140,21 +115,12 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
     cancelOrder();
   }
 
+  public void setData(CompleteOrder order) {
+    mOrder = order;
+  }
+
   public void setListener(OrderSentListener listener) {
     mListener = listener;
-  }
-
-  public void setRepository(Repository repository) {
-    mRepository = repository;
-  }
-
-  void startPreparationsIfReady() {
-    if (mOrder == null) {
-      //  still waiting on order to arrive from repository
-      return;
-    }
-
-    prepareOrderToSend();
   }
 
   void prepareOrderToSend() {
@@ -162,38 +128,36 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
       Workbook workbook = WorkbookFactory.create(getActivity().getAssets().open(
           getString(R.string.excel_template_filename)));
 
-      startRunnerForGenerateExcelFile(workbook, mOrder.getStoreName(),
-          mOrder.getOrderDate(), new ArrayList<Integer>(), new GenerateExcelFileCallback() {
-            @Override
-            public void onFileGenerationComplete(File file) {
-              //  prepare SEND_ACTION intent with email details
-              Intent intent = createEmailIntent(file, mOrder.getStoreName());
+      startRunnerForGenerateExcelFile(workbook, new GenerateExcelFileCallback() {
+        @Override
+        public void onFileGenerationComplete(File file) {
+          //  prepare SEND_ACTION intent with email details
+          Intent intent = createEmailIntent(file);
 
-              Intent chooser = Intent
-                  .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+          Intent chooser = Intent
+              .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
 
-              if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-                startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-              } else {
-                //  there are no apps on phone to handle this intent, cancel order
-                cancelOrderWithNoAppsForIntent();
-              }
-            }
-          });
+          if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+          } else {
+            //  there are no apps on phone to handle this intent, cancel order
+            cancelOrderWithNoAppsForIntent();
+          }
+        }
+      });
     } catch (InvalidFormatException | IOException e) {
       e.printStackTrace();
     }
   }
 
-  private void startRunnerForGenerateExcelFile(final Workbook workbook, final String storeName,
-      final Date orderDate, final List<Integer> blankList,
+  private void startRunnerForGenerateExcelFile(final Workbook workbook,
       final GenerateExcelFileCallback callback) {
 
     new Runnable() {
       @Override
       public void run() {
         try {
-          File file = generateExcelFile(workbook, storeName, orderDate, blankList);
+          File file = generateExcelFile(workbook);
           callback.onFileGenerationComplete(file);
         } catch (IOException | InvalidFormatException | ParseException e) {
           e.printStackTrace();
@@ -202,9 +166,11 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
     }.run();
   }
 
-  private File generateExcelFile(Workbook workbook, String storeName,
-      Date orderDate, List<Integer> blankList)
+  private File generateExcelFile(Workbook workbook)
       throws IOException, InvalidFormatException, ParseException {
+    String storeName = mOrder.getStoreName();
+    Date orderDate = mOrder.getOrderDate();
+
     Sheet sheet = workbook.getSheetAt(0);
 
     //  Write Store Name and Number.
@@ -276,7 +242,9 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
     return file;
   }
 
-  private Intent createEmailIntent(File file, String storeName) {
+  private Intent createEmailIntent(File file) {
+    String storeName = mOrder.getStoreName();
+
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
     String repTerritory = prefs.getString(getString(R.string.pref_key_rep_territory),
         getString(R.string.pref_key_rep_territory));
@@ -312,47 +280,43 @@ public class PrepareIntentDialogFragment extends DialogFragment implements
   }
 
   private void orderSent() {
-    //  delete file
-    boolean filedDeleted = Util.deleteTempFile(mUri);
+    //  Delete generated file.
+    deleteTempFile();
 
-    if (!filedDeleted) {
-      //  alert Firebase of file not being deleted.
-    }
-
-    //  tell listener of success
+    //  Tell listener of success.
     mListener.onOrderSent();
 
-    //  dismiss dialog
+    //  Dismiss dialog, return to previous screen.
     dismiss();
   }
 
   private void cancelOrder() {
-    //  delete file
-    boolean filedDeleted = Util.deleteTempFile(mUri);
+    //  Delete generated file.
+    deleteTempFile();
 
-    if (!filedDeleted) {
-      //  alert Firebase of file not being deleted.
-    }
-
-    //  tell listener of failure
+    //  Tell listener of failure
     mListener.onOrderNotSent();
 
-    //  dismiss dialog
+    //  Dismiss dialog, return to previous screen.
     dismiss();
   }
 
   private void cancelOrderWithNoAppsForIntent() {
-    //  delete file
+    //  Delete generated file.
+    deleteTempFile();
+
+    //  Tell listener of failure
+    mListener.onOrderNotSend_NoAppsForIntent();
+
+    //  Dismiss dialog, return to previous screen.
+    dismiss();
+  }
+
+  private void deleteTempFile() {
     boolean filedDeleted = Util.deleteTempFile(mUri);
 
     if (!filedDeleted) {
-      //  alert Firebase of file not being deleted.
+      //  Alert Firebase of file not being deleted.
     }
-
-    //  tell listener of failure
-    mListener.onOrderNotSend_NoAppsForIntent();
-
-    //  dismiss dialog
-    dismiss();
   }
 }

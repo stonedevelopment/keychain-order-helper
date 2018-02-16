@@ -18,18 +18,12 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.databinding.ObservableList;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOrderCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 
 /**
  * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
@@ -37,17 +31,21 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
  */
 public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderCallback {
 
-  public final ObservableField<Order> order = new ObservableField<>();
+  //  SnackBar
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  public final ObservableList<OrderItem> items = new ObservableArrayList<>();
+  //  Events
+  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
 
-  public final ObservableBoolean dataLoading = new ObservableBoolean();
-
-  private final SingleLiveEvent<Order> mSendOrderCommand = new SingleLiveEvent<>();
+  //  Commands directed by User via on-screen interactions.
+  private final SingleLiveEvent<CompleteOrder> mSendOrderCommand = new SingleLiveEvent<>();
 
   private final Repository mRepository;
 
-  private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
+  //  View model's data variables
+  private CompleteOrder mOrder;
 
   public OrderDetailViewModel(
       @NonNull Application application, @NonNull Repository repository) {
@@ -56,17 +54,24 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderC
     mRepository = repository;
   }
 
-  SnackBarMessage getSnackBarMessage() {
-    return mSnackBarMessage;
+  SnackBarMessage getSnackBarMessenger() {
+    return mSnackBarMessenger;
   }
 
-  SingleLiveEvent<Order> getSendOrderCommand() {
+  SingleLiveEvent<Boolean> getDataLoadingEvent() {
+    return mDataLoadingEvent;
+  }
+
+  SingleLiveEvent<CompleteOrder> getDataLoadedEvent() {
+    return mDataLoadedEvent;
+  }
+
+  SingleLiveEvent<Void> getErrorLoadingDataEvent() {
+    return mErrorLoadingDataEvent;
+  }
+
+  SingleLiveEvent<CompleteOrder> getSendOrderCommand() {
     return mSendOrderCommand;
-  }
-
-  @NonNull
-  protected String getOrderId() {
-    return order.get().getId();
   }
 
   Repository getRepository() {
@@ -74,27 +79,22 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderC
   }
 
   public void start(@NonNull String orderId) {
-    dataLoading.set(true);
+    mDataLoadingEvent.setValue(true);
     mRepository.getOrder(orderId, this);
   }
 
-  public void setOrder(@NonNull Order order) {
-    this.order.set(order);
-  }
-
-  private void showSnackBarMessage(@StringRes Integer message) {
-    mSnackBarMessage.setValue(message);
-  }
-
   @Override
-  public void onDataLoaded(Order order) {
-    setOrder(order);
-    dataLoading.set(false);
+  public void onDataLoaded(CompleteOrder order) {
+    mOrder = order;
+
+    mDataLoadedEvent.setValue(order);
+    mDataLoadingEvent.setValue(false);
   }
 
   @Override
   public void onDataNotAvailable() {
     //  For future use, with remote data source.
-    dataLoading.set(false);
+    mErrorLoadingDataEvent.call();
+    mDataLoadingEvent.setValue(false);
   }
 }

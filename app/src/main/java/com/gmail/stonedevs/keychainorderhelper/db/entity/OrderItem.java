@@ -1,5 +1,7 @@
 package com.gmail.stonedevs.keychainorderhelper.db.entity;
 
+import static android.arch.persistence.room.ForeignKey.CASCADE;
+
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
@@ -23,7 +25,8 @@ import java.util.UUID;
         childColumns = "keychain_id"),
     @ForeignKey(entity = Order.class,
         parentColumns = "id",
-        childColumns = "order_id")},
+        childColumns = "order_id",
+        onDelete = CASCADE)},
     indices = {
         @Index(value = {"keychain_id"}),
         @Index(value = {"order_id"})})
