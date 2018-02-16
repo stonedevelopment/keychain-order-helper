@@ -17,7 +17,7 @@ public class ClickableKeychainAdapter extends KeychainAdapter {
 
   private OnRecyclerViewItemClickListener mOnRecyclerViewItemClickListener = new OnRecyclerViewItemClickListener() {
     @Override
-    public void onClick(View view, int position) {
+    public void onItemClick(int position) {
       Keychain item = getItem(position);
 
       int quantity = item.getQuantity();
@@ -34,7 +34,7 @@ public class ClickableKeychainAdapter extends KeychainAdapter {
     }
 
     @Override
-    public boolean onLongClick(View view, int position) {
+    public boolean onItemLongClick(int position) {
       Keychain item = getItem(position);
 
       int quantity = item.getQuantity();
@@ -67,12 +67,12 @@ public class ClickableKeychainAdapter extends KeychainAdapter {
 
     @Override
     public void onClick(View v) {
-      mOnRecyclerViewItemClickListener.onClick(v, getAdapterPosition());
+      mOnRecyclerViewItemClickListener.onItemClick(getAdapterPosition());
     }
 
     @Override
     public boolean onLongClick(View v) {
-      return mOnRecyclerViewItemClickListener.onLongClick(v, getAdapterPosition());
+      return mOnRecyclerViewItemClickListener.onItemLongClick(getAdapterPosition());
     }
   }
 

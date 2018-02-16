@@ -15,71 +15,45 @@
   ~ limitations under the License.
   -->
 
-<layout
+<android.support.constraint.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools">
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
 
-  <data>
-    <import type="android.view.View.OnClickListener"/>
-    <import type="com.gmail.stonedevs.keychainorderhelper.util.DateUtil"/>
+  <TextView
+    android:id="@+id/storeNameTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="16dp"
+    android:gravity="center_vertical"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="Store Name 1"/>
 
-    <variable
-      name="order"
-      type="com.gmail.stonedevs.keychainorderhelper.db.entity.Order"/>
+  <TextView
+    android:id="@+id/orderDateTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="center_vertical"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:text="02/06/2018"/>
 
-    <variable
-      name="listener"
-      type="com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListItemClickListener"/>
+  <TextView
+    android:id="@+id/orderTimeSinceTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="16dp"
+    android:gravity="center_vertical"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/orderDateTextView"
+    tools:text="Sent 4 minutes ago"/>
 
-  </data>
-
-  <android.support.constraint.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:onClick="@{() -> listener.onItemClick(order)}">
-
-    <TextView
-      android:id="@+id/textStoreName"
-      android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginBottom="8dp"
-      android:layout_marginStart="16dp"
-      android:gravity="center_vertical"
-      android:text="@{order.storeName}"
-      android:textAppearance="@android:style/TextAppearance.Material.Medium"
-      app:layout_constraintBottom_toBottomOf="@+id/textOrderTime"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      tools:text="Store Name 1"/>
-
-    <TextView
-      android:id="@+id/orderDateButton"
-      android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginEnd="16dp"
-      android:gravity="center_vertical"
-      android:text="@{DateUtil.getFormattedDateForLayout(order.orderDate)}"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      tools:text="02/06/2018"/>
-
-    <TextView
-      android:id="@+id/textOrderTime"
-      android:layout_width="wrap_content"
-      android:layout_height="0dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="16dp"
-      android:gravity="center_vertical"
-      android:text="@{DateUtil.getFormattedTimeForLayout(order.orderDate)}"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="@+id/orderDateButton"
-      app:layout_constraintTop_toBottomOf="@+id/orderDateButton"
-      tools:text="03:30p"/>
-
-  </android.support.constraint.ConstraintLayout>
-
-</layout>
+</android.support.constraint.ConstraintLayout>

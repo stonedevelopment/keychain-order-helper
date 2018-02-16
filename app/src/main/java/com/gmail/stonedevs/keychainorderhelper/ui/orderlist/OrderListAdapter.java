@@ -16,11 +16,14 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import com.gmail.stonedevs.keychainorderhelper.databinding.ListItemOrderBinding;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,35 +31,34 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> {
+public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> implements
+    OnRecyclerViewItemClickListener {
+
+  private final Context mContext;
 
   private OrderListViewModel mViewModel;
 
-  private List<Order> mOrders;
+  private List<CompleteOrder> mOrders;
 
-  public OrderListAdapter(OrderListViewModel viewModel, ArrayList<Order> orders) {
+  public OrderListAdapter(Context context, OrderListViewModel viewModel) {
+    mContext = context;
     mViewModel = viewModel;
 
-    setData(orders);
+    setData(new ArrayList<CompleteOrder>(0));
   }
 
   @Override
   public OrderListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-    ListItemOrderBinding binding = ListItemOrderBinding.inflate(inflater, parent, false);
+    View view = LayoutInflater.from(parent.getContext())
+        .inflate(R.layout.list_item_order, parent, false);
 
-    return new OrderListViewHolder(binding);
+    return new OrderListViewHolder(view, this);
   }
 
   @Override
   public void onBindViewHolder(OrderListViewHolder holder, int position) {
-    Order order = getItem(position);
-    holder.bind(order, new OrderListItemClickListener() {
-      @Override
-      public void onItemClick(Order order) {
-        mViewModel.getOrderDetailCommand().setValue(order.getId());
-      }
-    });
+    CompleteOrder order = getItem(position);
+    holder.bindItem(mContext, order.getOrder());
   }
 
   @Override
@@ -64,12 +66,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     return mOrders != null ? mOrders.size() : 0;
   }
 
-  public Order getItem(int position) {
+  private CompleteOrder getItem(int position) {
     return mOrders.get(position);
-  }
-
-  public List<Order> getItems() {
-    return mOrders;
   }
 
   @Override
@@ -77,12 +75,23 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     return position;
   }
 
-  public void replaceData(List<Order> orders) {
+  void replaceData(List<CompleteOrder> orders) {
     setData(orders);
   }
 
-  private void setData(List<Order> orders) {
+  private void setData(List<CompleteOrder> orders) {
     mOrders = orders;
     notifyDataSetChanged();
+  }
+
+  @Override
+  public void onItemClick(int position) {
+    CompleteOrder order = getItem(position);
+    mViewModel.getOrderDetailCommand().setValue(order.getOrderId());
+  }
+
+  @Override
+  public boolean onItemLongClick(int position) {
+    return false;
   }
 }

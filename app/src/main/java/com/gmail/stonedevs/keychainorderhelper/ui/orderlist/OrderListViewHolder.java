@@ -16,29 +16,57 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import com.gmail.stonedevs.keychainorderhelper.databinding.ListItemOrderBinding;
+import android.text.format.DateUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.widget.TextView;
+import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
 
 /**
  * ViewHolder for {@link OrderListAdapter} with binding to its item layout.
  */
 
-public class OrderListViewHolder extends RecyclerView.ViewHolder {
+public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
+    OnLongClickListener {
 
-  private ListItemOrderBinding mBinding;
+  private final TextView mStoreNameTextView;
+  private final TextView mOrderDateTextView;
+  private final TextView mOrderTimeSinceTextView;
 
-  public OrderListViewHolder(ListItemOrderBinding binding) {
-    super(binding.getRoot());
+  private OnRecyclerViewItemClickListener mListener;
 
-    mBinding = binding;
+  OrderListViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+    super(itemView);
+
+    mListener = listener;
+
+    mStoreNameTextView = itemView.findViewById(R.id.storeNameTextView);
+    mOrderDateTextView = itemView.findViewById(R.id.orderDateTextView);
+    mOrderTimeSinceTextView = itemView.findViewById(R.id.orderTimeSinceTextView);
   }
 
-  public void bind(Order order, OrderListItemClickListener listener) {
-    mBinding.setOrder(order);
-    mBinding.setListener(listener);
+  void bindItem(Context context, @NonNull Order order) {
+    mStoreNameTextView.setText(order.getStoreName());
 
-    //  executes bindings immediately, without this the view wouldn't be correct.
-    mBinding.executePendingBindings();
+    long orderDate = order.getOrderDate().getTime();
+    mOrderDateTextView.setText(DateUtils
+        .formatDateTime(context, orderDate, DateUtils.FORMAT_NUMERIC_DATE));
+    mOrderTimeSinceTextView.setText(DateUtils.formatElapsedTime(orderDate));
+  }
+
+  @Override
+  public void onClick(View v) {
+    mListener.onItemClick(getAdapterPosition());
+  }
+
+  @Override
+  public boolean onLongClick(View v) {
+    return mListener.onItemLongClick(getAdapterPosition());
   }
 }

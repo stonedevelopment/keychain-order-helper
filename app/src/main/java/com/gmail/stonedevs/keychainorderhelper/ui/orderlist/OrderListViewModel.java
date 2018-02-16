@@ -18,16 +18,13 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableList;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllOrdersCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import java.util.List;
 
@@ -35,89 +32,85 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class OrderListViewModel extends AndroidViewModel {
+public class OrderListViewModel extends AndroidViewModel implements LoadAllOrdersCallback {
 
-  public final ObservableList<Order> items = new ObservableArrayList<>();
-  public final ObservableBoolean empty = new ObservableBoolean();
-  public final ObservableBoolean dataLoading = new ObservableBoolean();
+  //  SnackBar
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  private final SnackBarMessage mSnackBarMessage = new SnackBarMessage();
+  //  Events
+  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<List<CompleteOrder>> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
 
-  private final Repository mRepository;
-
+  //  Commands directed by User via on-screen interactions.
   private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
+
+  //  Data repository
+  private final Repository mRepository;
 
   public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
     mRepository = repository;
   }
 
+  SnackBarMessage getSnackBarMessenger() {
+    return mSnackBarMessenger;
+  }
+
+  SingleLiveEvent<Boolean> getDataLoadingEvent() {
+    return mDataLoadingEvent;
+  }
+
+  SingleLiveEvent<List<CompleteOrder>> getDataLoadedEvent() {
+    return mDataLoadedEvent;
+  }
+
+  SingleLiveEvent<Void> getNoDataLoadedEvent() {
+    return mNoDataLoadedEvent;
+  }
+
   SingleLiveEvent<String> getOrderDetailCommand() {
     return mOrderDetailCommand;
   }
 
-  SnackBarMessage getSnackBarMessage() {
-    return mSnackBarMessage;
-  }
-
   public void start() {
-    loadData(false);
+    loadData();
   }
-
-  /**
-   * For future use, with editing orders on {@link OrderDetailActivity} screen, for now: just
-   * viewing details.
-   */
 
   void handleActivityResult(int requestCode, int resultCode) {
     if (OrderDetailActivity.REQUEST_CODE == requestCode) {
       switch (resultCode) {
         case OrderDetailActivity.RESULT_SENT_OK:
           //  send success message
-          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_success);
+          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
           break;
         case OrderDetailActivity.RESULT_SENT_CANCEL:
           //  send failed message
-          mSnackBarMessage.setValue(R.string.snackbar_message_send_order_fail);
+          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_fail);
       }
     }
   }
 
-  private void loadData(boolean forceUpdate) {
-    loadData(forceUpdate, true);
+  private void loadData() {
+    //  Let fragment know we're updating
+    mDataLoadingEvent.setValue(true);
+    //  Start retrieval of order data.
+    mRepository.getAllOrders(this);
   }
 
-  private void loadData(boolean forceUpdate, final boolean showLoadingUI) {
-    if (showLoadingUI) {
-      dataLoading.set(true);
-    }
+  @Override
+  public void onDataNotAvailable() {
+    //  Update screen components first.
+    mNoDataLoadedEvent.call();
+    //  Then enable it to view message.
+    mDataLoadingEvent.setValue(false);
+  }
 
-    if (forceUpdate) {
-      mRepository.refreshData();
-    }
-
-    mRepository.getAllOrders(new LoadAllOrdersCallback() {
-      @Override
-      public void onDataLoaded(List<Order> orders) {
-        if (showLoadingUI) {
-          dataLoading.set(false);
-        }
-
-        items.clear();
-        items.addAll(orders);
-        empty.set(items.isEmpty());
-      }
-
-      @Override
-      public void onDataNotAvailable() {
-        //  sample code shows error, but let's just set to no items in list.
-        if (showLoadingUI) {
-          dataLoading.set(false);
-        }
-
-        items.clear();
-        empty.set(true);
-      }
-    });
+  @Override
+  public void onDataLoaded(List<CompleteOrder> orders) {
+    //  Let adapter know its safe to fill items
+    mDataLoadedEvent.setValue(orders);
+    //  Finally, enable layout to view items
+    mDataLoadingEvent.setValue(false);
   }
 }

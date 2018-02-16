@@ -42,6 +42,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderC
   //  Commands directed by User via on-screen interactions.
   private final SingleLiveEvent<CompleteOrder> mSendOrderCommand = new SingleLiveEvent<>();
 
+  //  Data repository
   private final Repository mRepository;
 
   //  View model's data variables
@@ -93,7 +94,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderC
 
   @Override
   public void onDataNotAvailable() {
-    //  For future use, with remote data source.
+    //  If for some reason the order didn't pull from database
     mErrorLoadingDataEvent.call();
     mDataLoadingEvent.setValue(false);
   }
