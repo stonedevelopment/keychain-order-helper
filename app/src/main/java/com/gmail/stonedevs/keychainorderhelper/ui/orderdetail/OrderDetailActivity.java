@@ -25,7 +25,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment.OrderSentListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;

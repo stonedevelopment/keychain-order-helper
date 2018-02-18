@@ -16,7 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 
 /**
  * TODO: Add a class header comment!

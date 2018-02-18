@@ -21,15 +21,15 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadOrderCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 
 /**
  * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
  * fragment's action listener.
  */
-public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderCallback {
+public class OrderDetailViewModel extends AndroidViewModel implements LoadCallback {
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();

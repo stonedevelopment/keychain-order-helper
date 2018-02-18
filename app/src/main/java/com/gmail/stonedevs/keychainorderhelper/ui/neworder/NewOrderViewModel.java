@@ -19,6 +19,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -38,12 +39,14 @@ import java.util.List;
 
 public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreationCallback {
 
+  private final static String TAG = NewOrderViewModel.class.getSimpleName();
+
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events: Data Loading Changes
-  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<List<NewOrderAdapterItem>> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Boolean> mLoadingEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<List<OrderItem>> mDataReadyEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
 
   //  Events: UI Changes
@@ -68,7 +71,13 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   }
 
   public void start() {
-    resetOrder();
+    if (mCompleteOrder == null) {
+      Log.d(TAG, "start: null");
+      createNewOrder();
+    } else {
+      Log.d(TAG, "start: " + mCompleteOrder.getOrder().toString());
+      onOrderCreated(mCompleteOrder);
+    }
   }
 
   void updateStoreName(String storeName) {
@@ -80,11 +89,11 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   }
 
   SingleLiveEvent<Boolean> getDataLoadingEvent() {
-    return mDataLoadingEvent;
+    return mLoadingEvent;
   }
 
-  SingleLiveEvent<List<NewOrderAdapterItem>> getDataLoadedEvent() {
-    return mDataLoadedEvent;
+  SingleLiveEvent<List<OrderItem>> getDataLoadedEvent() {
+    return mDataReadyEvent;
   }
 
   SingleLiveEvent<Void> getErrorLoadingDataEvent() {
@@ -112,28 +121,24 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   }
 
   private void createNewOrder() {
+    mLoadingEvent.setValue(true);
+
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         String storeName = "";
         Date orderDate = Calendar.getInstance().getTime();
-        String filename = getApplication().getString(R.string.excel_template_filename);
 
-        final Order order = new Order(storeName, orderDate, filename);
+        final Order order = new Order(storeName, orderDate);
 
         String orderId = order.getId();
 
-        String[] nameCellAddresses = getApplication().getResources()
-            .getStringArray(R.array.excel_cell_locations_names);
-
-        // TODO: 2/17/2018 Need to access excel filename and load keychain names into adapter
-
-        String[] quantityCellAddresses = getApplication().getResources()
-            .getStringArray(R.array.excel_cell_locations_quantities);
+        String[] names = getApplication().getResources()
+            .getStringArray(R.array.excel_cell_values_names);
 
         final List<OrderItem> orderItems = new ArrayList<>(0);
-        for (String quantityCellAddress : quantityCellAddresses) {
-          orderItems.add(new OrderItem(orderId, quantityCellAddress, 0));
+        for (String name : names) {
+          orderItems.add(new OrderItem(orderId, name, 0));
         }
 
         new AppExecutors().mainThread().execute(new Runnable() {
@@ -149,8 +154,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   }
 
   void resetOrder() {
-    mDataLoadingEvent.setValue(true);
-
     createNewOrder();
   }
 
@@ -158,6 +161,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   public void onOrderCreated(CompleteOrder order) {
     mCompleteOrder = order;
 
-    mDataLoadingEvent.setValue(false);
+    mLoadingEvent.setValue(false);
+    mDataReadyEvent.setValue(order.getOrderItems());
   }
 }

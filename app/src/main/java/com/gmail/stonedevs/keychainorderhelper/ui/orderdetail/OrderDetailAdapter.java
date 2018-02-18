@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
+package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,33 +30,25 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> implements
+public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHolder> implements
     OnRecyclerViewItemClickListener {
-
-  private static int mMinOrderQuantity;
-  private static int mMaxOrderQuantity;
 
   private List<OrderItem> mItems;
 
-  public NewOrderAdapter(Context c) {
-
-    //  set min/max quantity attributes
-    mMinOrderQuantity = c.getResources().getInteger(R.integer.excel_min_order_quantity_value);
-    mMaxOrderQuantity = c.getResources().getInteger(R.integer.excel_max_order_quantity_value);
-
+  public OrderDetailAdapter() {
     setData(new ArrayList<OrderItem>(0));
   }
 
   @Override
-  public NewOrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  public OrderDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.list_item_keychain, parent, false);
 
-    return new NewOrderViewHolder(view, this);
+    return new OrderDetailViewHolder(view, this);
   }
 
   @Override
-  public void onBindViewHolder(NewOrderViewHolder holder, int position) {
+  public void onBindViewHolder(OrderDetailViewHolder holder, int position) {
     OrderItem item = getItem(position);
     holder.bindItem(item);
   }
@@ -87,34 +78,11 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
   @Override
   public void onItemClick(int position) {
-    OrderItem item = getItem(position);
 
-    int quantity = item.getQuantity();
-
-    if (quantity < mMinOrderQuantity) {
-      item.setQuantity(mMinOrderQuantity);
-    } else if (quantity < mMaxOrderQuantity) {
-      item.setQuantity(mMaxOrderQuantity);
-    } else {
-      item.setQuantity(0);
-    }
-
-    notifyItemChanged(position);
   }
 
   @Override
   public boolean onItemLongClick(int position) {
-    OrderItem item = getItem(position);
-
-    int quantity = item.getQuantity();
-
-    if (quantity < mMaxOrderQuantity) {
-      item.setQuantity(mMaxOrderQuantity);
-    } else {
-      item.setQuantity(0);
-    }
-
-    notifyItemChanged(position);
-    return true;
+    return false;
   }
 }

@@ -22,7 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +38,13 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
 
   private OrderListViewModel mViewModel;
 
-  private List<CompleteOrder> mOrders;
+  private List<Order> mOrders;
 
   OrderListAdapter(Context context, OrderListViewModel viewModel) {
     mContext = context;
     mViewModel = viewModel;
 
-    setData(new ArrayList<CompleteOrder>(0));
+    setData(new ArrayList<Order>(0));
   }
 
   @Override
@@ -57,8 +57,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
 
   @Override
   public void onBindViewHolder(OrderListViewHolder holder, int position) {
-    CompleteOrder order = getItem(position);
-    holder.bindItem(mContext, order.getOrder());
+    Order order = getItem(position);
+    holder.bindItem(mContext, order);
   }
 
   @Override
@@ -71,23 +71,23 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     return position;
   }
 
-  private CompleteOrder getItem(int position) {
+  private Order getItem(int position) {
     return mOrders.get(position);
   }
 
-  void replaceData(List<CompleteOrder> orders) {
+  void replaceData(List<Order> orders) {
     setData(orders);
   }
 
-  private void setData(List<CompleteOrder> orders) {
+  private void setData(List<Order> orders) {
     mOrders = orders;
     notifyDataSetChanged();
   }
 
   @Override
   public void onItemClick(int position) {
-    CompleteOrder order = getItem(position);
-    mViewModel.getOrderDetailCommand().setValue(order.getOrderId());
+    Order order = getItem(position);
+    mViewModel.getOrderDetailCommand().setValue(order.getId());
   }
 
   @Override

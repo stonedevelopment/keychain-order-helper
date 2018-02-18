@@ -9,13 +9,10 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-import com.gmail.stonedevs.keychainorderhelper.model.NewOrder;
 import java.util.UUID;
 
 /**
- * Defines an item tied to its {@link Order} and {@link Keychain}. Quantity should be the only
- * variable with the ability to change. This is done by User clicking on the RecyclerView in {@link
- * NewOrder}.
+ * Defines an item tied to its {@link Order}.
  */
 
 @Entity(foreignKeys = {
@@ -34,29 +31,29 @@ public class OrderItem {
   private final String mId;
 
   @NonNull
-  @ColumnInfo(name = "order_id")
-  private final String mOrderId;
-
-  @NonNull
-  @ColumnInfo(name = "cell_address")
-  private final String mCellAddress;
+  @ColumnInfo(name = "name")
+  private String mName;
 
   @NonNull
   @ColumnInfo(name = "quantity")
   private Integer mQuantity;
 
+  @NonNull
+  @ColumnInfo(name = "order_id")
+  private final String mOrderId;
+
   @Ignore
-  public OrderItem(String orderId, String cellAddress, Integer quantity) {
-    this(UUID.randomUUID().toString(), cellAddress, orderId, quantity);
+  public OrderItem(String orderId, String name, Integer quantity) {
+    this(UUID.randomUUID().toString(), name, quantity, orderId);
   }
 
   public OrderItem(
-      @NonNull String id, @NonNull String orderId, @NonNull String cellAddress,
-      @NonNull Integer quantity) {
+      @NonNull String id, @NonNull String name,
+      @NonNull Integer quantity, @NonNull String orderId) {
     this.mId = id;
-    this.mCellAddress = cellAddress;
-    this.mOrderId = orderId;
+    this.mName = name;
     this.mQuantity = quantity;
+    this.mOrderId = orderId;
   }
 
   @NonNull
@@ -65,13 +62,17 @@ public class OrderItem {
   }
 
   @NonNull
-  public String getKeychainId() {
-    return mCellAddress;
+  public String getOrderId() {
+    return mOrderId;
   }
 
   @NonNull
-  public String getOrderId() {
-    return mOrderId;
+  public String getName() {
+    return mName;
+  }
+
+  public void setName(@NonNull String name) {
+    mName = name;
   }
 
   @NonNull
@@ -85,7 +86,7 @@ public class OrderItem {
 
   @Override
   public String toString() {
-    return "id:" + getId() + ", keychainId:" + getKeychainId() + ", orderId:"
-        + getOrderId() + ", quantity:" + getQuantity();
+    return "id:" + getId() + ", orderId:" + getOrderId() + ", name: " + getName() + ", quantity:"
+        + getQuantity();
   }
 }

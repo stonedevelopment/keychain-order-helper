@@ -35,6 +35,6 @@ class Injection {
     AppDatabase database = AppDatabase.getInstance(context);
     return Repository
         .getInstance(LocalDataSource
-            .getInstance(new AppExecutors(), database.orderDao(), database.keychainDao()));
+            .getInstance(new AppExecutors(), database.orderDao(), database.orderItemDao()));
   }
 }

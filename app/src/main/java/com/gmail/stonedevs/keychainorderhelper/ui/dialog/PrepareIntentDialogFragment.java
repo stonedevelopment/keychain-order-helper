@@ -32,7 +32,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.io.File;

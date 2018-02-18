@@ -22,12 +22,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
@@ -59,15 +59,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   private void setupActionBar() {
-    // TODO: 2/15/2018 action bar replication error
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setDisplayShowHomeEnabled(true);
-    }
   }
 
   private void setupViewFragment() {
@@ -86,8 +79,15 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
       @Override
       public void onChanged(@Nullable String orderId) {
         if (orderId != null) {
-          openOrderDetails(orderId);
+          startOrderDetailActivity(orderId);
         }
+      }
+    });
+
+    mViewModel.getNewOrderCommand().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        startNewOrderActivity();
       }
     });
   }
@@ -116,7 +116,13 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   @Override
-  public void openOrderDetails(String orderId) {
+  public void startNewOrderActivity() {
+    Intent intent = new Intent(this, NewOrderActivity.class);
+    startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
+  }
+
+  @Override
+  public void startOrderDetailActivity(String orderId) {
     Intent intent = new Intent(this, OrderDetailActivity.class);
     intent.putExtra(getString(R.string.bundle_key_order_id), orderId);
     startActivityForResult(intent, OrderDetailActivity.REQUEST_CODE);

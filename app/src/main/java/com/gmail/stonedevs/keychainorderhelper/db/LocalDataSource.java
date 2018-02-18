@@ -19,9 +19,8 @@ package com.gmail.stonedevs.keychainorderhelper.db;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
-import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderWithOrderItemsDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderWithOrderItems;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.List;
@@ -36,21 +35,20 @@ public class LocalDataSource implements DataSource {
 
   private OrderDao mOrderDao;
   private OrderItemDao mOrderItemDao;
-  private OrderWithOrderItemsDao mOrderWithOrderItemsDao;
 
   private AppExecutors mAppExecutors;
 
   private LocalDataSource(@NonNull AppExecutors appExecutors, @NonNull OrderDao orderDao,
-      @NonNull OrderItemDao orderItemDao, @NonNull OrderWithOrderItemsDao orderWithOrderItemsDao) {
+      @NonNull OrderItemDao orderItemDao) {
     mAppExecutors = appExecutors;
     mOrderDao = orderDao;
+    mOrderItemDao = orderItemDao;
   }
 
   public static synchronized LocalDataSource getInstance(AppExecutors appExecutors,
-      OrderDao orderDao, @NonNull OrderItemDao orderItemDao,
-      OrderWithOrderItemsDao orderWithOrderItemsDao) {
+      OrderDao orderDao, @NonNull OrderItemDao orderItemDao) {
     if (sInstance == null) {
-      sInstance = new LocalDataSource(appExecutors, orderDao, orderItemDao, orderWithOrderItemsDao);
+      sInstance = new LocalDataSource(appExecutors, orderDao, orderItemDao);
     }
 
     return sInstance;
@@ -91,10 +89,10 @@ public class LocalDataSource implements DataSource {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        final OrderWithOrderItems orderWithOrderItems = mOrderWithOrderItemsDao.get(orderId);
+        final Order order = mOrderDao.get(orderId);
+        final List<OrderItem> orderItems = mOrderItemDao.get(orderId);
 
-        final CompleteOrder order =
-            new CompleteOrder(orderWithOrderItems.getOrder(), orderWithOrderItems.getOrderItems());
+        final CompleteOrder completeOrder = new CompleteOrder(order, orderItems);
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
@@ -102,7 +100,7 @@ public class LocalDataSource implements DataSource {
             if (order == null) {
               callback.onDataNotAvailable();
             } else {
-              callback.onDataLoaded(order);
+              callback.onDataLoaded(completeOrder);
             }
           }
         });

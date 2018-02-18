@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
+package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +30,7 @@ import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItem
  * TODO: Add a class header comment!
  */
 
-public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
+public class OrderDetailViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
     OnLongClickListener {
 
   private final TextView mKeychainNameTextView;
@@ -38,21 +38,18 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
 
   private OnRecyclerViewItemClickListener mListener;
 
-  NewOrderViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+  OrderDetailViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
     super(itemView);
 
     mListener = listener;
 
     mKeychainNameTextView = itemView.findViewById(R.id.keychainNameTextView);
     mItemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
-
-    itemView.setOnClickListener(this);
-    itemView.setOnLongClickListener(this);
   }
 
   void bindItem(@NonNull OrderItem item) {
     mKeychainNameTextView.setText(item.getName());
-    mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
+    mItemQuantityTextView.setText(item.getQuantity());
   }
 
   @Override

@@ -22,5 +22,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 public interface OrderListNavigator {
 
-  void openOrderDetails(String orderId);
+  void startNewOrderActivity();
+
+  void startOrderDetailActivity(String orderId);
 }

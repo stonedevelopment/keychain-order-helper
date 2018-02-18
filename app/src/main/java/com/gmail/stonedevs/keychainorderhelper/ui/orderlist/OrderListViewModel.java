@@ -16,15 +16,17 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
+import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllOrdersCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import java.util.List;
 
@@ -32,17 +34,18 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class OrderListViewModel extends AndroidViewModel implements LoadAllOrdersCallback {
+public class OrderListViewModel extends AndroidViewModel implements LoadAllCallback {
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<List<CompleteOrder>> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<List<Order>> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen interactions.
+  private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
 
   //  Data repository
@@ -61,12 +64,16 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllOrder
     return mDataLoadingEvent;
   }
 
-  SingleLiveEvent<List<CompleteOrder>> getDataLoadedEvent() {
+  SingleLiveEvent<List<Order>> getDataLoadedEvent() {
     return mDataLoadedEvent;
   }
 
   SingleLiveEvent<Void> getNoDataLoadedEvent() {
     return mNoDataLoadedEvent;
+  }
+
+  SingleLiveEvent<Void> getNewOrderCommand() {
+    return mNewOrderCommand;
   }
 
   SingleLiveEvent<String> getOrderDetailCommand() {
@@ -89,6 +96,31 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllOrder
           mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_fail);
       }
     }
+
+    switch (requestCode) {
+      case NewOrderActivity.REQUEST_CODE:
+        switch (resultCode) {
+          case Activity.RESULT_CANCELED:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_cancel_order_success);
+            break;
+          case NewOrderActivity.SENT_RESULT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
+            break;
+        }
+        break;
+
+      case OrderDetailActivity.REQUEST_CODE:
+        switch (resultCode) {
+          case OrderDetailActivity.RESULT_SENT_OK:
+            //  send success message
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
+            break;
+          case OrderDetailActivity.RESULT_SENT_CANCEL:
+            //  send failed message
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_fail);
+        }
+        break;
+    }
   }
 
   private void loadData() {
@@ -107,7 +139,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllOrder
   }
 
   @Override
-  public void onDataLoaded(List<CompleteOrder> orders) {
+  public void onDataLoaded(List<Order> orders) {
     //  Let adapter know its safe to fill items
     mDataLoadedEvent.setValue(orders);
     //  Finally, enable layout to view items

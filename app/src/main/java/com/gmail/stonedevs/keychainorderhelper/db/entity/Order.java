@@ -41,21 +41,15 @@ public class Order {
   @ColumnInfo(name = "order_date")
   private final Date mOrderDate;
 
-  @NonNull
-  @ColumnInfo(name = "template_filename")
-  private final String mFilename;
-
   @Ignore
-  public Order(String storeName, Date orderDate, String filename) {
-    this(UUID.randomUUID().toString(), storeName, orderDate, filename);
+  public Order(String storeName, Date orderDate) {
+    this(UUID.randomUUID().toString(), storeName, orderDate);
   }
 
-  public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @NonNull String filename) {
+  public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate) {
     this.mId = id;
     this.mStoreName = storeName;
     this.mOrderDate = orderDate;
-    this.mFilename = filename;
   }
 
   @NonNull
@@ -75,11 +69,6 @@ public class Order {
   @NonNull
   public Date getOrderDate() {
     return mOrderDate;
-  }
-
-  @NonNull
-  public String getFilename() {
-    return mFilename;
   }
 
   @Override

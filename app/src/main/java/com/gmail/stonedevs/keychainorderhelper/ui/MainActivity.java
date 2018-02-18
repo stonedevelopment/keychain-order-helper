@@ -28,7 +28,6 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
-import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
@@ -40,8 +39,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
   private MainActivityViewModel mViewModel;
 
-  // TODO: 2/15/2018 Load keychains
-  // TODO: 2/15/2018 MainActivity will eventually be strictly loading data needed to be loaded.
+  // TODO: 2/17/2018 Save order before sending order, after confirmation
+  // TODO: 2/17/2018 OrderDetail Adapter
+  // TODO: 2/17/2018 Settings menu option in order list activity
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +53,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     setupViewModel();
 
     subscribeToNavigationChanges();
-  }
-
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    mViewModel.handleActivityResult(requestCode, resultCode);
   }
 
   @Override
@@ -154,12 +149,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
     //  Initializations complete, show that dialog!
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
-  }
-
-  @Override
-  public void startNewOrderActivity() {
-    Intent intent = new Intent(this, NewOrderActivity.class);
-    startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }
 
   @Override

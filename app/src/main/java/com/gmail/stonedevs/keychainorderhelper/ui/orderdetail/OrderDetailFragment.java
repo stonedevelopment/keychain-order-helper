@@ -20,7 +20,10 @@ import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +33,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 
@@ -47,6 +50,8 @@ public class OrderDetailFragment extends Fragment {
   private TextView mOrderDateTextView;
 
   private OrderDetailViewModel mViewModel;
+
+  private OrderDetailAdapter mAdapter;
 
   public OrderDetailFragment() {
     // Required empty public constructor
@@ -92,6 +97,10 @@ public class OrderDetailFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    setupAdapter();
+
+    setupFab();
+
     subscribeToSnackBarMessenger();
 
     subscribeToUIObservableEvents();
@@ -103,6 +112,25 @@ public class OrderDetailFragment extends Fragment {
 
     String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
     mViewModel.start(orderId);
+  }
+
+  private void setupAdapter() {
+    RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+    mAdapter = new OrderDetailAdapter();
+
+    recyclerView.setAdapter(mAdapter);
+  }
+
+  private void setupFab() {
+    FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+    fab.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mViewModel.getSendOrderCommand().call();
+      }
+    });
   }
 
   private void subscribeToSnackBarMessenger() {
@@ -147,7 +175,7 @@ public class OrderDetailFragment extends Fragment {
         mStoreNameTextView.setText(order.getStoreName());
         mOrderDateTextView.setText(DateUtil.getFormattedDateForLayout(order.getOrderDate()));
 
-        //  todo Fill keychain list with data
+        mAdapter.setData(completeOrder.getOrderItems());
       }
     });
 

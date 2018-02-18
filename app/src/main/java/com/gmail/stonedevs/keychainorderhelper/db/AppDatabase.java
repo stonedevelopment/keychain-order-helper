@@ -8,7 +8,6 @@ import android.content.Context;
 import com.gmail.stonedevs.keychainorderhelper.db.converter.DateConverter;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
-import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderWithOrderItemsDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 
@@ -35,8 +34,6 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract OrderDao orderDao();
 
   public abstract OrderItemDao orderItemDao();
-
-  public abstract OrderWithOrderItemsDao orderWithOrderItemsDao();
 
   public static synchronized AppDatabase getInstance(Context context) {
     if (sInstance == null) {

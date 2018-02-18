@@ -26,6 +26,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,9 +35,9 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import java.util.List;
 
@@ -67,6 +68,8 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+
+    Log.d(TAG, "onCreateView: ");
 
     mViewModel = NewOrderActivity.obtainViewModel(getActivity());
 
@@ -99,6 +102,8 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    Log.d(TAG, "onActivityCreated: ");
+
     setupAdapter();
 
     setupFab();
@@ -112,13 +117,16 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
   public void onResume() {
     super.onResume();
 
+    Log.d(TAG, "onResume: ");
+
     mViewModel.start();
   }
 
   private void setupAdapter() {
     RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-    mAdapter = new NewOrderAdapter();
+
+    mAdapter = new NewOrderAdapter(getActivity());
 
     recyclerView.setAdapter(mAdapter);
   }
@@ -161,7 +169,7 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
           progressBar.setVisibility(View.VISIBLE);
 
           //  Hide container layout.
-          ScrollView layout = getView().findViewById(R.id.layout);
+          View layout = getView().findViewById(R.id.layout);
           layout.setVisibility(View.GONE);
         } else {
           //  Hide progress bar.
@@ -169,15 +177,15 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
           progressBar.setVisibility(View.GONE);
 
           //  Show container layout.
-          ScrollView layout = getView().findViewById(R.id.layout);
+          View layout = getView().findViewById(R.id.layout);
           layout.setVisibility(View.VISIBLE);
         }
       }
     });
 
-    mViewModel.getDataLoadedEvent().observe(this, new Observer<List<NewOrderAdapterItem>>() {
+    mViewModel.getDataLoadedEvent().observe(this, new Observer<List<OrderItem>>() {
       @Override
-      public void onChanged(@Nullable List<NewOrderAdapterItem> items) {
+      public void onChanged(@Nullable List<OrderItem> items) {
         mAdapter.replaceData(items);
       }
     });

@@ -23,7 +23,5 @@ public interface MainActivityNavigation {
 
   void startRequiredFieldsDialogFragment();
 
-  void startNewOrderActivity();
-
   void startOrderListActivity();
 }
