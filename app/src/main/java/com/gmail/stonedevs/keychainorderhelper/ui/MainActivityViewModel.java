@@ -52,13 +52,14 @@ public class MainActivityViewModel extends AndroidViewModel {
   }
 
   void start() {
+    setupDefaultValues();
+
     checkReady();
   }
 
-  void checkReady() {
+  private void checkReady() {
     //  If required fields are not empty, open main activity,
     //  Otherwise, open dialog for User to enter name and territory.
-    setupDefaultValues();
 
     if (isReady()) {
       getOrderListCommand().call();
@@ -87,10 +88,6 @@ public class MainActivityViewModel extends AndroidViewModel {
     return mOrderListCommand;
   }
 
-  boolean isReady() {
-    return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
-  }
-
   private void setupDefaultValues() {
     Context c = getApplication().getApplicationContext();
 
@@ -100,5 +97,9 @@ public class MainActivityViewModel extends AndroidViewModel {
     //  Get saved rep values from SharedPreferences
     mRepName = prefs.getString(c.getString(R.string.pref_key_rep_name), "");
     mRepTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory), "");
+  }
+
+  private boolean isReady() {
+    return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
   }
 }

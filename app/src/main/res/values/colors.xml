@@ -6,6 +6,7 @@
   <color name="secondaryColor">#88887d</color>
   <color name="secondaryLightColor">#b8b8ac</color>
   <color name="secondaryDarkColor">#5b5b51</color>
-  <color name="primaryTextColor">#ffffff</color>
-  <color name="secondaryTextColor">#ffffff</color>
+  <color name="primaryTextColor">#fff</color>
+  <color name="secondaryTextColor">#000</color>
+  <color name="white">#fff</color>
 </resources>

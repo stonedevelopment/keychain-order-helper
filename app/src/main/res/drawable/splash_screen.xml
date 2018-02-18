@@ -15,18 +15,17 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
-    android:id="@+id/action_reset_order"
-    android:title="@string/action_reset_order_text"
-    app:showAsAction="ifRoom|withText"/>
+    android:drawable="@color/white"/>
 
-  <item
-    android:id="@+id/action_send"
-    android:icon="@drawable/ic_action_send"
-    android:title="@string/action_send_order_text"
-    app:showAsAction="ifRoom"/>
+  <item>
 
-</menu>
+    <bitmap
+      android:gravity="center"
+      android:src="@drawable/logo_srp_companies"/>
+
+  </item>
+
+</layer-list>

@@ -97,9 +97,9 @@
   <!--  Toasts -->
   <string name="toast_dialog_incomplete_order_keychains_empty">You haven\'t chosen any keychains to order.</string>
   <string name="toast_dialog_required_fields_success">Settings saved successfully.</string>
-  <string name="toast_dialog_required_fields_fail">Settings not saved, you must enter both your name and territory before starting an order.</string>
-  <string name="toast_dialog_required_fields_rep_name_empty">Settings not saved, you must enter your name before starting an order.</string>
-  <string name="toast_dialog_required_fields_rep_territory_empty">Settings not saved, you must enter your territory before starting an order.</string>
+  <string name="snackbar_dialog_required_fields_fail">Settings not saved, you must enter both your name and territory before starting an order.</string>
+  <string name="snackbar_dialog_required_fields_rep_name_empty">Settings not saved, you must enter your name before starting an order.</string>
+  <string name="snackbar_dialog_required_fields_rep_territory_empty">Settings not saved, you must enter your territory before starting an order.</string>
 
   <!--  Snackbar Messages -->
   <string name="snackbar_message_cancel_order_success">Order canceled.</string>
@@ -161,4 +161,6 @@
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
   <string name="action_reset_order_text">Reset</string>
+  <string name="action_send_order_text">Send</string>
+  <string name="dialog_required_fields_saveButton_text">Save</string>
 </resources>

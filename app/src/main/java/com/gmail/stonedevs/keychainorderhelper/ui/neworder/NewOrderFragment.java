@@ -102,11 +102,9 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    Log.d(TAG, "onActivityCreated: ");
-
     setupAdapter();
 
-    setupFab();
+//    setupFab();
 
     subscribeToSnackBarMessenger();
 
@@ -116,8 +114,6 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
   @Override
   public void onResume() {
     super.onResume();
-
-    Log.d(TAG, "onResume: ");
 
     mViewModel.start();
   }
@@ -139,7 +135,6 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
         mViewModel.getSendOrderCommand().call();
       }
     });
-
   }
 
   private void subscribeToSnackBarMessenger() {

@@ -52,7 +52,11 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
 
   void bindItem(@NonNull OrderItem item) {
     mKeychainNameTextView.setText(item.getName());
-    mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
+    if (item.getQuantity() > 0) {
+      mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
+    } else {
+      mItemQuantityTextView.setText("");
+    }
   }
 
   @Override

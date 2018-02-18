@@ -24,6 +24,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
@@ -56,6 +59,23 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     mViewModel.handleActivityResult(requestCode, resultCode);
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_main, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_settings:
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
   }
 
   private void setupActionBar() {

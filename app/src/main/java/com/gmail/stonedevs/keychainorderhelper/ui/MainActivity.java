@@ -20,18 +20,20 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment.OnRequiredFieldsCheckListener;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields.RequiredFieldsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields.RequiredFieldsDialogFragment.RequiredFieldsDialogListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
-public class MainActivity extends AppCompatActivity implements MainActivityNavigation {
+public class MainActivity extends AppCompatActivity implements MainActivityNavigation,
+    RequiredFieldsDialogListener {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -84,7 +86,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     mViewModel.getOrderListCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        startOrderListActivity();
+        new Handler().postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            startOrderListActivity();
+          }
+        }, 1000);
       }
     });
   }
@@ -128,24 +135,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     RequiredFieldsDialogFragment dialogFragment = RequiredFieldsDialogFragment
         .createInstance(args);
 
-    //  Set up a listener that will determine whether we allow User into New Order Activity.
-    dialogFragment.setListener(new OnRequiredFieldsCheckListener() {
-      @Override
-      public void onSuccess(int resourceId) {
-        //  User successfully entered all values completed. Let them know.
-        mViewModel.getSnackBarMessenger().setValue(resourceId);
-
-        mViewModel.checkReady();
-      }
-
-      @Override
-      public void onFail(int resourceId) {
-        //  User did not fill out all fields required completely, let them know.
-        mViewModel.getSnackBarMessenger().setValue(resourceId);
-
-        mViewModel.checkReady();
-      }
-    });
+    dialogFragment.setCancelable(false);
 
     //  Initializations complete, show that dialog!
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
@@ -157,5 +147,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     startActivityForResult(intent, OrderListActivity.REQUEST_CODE);
 
     finish();
+  }
+
+  @Override
+  public void onSuccess(int resourceId) {
+    mViewModel.getOrderListCommand().call();
+
+  }
+
+  @Override
+  public void onFail(int resourceId) {
+    //  User did not fill out all fields required completely, let them know.
+    mViewModel.getSnackBarMessenger().setValue(resourceId);
   }
 }

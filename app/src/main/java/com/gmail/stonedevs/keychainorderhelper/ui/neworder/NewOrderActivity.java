@@ -80,6 +80,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       case R.id.action_reset_order:
         mViewModel.getResetOrderCommand().call();
         return true;
+      case R.id.action_send:
+        mViewModel.getSendOrderCommand().call();
+        return true;
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -136,13 +139,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_send_order_fail);
       }
     });
-
-    mViewModel.getOpenDatePickerCommand().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-
-      }
-    });
   }
 
   private NewOrderFragment obtainViewFragment() {
@@ -177,6 +173,11 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     return ViewModelProviders.of(activity, factory).get(NewOrderViewModel.class);
   }
 
+  void finishWithResult(int resultCode) {
+    setResult(resultCode);
+    finish();
+  }
+
   @Override
   public void showConfirmCancelOrderDialog() {
     AlertDialog.Builder builder = new Builder(this);
@@ -186,8 +187,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            setResult(RESULT_CANCELED);
-            finish();
+            finishWithResult(RESULT_CANCELED);
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_cancel_order,

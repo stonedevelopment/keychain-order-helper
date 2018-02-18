@@ -19,7 +19,20 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content">
+
+  <TextView
+    android:id="@+id/textMessage"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:text="@string/dialog_message_required_fields"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"/>
 
   <EditText
     android:id="@+id/editName"
@@ -37,6 +50,7 @@
     app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/textMessage"/>
+
   <EditText
     android:id="@+id/editTerritory"
     android:layout_width="0dp"
@@ -52,16 +66,16 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/editName"/>
-  <TextView
-    android:id="@+id/textMessage"
-    android:layout_width="0dp"
+
+  <Button
+    android:id="@+id/saveButton"
+    style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:layout_marginStart="24dp"
-    android:layout_marginEnd="24dp"
-    android:text="@string/dialog_message_required_fields"
-    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="@string/dialog_positive_button_required_fields"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+    app:layout_constraintTop_toBottomOf="@+id/editTerritory"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -39,7 +39,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
   private List<OrderItem> mItems;
 
-  public NewOrderAdapter(Context c) {
+  NewOrderAdapter(Context c) {
 
     //  set min/max quantity attributes
     mMinOrderQuantity = c.getResources().getInteger(R.integer.excel_min_order_quantity_value);
