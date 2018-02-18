@@ -22,12 +22,11 @@ import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllKeychainsCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +36,7 @@ import java.util.List;
  * ViewModel for the New Order screen.
  */
 
-public class NewOrderViewModel extends AndroidViewModel implements LoadAllKeychainsCallback {
+public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreationCallback {
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
@@ -72,15 +71,8 @@ public class NewOrderViewModel extends AndroidViewModel implements LoadAllKeycha
     resetOrder();
   }
 
-  void updateStoreName(String storeName, boolean updateUI) {
-
-    if (updateUI) {
-      mUpdateUIStoreNameText.setValue(storeName);
-    }
-  }
-
-  private void setOrderDate(Date orderDate) {
-    mOrderDate = orderDate;
+  void updateStoreName(String storeName) {
+    mCompleteOrder.setStoreName(storeName);
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -119,41 +111,53 @@ public class NewOrderViewModel extends AndroidViewModel implements LoadAllKeycha
     return mSendOrderCommand;
   }
 
-  void createNewOrder() {
-    Order order = new Order("", Calendar.getInstance().getTime());
+  private void createNewOrder() {
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        String storeName = "";
+        Date orderDate = Calendar.getInstance().getTime();
+        String filename = getApplication().getString(R.string.excel_template_filename);
 
-    mCompleteOrder = new CompleteOrder(order, new ArrayList<OrderItem>(0));
+        final Order order = new Order(storeName, orderDate, filename);
+
+        String orderId = order.getId();
+
+        String[] nameCellAddresses = getApplication().getResources()
+            .getStringArray(R.array.excel_cell_locations_names);
+
+        // TODO: 2/17/2018 Need to access excel filename and load keychain names into adapter
+
+        String[] quantityCellAddresses = getApplication().getResources()
+            .getStringArray(R.array.excel_cell_locations_quantities);
+
+        final List<OrderItem> orderItems = new ArrayList<>(0);
+        for (String quantityCellAddress : quantityCellAddresses) {
+          orderItems.add(new OrderItem(orderId, quantityCellAddress, 0));
+        }
+
+        new AppExecutors().mainThread().execute(new Runnable() {
+          @Override
+          public void run() {
+            onOrderCreated(new CompleteOrder(order, orderItems));
+          }
+        });
+      }
+    };
+
+    new AppExecutors().diskIO().execute(runnable);
   }
 
   void resetOrder() {
-    updateStoreName(null, true);
-    setOrderDate(Calendar.getInstance().getTime());
-
-    //  todo pull default values from repository for list of keychains.
     mDataLoadingEvent.setValue(true);
-    mRepository.getAllKeychains(this);
+
+    createNewOrder();
   }
 
   @Override
-  public void onDataNotAvailable() {
-    //  no keychains were found, instantiate keychains then return list again
-    String[] keychainNames = getApplication().getResources()
-        .getStringArray(R.array.excel_cell_values_names);
-    String[] quantityCellAddresses = getApplication().getResources()
-        .getStringArray(R.array.excel_cell_locations_quantities);
-
-    mRepository.insertKeychains(keychainNames, quantityCellAddresses);
-  }
-
-  @Override
-  public void onDataLoaded(List<Keychain> keychains) {
-    List<NewOrderAdapterItem> items = new ArrayList<>(0);
-
-    for (Keychain keychain : keychains) {
-      items.add(new NewOrderAdapterItem(keychain, 0));
-    }
+  public void onOrderCreated(CompleteOrder order) {
+    mCompleteOrder = order;
 
     mDataLoadingEvent.setValue(false);
-    mDataLoadedEvent.setValue(items);
   }
 }

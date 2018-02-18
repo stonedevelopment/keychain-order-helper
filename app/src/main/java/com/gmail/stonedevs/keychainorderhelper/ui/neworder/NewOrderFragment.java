@@ -88,7 +88,7 @@ public class NewOrderFragment extends Fragment implements OnFocusChangeListener 
 
       @Override
       public void afterTextChanged(Editable s) {
-        mViewModel.setStoreName(s.toString(), false);
+        mViewModel.updateStoreName(s.toString());
       }
     });
 

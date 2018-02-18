@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.converter;
+package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-import android.arch.persistence.room.TypeConverter;
-import android.net.Uri;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 
 /**
- * Created by Shane Stone on 2/10/2018.
- *
- * Email: stonedevs@gmail.com
+ * TODO: Add a class header comment!
  */
 
-public class UriConverter {
+public interface NewOrderCreationCallback {
 
-  @TypeConverter
-  public static Uri toUri(String path) {
-    return path == null ? null : Uri.parse(path);
-  }
-
-  @TypeConverter
-  public static String toString(Uri path) {
-    return path == null ? null : path.toString();
-  }
+  void onOrderCreated(CompleteOrder order);
 }

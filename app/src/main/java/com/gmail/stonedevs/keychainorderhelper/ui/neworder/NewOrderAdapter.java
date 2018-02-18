@@ -65,7 +65,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
     return mItems.get(position);
   }
 
-  public void replaceData(List<NewOrderAdapterItem> items) {
+  void replaceData(List<NewOrderAdapterItem> items) {
     setData(items);
   }
 

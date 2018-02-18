@@ -16,29 +16,23 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
-
 /**
  * TODO: Add a class header comment!
  */
 
 public class NewOrderAdapterItem {
 
-  private final Keychain mKeychain;
+  private final String mName;
 
   private Integer mItemQuantity;
 
-  public NewOrderAdapterItem(Keychain keychain, Integer itemQuantity) {
-    this.mKeychain = keychain;
+  public NewOrderAdapterItem(String name, Integer itemQuantity) {
+    this.mName = name;
     this.mItemQuantity = itemQuantity;
   }
 
-  public Keychain getKeychain() {
-    return mKeychain;
-  }
-
-  public String getKeychainName() {
-    return mKeychain.getName();
+  public String getName() {
+    return mName;
   }
 
   public Integer getItemQuantity() {

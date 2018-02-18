@@ -20,7 +20,6 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
@@ -44,15 +43,15 @@ public class Order {
 
   @NonNull
   @ColumnInfo(name = "template_filename")
-  private final Uri mFilename;
+  private final String mFilename;
 
   @Ignore
-  public Order(String storeName, Date orderDate, Uri filename) {
+  public Order(String storeName, Date orderDate, String filename) {
     this(UUID.randomUUID().toString(), storeName, orderDate, filename);
   }
 
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @NonNull Uri filename) {
+      @NonNull String filename) {
     this.mId = id;
     this.mStoreName = storeName;
     this.mOrderDate = orderDate;
@@ -79,7 +78,7 @@ public class Order {
   }
 
   @NonNull
-  public Uri getFilename() {
+  public String getFilename() {
     return mFilename;
   }
 
