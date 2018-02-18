@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.entity;
+package com.gmail.stonedevs.keychainorderhelper.db.converter;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Relation;
-import java.util.List;
+import android.arch.persistence.room.TypeConverter;
+import android.net.Uri;
 
 /**
- * TODO: Add a class header comment!
+ * Created by Shane Stone on 2/10/2018.
+ *
+ * Email: stonedevs@gmail.com
  */
 
-public class OrderWithOrderItemQuantityWithKeychainCellAddress {
+public class UriConverter {
 
-  @Embedded
-  public Order order;
+  @TypeConverter
+  public static Uri toUri(String path) {
+    return path == null ? null : Uri.parse(path);
+  }
 
-  @Relation(parentColumn = "id",
-      entityColumn = "order_id",
-      entity = OrderItemQuantityWithKeychainCellAddress.class)
-  public List<OrderItemQuantityWithKeychainCellAddress> orderItems;
+  @TypeConverter
+  public static String toString(Uri path) {
+    return path == null ? null : path.toString();
+  }
 }

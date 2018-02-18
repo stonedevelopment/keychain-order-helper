@@ -34,6 +34,7 @@ import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.Util;
+import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class PrepareIntentDialogFragment extends DialogFragment {
   public static final int REQUEST_CODE_ACTION_SEND = 1;
 
   private OrderSentListener mListener;
+
+  private AppExecutors mAppExecutors;
 
   private CompleteOrder mOrder;
 
@@ -153,7 +156,7 @@ public class PrepareIntentDialogFragment extends DialogFragment {
   private void startRunnerForGenerateExcelFile(final Workbook workbook,
       final GenerateExcelFileCallback callback) {
 
-    new Runnable() {
+    Runnable runnable = new Runnable() {
       @Override
       public void run() {
         try {
@@ -163,7 +166,10 @@ public class PrepareIntentDialogFragment extends DialogFragment {
           e.printStackTrace();
         }
       }
-    }.run();
+    };
+
+    //  run on disk thread
+    new AppExecutors().diskIO().execute(runnable);
   }
 
   private File generateExcelFile(Workbook workbook)

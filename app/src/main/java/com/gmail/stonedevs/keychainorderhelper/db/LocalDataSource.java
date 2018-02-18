@@ -17,12 +17,13 @@
 package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
+import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderWithOrderItemsDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderWithOrderItems;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,40 +35,37 @@ public class LocalDataSource implements DataSource {
   private static volatile LocalDataSource sInstance;
 
   private OrderDao mOrderDao;
+  private OrderItemDao mOrderItemDao;
+  private OrderWithOrderItemsDao mOrderWithOrderItemsDao;
 
   private AppExecutors mAppExecutors;
 
-  private LocalDataSource(@NonNull AppExecutors appExecutors, @NonNull OrderDao orderDao) {
+  private LocalDataSource(@NonNull AppExecutors appExecutors, @NonNull OrderDao orderDao,
+      @NonNull OrderItemDao orderItemDao, @NonNull OrderWithOrderItemsDao orderWithOrderItemsDao) {
     mAppExecutors = appExecutors;
     mOrderDao = orderDao;
   }
 
-  public static synchronized LocalDataSource getInstance(@NonNull AppExecutors appExecutors,
-      @NonNull OrderDao orderDao) {
+  public static synchronized LocalDataSource getInstance(AppExecutors appExecutors,
+      OrderDao orderDao, @NonNull OrderItemDao orderItemDao,
+      OrderWithOrderItemsDao orderWithOrderItemsDao) {
     if (sInstance == null) {
-      sInstance = new LocalDataSource(appExecutors, orderDao);
+      sInstance = new LocalDataSource(appExecutors, orderDao, orderItemDao, orderWithOrderItemsDao);
     }
 
     return sInstance;
   }
 
   /**
-   * Note: {@link LoadAllOrdersCallback#onDataNotAvailable()} is fired if the database doesn't exist
+   * Note: {@link LoadAllCallback#onDataNotAvailable()} is fired if the database doesn't exist
    * or the table is empty.
    */
   @Override
-  public void getAllOrders(@NonNull final LoadAllOrdersCallback callback) {
+  public void getAllOrders(@NonNull final LoadAllCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         final List<Order> orders = mOrderDao.getAll();
-
-        final List<CompleteOrder> completeOrders = new ArrayList<>(0);
-        for (Order order : orders) {
-          //  todo get extended data per order, add to complete order.
-
-          completeOrders.add(new CompleteOrder(order));
-        }
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
@@ -75,7 +73,7 @@ public class LocalDataSource implements DataSource {
             if (orders.isEmpty()) {
               callback.onDataNotAvailable();
             } else {
-              callback.onDataLoaded(completeOrders);
+              callback.onDataLoaded(orders);
             }
           }
         });
@@ -86,17 +84,17 @@ public class LocalDataSource implements DataSource {
   }
 
   /**
-   * Note: {@link LoadOrderCallback#onDataNotAvailable()} is fired if {@link Order} isn't found.
+   * Note: {@link LoadCallback#onDataNotAvailable()} is fired if {@link Order} isn't found.
    */
   @Override
-  public void getOrder(@NonNull final String orderId,
-      @NonNull final LoadOrderCallback callback) {
+  public void getOrder(@NonNull final String orderId, @NonNull final LoadCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        final Order order = mOrderDao.get(orderId);
+        final OrderWithOrderItems orderWithOrderItems = mOrderWithOrderItemsDao.get(orderId);
 
-        //  todo get extended order data, add to complete order.
+        final CompleteOrder order =
+            new CompleteOrder(orderWithOrderItems.getOrder(), orderWithOrderItems.getOrderItems());
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
@@ -104,7 +102,7 @@ public class LocalDataSource implements DataSource {
             if (order == null) {
               callback.onDataNotAvailable();
             } else {
-              callback.onDataLoaded(new CompleteOrder(order));
+              callback.onDataLoaded(order);
             }
           }
         });
@@ -115,13 +113,20 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void saveOrder(@NonNull final CompleteOrder completeOrder) {
+  public void saveOrder(@NonNull final CompleteOrder completeOrder,
+      @NonNull final InsertCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         mOrderDao.insert(completeOrder.getOrder());
+        mOrderItemDao.insert(completeOrder.getOrderItems());
 
-        //  todo insert extended data
+        mAppExecutors.mainThread().execute(new Runnable() {
+          @Override
+          public void run() {
+            callback.onDataInserted();
+          }
+        });
       }
     };
 
@@ -129,35 +134,41 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void saveOrders(@NonNull final List<CompleteOrder> completeOrders) {
+  public void saveOrders(@NonNull final List<CompleteOrder> completeOrders,
+      @NonNull final InsertCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         for (CompleteOrder completeOrder : completeOrders) {
           mOrderDao.insert(completeOrder.getOrder());
-
-          //  todo insert extended data
+          mOrderItemDao.insert(completeOrder.getOrderItems());
         }
+
+        mAppExecutors.mainThread().execute(new Runnable() {
+          @Override
+          public void run() {
+            callback.onDataInserted();
+          }
+        });
       }
     };
 
     mAppExecutors.diskIO().execute(runnable);
   }
 
-  /**
-   * Not required, {@link Repository} handles the logic of refreshing the data.
-   */
   @Override
-  public void refreshData() {
-    //  do nothing
-  }
-
-  @Override
-  public void deleteOrder(@NonNull final CompleteOrder completeOrder) {
+  public void deleteOrder(@NonNull final Order order, @NonNull final DeleteCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        mOrderDao.delete(completeOrder.getOrder());
+        mOrderDao.delete(order);
+
+        mAppExecutors.mainThread().execute(new Runnable() {
+          @Override
+          public void run() {
+            callback.onDataDeleted();
+          }
+        });
       }
     };
 
@@ -165,19 +176,21 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void deleteAllOrders() {
+  public void deleteAllOrders(@NonNull final DeleteCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        mOrderDao.delete();
+        mOrderDao.deleteAll();
+
+        mAppExecutors.mainThread().execute(new Runnable() {
+          @Override
+          public void run() {
+            callback.onDataDeleted();
+          }
+        });
       }
     };
 
     mAppExecutors.diskIO().execute(runnable);
-  }
-
-  @VisibleForTesting
-  static void clearInstance() {
-    sInstance = null;
   }
 }

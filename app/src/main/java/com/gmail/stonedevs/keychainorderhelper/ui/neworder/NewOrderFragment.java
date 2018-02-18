@@ -16,20 +16,29 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
+import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import java.util.List;
 
 /**
  * Main UI for the New Order screen.
@@ -37,9 +46,15 @@ import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
  * Users can enter a store name, order date, and click on the list to adjust quantities of
  * keychains.
  */
-public class NewOrderFragment extends Fragment {
+public class NewOrderFragment extends Fragment implements OnFocusChangeListener {
+
+  private final static String TAG = NewOrderFragment.class.getSimpleName();
+
+  private EditText mStoreNameEditText;
 
   private NewOrderViewModel mViewModel;
+
+  private NewOrderAdapter mAdapter;
 
   public NewOrderFragment() {
     // Required empty public constructor
@@ -58,8 +73,9 @@ public class NewOrderFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_new_order, container, false);
 
     //  Store Name EditText
-    EditText storeNameEditText = view.findViewById(R.id.storeNameEditText);
-    storeNameEditText.addTextChangedListener(new TextWatcher() {
+    mStoreNameEditText = view.findViewById(R.id.storeNameEditText);
+    mStoreNameEditText.setOnFocusChangeListener(this);
+    mStoreNameEditText.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         //  do nothing, for now?
@@ -72,40 +88,7 @@ public class NewOrderFragment extends Fragment {
 
       @Override
       public void afterTextChanged(Editable s) {
-        mViewModel.updateStoreName(s.toString());
-      }
-    });
-
-    //  Order Date Button
-    Button orderDateButton = view.findViewById(R.id.orderDateButton);
-    orderDateButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        //  Open date picker dialog.
-      }
-    });
-
-    //  todo Keychain List RecyclerView
-
-    //  todo Set Keychain List RecyclerView Adapter
-
-    //  Reset Order Button
-    Button resetButton = view.findViewById(R.id.resetOrderButton);
-    resetButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        //  Get ViewModel's ResetOrderCommand
-        mViewModel.getResetOrderCommand().call();
-      }
-    });
-
-    //  Send Order Button
-    Button sendOrderButton = view.findViewById(R.id.sendOrderButton);
-    sendOrderButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        //  Get ViewModel's SendOrderCommand
-        mViewModel.getSendOrderCommand().call();
+        mViewModel.setStoreName(s.toString(), false);
       }
     });
 
@@ -116,7 +99,39 @@ public class NewOrderFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    setupAdapter();
+
+    setupFab();
+
     subscribeToSnackBarMessenger();
+
+    subscribeToUIObservableEvents();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+
+    mViewModel.start();
+  }
+
+  private void setupAdapter() {
+    RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    mAdapter = new NewOrderAdapter();
+
+    recyclerView.setAdapter(mAdapter);
+  }
+
+  private void setupFab() {
+    FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+    fab.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        mViewModel.getSendOrderCommand().call();
+      }
+    });
+
   }
 
   private void subscribeToSnackBarMessenger() {
@@ -126,5 +141,66 @@ public class NewOrderFragment extends Fragment {
         SnackbarUtils.showSnackbar(getView(), getString(resourceId));
       }
     });
+  }
+
+  private void subscribeToUIObservableEvents() {
+    mViewModel.getUpdateUIStoreNameText().observe(this, new Observer<String>() {
+      @Override
+      public void onChanged(@Nullable String s) {
+        mStoreNameEditText.setText(s);
+      }
+    });
+
+    mViewModel.getDataLoadingEvent().observe(this, new Observer<Boolean>() {
+      @Override
+      public void onChanged(@Nullable Boolean isDataLoading) {
+        //  Determine whether data is loading, react accordingly.
+        if (isDataLoading) {
+          //  Show progress bar.
+          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+          progressBar.setVisibility(View.VISIBLE);
+
+          //  Hide container layout.
+          ScrollView layout = getView().findViewById(R.id.layout);
+          layout.setVisibility(View.GONE);
+        } else {
+          //  Hide progress bar.
+          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+          progressBar.setVisibility(View.GONE);
+
+          //  Show container layout.
+          ScrollView layout = getView().findViewById(R.id.layout);
+          layout.setVisibility(View.VISIBLE);
+        }
+      }
+    });
+
+    mViewModel.getDataLoadedEvent().observe(this, new Observer<List<NewOrderAdapterItem>>() {
+      @Override
+      public void onChanged(@Nullable List<NewOrderAdapterItem> items) {
+        mAdapter.replaceData(items);
+      }
+    });
+
+    mViewModel.getErrorLoadingDataEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        throw new RuntimeException("Keychain list failed to retrieve items.");
+      }
+    });
+  }
+
+  /**
+   * Focus change override to force keyboard to close
+   */
+  @Override
+  public void onFocusChange(View v, boolean hasFocus) {
+    if (!hasFocus) {
+      InputMethodManager mImMan = (InputMethodManager) getContext()
+          .getSystemService(Context.INPUT_METHOD_SERVICE);
+      if (mImMan != null) {
+        mImMan.hideSoftInputFromWindow(v.getWindowToken(), 0);
+      }
+    }
   }
 }

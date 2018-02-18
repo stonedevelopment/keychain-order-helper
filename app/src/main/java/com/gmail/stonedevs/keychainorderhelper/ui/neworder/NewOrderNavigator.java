@@ -18,7 +18,9 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 interface NewOrderNavigator {
 
-  void onOrderSaved();
+  void showConfirmCancelOrderDialog();
 
-  void onOrderSent();
+  void showConfirmResetOrderDialog();
+
+  void showConfirmSendOrderDialog();
 }

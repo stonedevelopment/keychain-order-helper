@@ -18,60 +18,97 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
+import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllKeychainsCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.Repository;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
+import java.util.List;
 
 /**
  * ViewModel for the New Order screen.
  */
 
-public class NewOrderViewModel extends AndroidViewModel {
+public class NewOrderViewModel extends AndroidViewModel implements LoadAllKeychainsCallback {
 
-  private final ObservableField<String> mObservableStoreName = new ObservableField<>();
-  private final ObservableField<Date> mObservableOrderDate = new ObservableField<>();
-  private final ObservableBoolean mObservableDataLoading = new ObservableBoolean();
-
+  //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  //  Commands directed by System
-  private final SingleLiveEvent<Void> mOpenDialogCommand = new SingleLiveEvent<>();
+  //  Events: Data Loading Changes
+  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<List<NewOrderAdapterItem>> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
 
-  //  Commands directed by User via on-screen interactions.
+  //  Events: UI Changes
+  private final SingleLiveEvent<String> mUpdateUIStoreNameText = new SingleLiveEvent<>();
+
+  //  Commands: User Direction
+  private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mOpenDatePickerCommand = new SingleLiveEvent<>();
 
-  public NewOrderViewModel(@NonNull Application application) {
+  //  Data repository
+  private final Repository mRepository;
+
+  //  View model's data variables
+  private CompleteOrder mCompleteOrder;
+
+  public NewOrderViewModel(@NonNull Application application, Repository repository) {
     super(application);
+
+    mRepository = repository;
   }
 
   public void start() {
     resetOrder();
   }
 
-  void updateStoreName(String storeName) {
-    if (!Objects.equals(mObservableStoreName.get(), storeName)) {
-      mObservableStoreName.set(storeName);
+  void updateStoreName(String storeName, boolean updateUI) {
+
+    if (updateUI) {
+      mUpdateUIStoreNameText.setValue(storeName);
     }
   }
 
-  void updateOrderDate(Date orderDate) {
-    if (!Objects.equals(mObservableOrderDate.get(), orderDate)) {
-      mObservableOrderDate.set(orderDate);
-    }
+  private void setOrderDate(Date orderDate) {
+    mOrderDate = orderDate;
   }
 
   SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 
-  SingleLiveEvent<Void> getOpenDialogCommand() {
-    return mOpenDialogCommand;
+  SingleLiveEvent<Boolean> getDataLoadingEvent() {
+    return mDataLoadingEvent;
+  }
+
+  SingleLiveEvent<List<NewOrderAdapterItem>> getDataLoadedEvent() {
+    return mDataLoadedEvent;
+  }
+
+  SingleLiveEvent<Void> getErrorLoadingDataEvent() {
+    return mErrorLoadingDataEvent;
+  }
+
+  SingleLiveEvent<String> getUpdateUIStoreNameText() {
+    return mUpdateUIStoreNameText;
+  }
+
+  SingleLiveEvent<Void> getOpenDatePickerCommand() {
+    return mOpenDatePickerCommand;
+  }
+
+  SingleLiveEvent<Void> getCancelOrderCommand() {
+    return mCancelOrderCommand;
   }
 
   SingleLiveEvent<Void> getResetOrderCommand() {
@@ -82,11 +119,41 @@ public class NewOrderViewModel extends AndroidViewModel {
     return mSendOrderCommand;
   }
 
+  void createNewOrder() {
+    Order order = new Order("", Calendar.getInstance().getTime());
+
+    mCompleteOrder = new CompleteOrder(order, new ArrayList<OrderItem>(0));
+  }
+
   void resetOrder() {
-    mObservableStoreName.set(null);
-    mObservableOrderDate.set(Calendar.getInstance().getTime());
+    updateStoreName(null, true);
+    setOrderDate(Calendar.getInstance().getTime());
 
-    //  pull default values from repository for list of keychains.
+    //  todo pull default values from repository for list of keychains.
+    mDataLoadingEvent.setValue(true);
+    mRepository.getAllKeychains(this);
+  }
 
+  @Override
+  public void onDataNotAvailable() {
+    //  no keychains were found, instantiate keychains then return list again
+    String[] keychainNames = getApplication().getResources()
+        .getStringArray(R.array.excel_cell_values_names);
+    String[] quantityCellAddresses = getApplication().getResources()
+        .getStringArray(R.array.excel_cell_locations_quantities);
+
+    mRepository.insertKeychains(keychainNames, quantityCellAddresses);
+  }
+
+  @Override
+  public void onDataLoaded(List<Keychain> keychains) {
+    List<NewOrderAdapterItem> items = new ArrayList<>(0);
+
+    for (Keychain keychain : keychains) {
+      items.add(new NewOrderAdapterItem(keychain, 0));
+    }
+
+    mDataLoadingEvent.setValue(false);
+    mDataLoadedEvent.setValue(items);
   }
 }

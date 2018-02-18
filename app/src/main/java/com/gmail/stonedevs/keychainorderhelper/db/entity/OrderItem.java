@@ -10,7 +10,6 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.model.NewOrder;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -20,15 +19,11 @@ import java.util.UUID;
  */
 
 @Entity(foreignKeys = {
-    @ForeignKey(entity = Keychain.class,
-        parentColumns = "id",
-        childColumns = "keychain_id"),
     @ForeignKey(entity = Order.class,
         parentColumns = "id",
         childColumns = "order_id",
         onDelete = CASCADE)},
     indices = {
-        @Index(value = {"keychain_id"}),
         @Index(value = {"order_id"})})
 
 public class OrderItem {
@@ -39,27 +34,27 @@ public class OrderItem {
   private final String mId;
 
   @NonNull
-  @ColumnInfo(name = "keychain_id")
-  private final String mKeychainId;
-
-  @NonNull
   @ColumnInfo(name = "order_id")
   private final String mOrderId;
+
+  @NonNull
+  @ColumnInfo(name = "cell_address")
+  private final String mCellAddress;
 
   @NonNull
   @ColumnInfo(name = "quantity")
   private Integer mQuantity;
 
   @Ignore
-  public OrderItem(String keychainId, String orderId, Integer quantity) {
-    this(UUID.randomUUID().toString(), keychainId, orderId, quantity);
+  public OrderItem(String orderId, String cellAddress, Integer quantity) {
+    this(UUID.randomUUID().toString(), cellAddress, orderId, quantity);
   }
 
   public OrderItem(
-      @NonNull String id, @NonNull String keychainId, @NonNull String orderId,
+      @NonNull String id, @NonNull String orderId, @NonNull String cellAddress,
       @NonNull Integer quantity) {
     this.mId = id;
-    this.mKeychainId = keychainId;
+    this.mCellAddress = cellAddress;
     this.mOrderId = orderId;
     this.mQuantity = quantity;
   }
@@ -71,7 +66,7 @@ public class OrderItem {
 
   @NonNull
   public String getKeychainId() {
-    return mKeychainId;
+    return mCellAddress;
   }
 
   @NonNull
@@ -86,28 +81,6 @@ public class OrderItem {
 
   public void setQuantity(@NonNull Integer quantity) {
     this.mQuantity = quantity;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-
-    OrderItem item = (OrderItem) obj;
-    return Objects.equals(getId(), item.getId()) &&
-        Objects.equals(getKeychainId(), item.getKeychainId()) &&
-        Objects.equals(getOrderId(), item.getOrderId()) &&
-        Objects.equals(getQuantity(), item.getQuantity());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId(), getKeychainId(), getOrderId(), getQuantity());
   }
 
   @Override

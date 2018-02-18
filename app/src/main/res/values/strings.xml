@@ -95,7 +95,6 @@
   <string name="dialog_message_prepare_email_intent">Preparing your order to be sent…</string>
 
   <!--  Toasts -->
-  <string name="toast_dialog_cancel_order_success">Order canceled.</string>
   <string name="toast_dialog_incomplete_order_keychains_empty">You haven\'t chosen any keychains to order.</string>
   <string name="toast_dialog_required_fields_success">Settings saved successfully.</string>
   <string name="toast_dialog_required_fields_fail">Settings not saved, you must enter both your name and territory before starting an order.</string>
@@ -103,10 +102,12 @@
   <string name="toast_dialog_required_fields_rep_territory_empty">Settings not saved, you must enter your territory before starting an order.</string>
 
   <!--  Snackbar Messages -->
+  <string name="snackbar_message_cancel_order_success">Order canceled.</string>
   <string name="snackbar_message_send_order_success">Order was sent.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
   <string name="snackbar_message_send_order_fail_no_supported_apps">There are no email apps configured on this device, order not sent.</string>
 
+  <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
   <string name="snackbar_message_coming_soon">Coming soon!</string>
 
   <!--  Settings -->
@@ -159,4 +160,5 @@
 
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
+  <string name="action_reset_order_text">Reset</string>
 </resources>

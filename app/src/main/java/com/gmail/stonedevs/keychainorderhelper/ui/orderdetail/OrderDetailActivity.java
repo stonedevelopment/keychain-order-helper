@@ -23,7 +23,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
@@ -32,7 +31,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFrag
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
-public class OrderDetailActivity extends AppCompatActivity {
+public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator {
 
   private static final String TAG = OrderDetailActivity.class.getSimpleName();
 
@@ -58,9 +57,6 @@ public class OrderDetailActivity extends AppCompatActivity {
   }
 
   private void setupActionBar() {
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
@@ -72,7 +68,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     OrderDetailFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
   private void setupViewModel() {
@@ -83,8 +79,8 @@ public class OrderDetailActivity extends AppCompatActivity {
     //  This event fires when User clicks Resend Order button.
     mViewModel.getSendOrderCommand().observe(this, new Observer<CompleteOrder>() {
       @Override
-      public void onChanged(@Nullable CompleteOrder completeOrder) {
-        startPrepareIntentDialog(completeOrder);
+      public void onChanged(@Nullable CompleteOrder order) {
+        sendOrder(order);
       }
     });
   }
@@ -121,12 +117,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     return ViewModelProviders.of(activity, factory).get(OrderDetailViewModel.class);
   }
 
-  void closeWithResult(int resultCode) {
-    setResult(resultCode);
-    finish();
-  }
-
-  public void startPrepareIntentDialog(CompleteOrder completeOrder) {
+  private void startPrepareIntentDialog(CompleteOrder completeOrder) {
     PrepareIntentDialogFragment dialogFragment = PrepareIntentDialogFragment.createInstance();
 
     dialogFragment.setListener(new OrderSentListener() {
@@ -150,5 +141,15 @@ public class OrderDetailActivity extends AppCompatActivity {
     dialogFragment.setData(completeOrder);
 
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+  }
+
+  void closeWithResult(int resultCode) {
+    setResult(resultCode);
+    finish();
+  }
+
+  @Override
+  public void sendOrder(CompleteOrder order) {
+    startPrepareIntentDialog(order);
   }
 }

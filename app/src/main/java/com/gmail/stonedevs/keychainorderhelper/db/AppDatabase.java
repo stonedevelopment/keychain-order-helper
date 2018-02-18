@@ -6,8 +6,12 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import com.gmail.stonedevs.keychainorderhelper.db.converter.DateConverter;
+import com.gmail.stonedevs.keychainorderhelper.db.converter.UriConverter;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
+import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
+import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderWithOrderItemsDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 
 /**
  * Created by Shane Stone on 2/10/2018.
@@ -17,9 +21,13 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 
 @Database(version = 1,
     entities = {
-        Order.class},
+        Order.class,
+        OrderItem.class},
     exportSchema = false)
-@TypeConverters(DateConverter.class)
+@TypeConverters(
+    value = {
+        DateConverter.class,
+        UriConverter.class})
 
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -29,6 +37,10 @@ public abstract class AppDatabase extends RoomDatabase {
 
   //  DAO list
   public abstract OrderDao orderDao();
+
+  public abstract OrderItemDao orderItemDao();
+
+  public abstract OrderWithOrderItemsDao orderWithOrderItemsDao();
 
   public static synchronized AppDatabase getInstance(Context context) {
     if (sInstance == null) {

@@ -14,35 +14,38 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.entity;
+package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Relation;
-import java.util.List;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public class OrderWithOrderItems {
+public class NewOrderAdapterItem {
 
-  @Embedded
-  private final Order mOrder;
+  private final Keychain mKeychain;
 
-  @Relation(parentColumn = "id",
-      entityColumn = "order_id")
-  private final List<OrderItem> mOrderItems;
+  private Integer mItemQuantity;
 
-  public OrderWithOrderItems(Order mOrder, List<OrderItem> mOrderItems) {
-    this.mOrder = mOrder;
-    this.mOrderItems = mOrderItems;
+  public NewOrderAdapterItem(Keychain keychain, Integer itemQuantity) {
+    this.mKeychain = keychain;
+    this.mItemQuantity = itemQuantity;
   }
 
-  public Order getOrder() {
-    return mOrder;
+  public Keychain getKeychain() {
+    return mKeychain;
   }
 
-  public List<OrderItem> getOrderItems() {
-    return mOrderItems;
+  public String getKeychainName() {
+    return mKeychain.getName();
+  }
+
+  public Integer getItemQuantity() {
+    return mItemQuantity;
+  }
+
+  public void setItemQuantity(Integer itemQuantity) {
+    this.mItemQuantity = itemQuantity;
   }
 }

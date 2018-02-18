@@ -109,4 +109,8 @@ public class ExcelUtils {
     return cell;
   }
 
+  public static Workbook getWorkbook(Context context) throws IOException, InvalidFormatException {
+    return WorkbookFactory
+        .create(context.getAssets().open(context.getString(R.string.excel_template_filename)));
+  }
 }

@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.entity;
+package com.gmail.stonedevs.keychainorderhelper.db.dao;
 
-import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Query;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderWithOrderItems;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public class OrderItemQuantityWithKeychainCellAddress {
+@Dao
+public interface OrderWithOrderItemsDao {
 
-  private final Integer quantity;
-
-  @ColumnInfo(name = "cell_address")
-  private final String cellAddress;
-
-  public OrderItemQuantityWithKeychainCellAddress(Integer quantity, String cellAddress) {
-    this.quantity = quantity;
-    this.cellAddress = cellAddress;
-  }
-
-  public Integer getQuantity() {
-    return quantity;
-  }
-
-  public String getCellAddress() {
-    return cellAddress;
-  }
+  @Query("select * from `order` "
+      + "where id = :orderId")
+  OrderWithOrderItems get(String orderId);
 }

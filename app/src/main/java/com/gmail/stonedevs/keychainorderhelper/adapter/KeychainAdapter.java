@@ -27,8 +27,8 @@ public class KeychainAdapter extends RecyclerView.Adapter<KeychainViewHolder> {
     KeychainViewHolder(View v) {
       super(v);
 
-      mNameText = v.findViewById(R.id.nameText);
-      mQuantityText = v.findViewById(R.id.quantityText);
+      mNameText = v.findViewById(R.id.keychainNameTextView);
+      mQuantityText = v.findViewById(R.id.itemQuantityTextView);
     }
 
     void bindItem(Keychain item) {

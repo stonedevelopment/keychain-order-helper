@@ -1,7 +1,11 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight"/>
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+    <item name="colorPrimary">@color/primaryColor</item>
+    <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+    <item name="colorAccent">@color/primaryLightColor</item>
+  </style>
 
   <style name="AppTheme.NoActionBar">
     <item name="windowActionBar">false</item>
@@ -11,5 +15,9 @@
   <style name="AppTheme.AppBarOverlay"/>
 
   <style name="AppTheme.PopupOverlay"/>
+
+  <style name="AppTheme.AlertDialog">
+
+  </style>
 
 </resources>

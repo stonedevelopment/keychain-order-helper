@@ -16,15 +16,12 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
@@ -52,36 +49,7 @@ public class MainActivityFragment extends Fragment {
 
     mViewModel = MainActivity.obtainViewModel(getActivity());
 
-    View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-    //  Button that allows User to create a new order.
-    Button newOrderButton = view.findViewById(R.id.newOrderButton);
-    newOrderButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mViewModel.getCheckReadyEvent().call();
-      }
-    });
-
-    //  Button that allows User to view a list of previously saved Orders.
-    Button orderListButton = view.findViewById(R.id.orderListButton);
-    orderListButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mViewModel.getOrderListCommand().call();
-      }
-    });
-
-    //  Button that allows User to view and set Settings (SharedPreferences).
-    Button settingsButton = view.findViewById(R.id.settingsButton);
-    settingsButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        startActivity(new Intent(getActivity(), SettingsActivity.class));
-      }
-    });
-
-    return view;
+    return inflater.inflate(R.layout.fragment_main, container, false);
   }
 
   @Override
@@ -89,6 +57,11 @@ public class MainActivityFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     subscribeToSnackBarMessenger();
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
   }
 
   private void subscribeToSnackBarMessenger() {

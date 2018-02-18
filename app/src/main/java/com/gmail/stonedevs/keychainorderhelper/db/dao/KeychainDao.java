@@ -16,13 +16,11 @@
 
 package com.gmail.stonedevs.keychainorderhelper.db.dao;
 
-import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
-
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Keychain;
 import java.util.List;
 
 /**
@@ -30,24 +28,22 @@ import java.util.List;
  */
 
 @Dao
-public interface OrderItemDao {
+public interface KeychainDao {
 
-  @Query("select * from orderitem "
-      + "where order_id = :orderId")
-  List<OrderItem> get(String orderId);
+  @Query("select * from keychain "
+      + "where id = :keychainId "
+      + "limit 1")
+  Keychain get(String keychainId);
 
-  @Insert(onConflict = REPLACE)
-  void insert(OrderItem orderItem);
+  @Query("select * from keychain")
+  List<Keychain> getAll();
 
-  @Insert(onConflict = REPLACE)
-  void insert(List<OrderItem> orderItemList);
+  @Insert
+  void insert(Keychain keychain);
 
-  @Delete
-  void delete(OrderItem orderItem);
-
-  @Delete
-  void delete(OrderItem... orderItems);
+  @Insert
+  void insertAll(List<Keychain> keychains);
 
   @Delete
-  void delete(List<OrderItem> orderItemList);
+  void delete(Keychain keychain);
 }

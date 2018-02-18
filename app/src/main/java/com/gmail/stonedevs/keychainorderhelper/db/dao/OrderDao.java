@@ -30,8 +30,8 @@ public interface OrderDao {
   @Update
   void update(Order order);
 
-  @Delete
-  void delete();
+  @Query("delete from `order`")
+  void deleteAll();
 
   @Delete
   void delete(Order order);

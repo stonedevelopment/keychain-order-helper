@@ -22,9 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
@@ -42,16 +40,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
   private MainActivityViewModel mViewModel;
 
-  // TODO: 2/14/2018 Left off: Cleaned up MainActivity and NewOrderActivity
-
-  // TODO: 2/14/2018 Test long store names and their ellipsize functionality.
+  // TODO: 2/15/2018 Load keychains
+  // TODO: 2/15/2018 MainActivity will eventually be strictly loading data needed to be loaded.
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    setupActionBar();
 
     setupViewFragment();
 
@@ -65,22 +60,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     mViewModel.handleActivityResult(requestCode, resultCode);
   }
 
-  private void setupActionBar() {
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
+  @Override
+  protected void onResume() {
+    super.onResume();
 
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setDisplayShowHomeEnabled(true);
-    }
+    mViewModel.start();
   }
 
   private void setupViewFragment() {
     MainActivityFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .addFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
   private void setupViewModel() {
@@ -88,26 +79,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   private void subscribeToNavigationChanges() {
-    mViewModel.getCheckReadyEvent().observe(this, new Observer<Void>() {
+    mViewModel.getOpenRequiredFieldsDialogCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-
-        //  If rep fields are empty, open dialog for easy editing, otherwise, send user to new order
-        //  activity, they followed instructions.
-        if (mViewModel.isReady()) {
-          //  Trigger view model's new order command to start the new order activity.
-          mViewModel.getNewOrderCommand().call();
-        } else {
-          //  Trigger view model's command to tell its observer to open the required fields dialog.
-          mViewModel.getOpenDialogCommand().call();
-        }
-      }
-    });
-
-    mViewModel.getNewOrderCommand().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        startNewOrderActivity();
+        startRequiredFieldsDialogFragment();
       }
     });
 
@@ -165,14 +140,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
         //  User successfully entered all values completed. Let them know.
         mViewModel.getSnackBarMessenger().setValue(resourceId);
 
-        //  Trigger view model's new order command to start the new order activity.
-        mViewModel.getNewOrderCommand().call();
+        mViewModel.checkReady();
       }
 
       @Override
       public void onFail(int resourceId) {
         //  User did not fill out all fields required completely, let them know.
         mViewModel.getSnackBarMessenger().setValue(resourceId);
+
+        mViewModel.checkReady();
       }
     });
 
@@ -190,5 +166,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   public void startOrderListActivity() {
     Intent intent = new Intent(this, OrderListActivity.class);
     startActivityForResult(intent, OrderListActivity.REQUEST_CODE);
+
+    finish();
   }
 }

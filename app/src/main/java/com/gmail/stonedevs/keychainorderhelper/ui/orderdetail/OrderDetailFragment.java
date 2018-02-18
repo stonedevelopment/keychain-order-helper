@@ -80,7 +80,8 @@ public class OrderDetailFragment extends Fragment {
       @Override
       public void onClick(View v) {
         //  Get view model's Send Order command.
-        mViewModel.getSendOrderCommand().call();
+        CompleteOrder order = mViewModel.getOrder();
+        mViewModel.getSendOrderCommand().setValue(order);
       }
     });
 
@@ -154,7 +155,6 @@ public class OrderDetailFragment extends Fragment {
       @Override
       public void onChanged(@Nullable Void aVoid) {
         //  Data was not received properly.
-        //  todo Finish activity with error result.
         ((OrderDetailActivity) getActivity()).closeWithResult(OrderDetailActivity.RESULT_ERROR);
       }
     });

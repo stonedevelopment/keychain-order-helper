@@ -20,8 +20,8 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
 import java.util.UUID;
@@ -36,21 +36,27 @@ public class Order {
 
   @NonNull
   @ColumnInfo(name = "store_name")
-  private final String mStoreName;
+  private String mStoreName;
 
   @NonNull
   @ColumnInfo(name = "order_date")
   private final Date mOrderDate;
 
+  @NonNull
+  @ColumnInfo(name = "template_filename")
+  private final Uri mFilename;
+
   @Ignore
-  public Order(String storeName, Date orderDate) {
-    this(UUID.randomUUID().toString(), storeName, orderDate);
+  public Order(String storeName, Date orderDate, Uri filename) {
+    this(UUID.randomUUID().toString(), storeName, orderDate, filename);
   }
 
-  public Order(@NonNull String id, @Nullable String storeName, @NonNull Date orderDate) {
+  public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
+      @NonNull Uri filename) {
     this.mId = id;
     this.mStoreName = storeName;
     this.mOrderDate = orderDate;
+    this.mFilename = filename;
   }
 
   @NonNull
@@ -58,14 +64,23 @@ public class Order {
     return mId;
   }
 
-  @Nullable
+  @NonNull
   public String getStoreName() {
     return mStoreName;
+  }
+
+  public void setStoreName(String storeName) {
+    mStoreName = storeName;
   }
 
   @NonNull
   public Date getOrderDate() {
     return mOrderDate;
+  }
+
+  @NonNull
+  public Uri getFilename() {
+    return mFilename;
   }
 
   @Override

@@ -75,8 +75,8 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadOrderC
     return mSendOrderCommand;
   }
 
-  Repository getRepository() {
-    return mRepository;
+  CompleteOrder getOrder() {
+    return mOrder;
   }
 
   public void start(@NonNull String orderId) {

@@ -59,6 +59,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   private void setupActionBar() {
+    // TODO: 2/15/2018 action bar replication error
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
@@ -73,7 +74,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     OrderListFragment fragment = obtainViewFragment();
 
     ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, fragment.getId());
+        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
   private void setupViewModel() {

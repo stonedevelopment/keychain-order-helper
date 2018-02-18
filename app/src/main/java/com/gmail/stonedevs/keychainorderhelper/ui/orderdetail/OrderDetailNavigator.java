@@ -14,35 +14,15 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.entity;
+package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Relation;
-import java.util.List;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public class OrderWithOrderItems {
+public interface OrderDetailNavigator {
 
-  @Embedded
-  private final Order mOrder;
-
-  @Relation(parentColumn = "id",
-      entityColumn = "order_id")
-  private final List<OrderItem> mOrderItems;
-
-  public OrderWithOrderItems(Order mOrder, List<OrderItem> mOrderItems) {
-    this.mOrder = mOrder;
-    this.mOrderItems = mOrderItems;
-  }
-
-  public Order getOrder() {
-    return mOrder;
-  }
-
-  public List<OrderItem> getOrderItems() {
-    return mOrderItems;
-  }
+  void sendOrder(CompleteOrder order);
 }

@@ -83,7 +83,7 @@ public class OrderListFragment extends Fragment {
   private void setupAdapter() {
     RecyclerView recyclerView = getView().findViewById(R.id.orderListRecyclerView);
 
-    mAdapter = new OrderListAdapter(mViewModel);
+    mAdapter = new OrderListAdapter(getActivity(), mViewModel);
 
     recyclerView.setAdapter(mAdapter);
   }

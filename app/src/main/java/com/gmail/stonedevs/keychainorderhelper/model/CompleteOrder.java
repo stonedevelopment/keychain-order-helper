@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.db.entity;
+package com.gmail.stonedevs.keychainorderhelper.model;
 
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import java.util.Date;
+import java.util.List;
 
 /**
  * TODO: Add a class header comment!
@@ -26,8 +29,11 @@ public class CompleteOrder {
 
   private final Order mOrder;
 
-  public CompleteOrder(Order order) {
+  private final List<OrderItem> mOrderItems;
+
+  public CompleteOrder(Order order, List<OrderItem> orderItems) {
     this.mOrder = order;
+    mOrderItems = orderItems;
   }
 
   public Order getOrder() {
@@ -42,7 +48,15 @@ public class CompleteOrder {
     return mOrder.getStoreName();
   }
 
+  public void setStoreName(String storeName) {
+    mOrder.setStoreName(storeName);
+  }
+
   public Date getOrderDate() {
     return mOrder.getOrderDate();
+  }
+
+  public List<OrderItem> getOrderItems() {
+    return mOrderItems;
   }
 }

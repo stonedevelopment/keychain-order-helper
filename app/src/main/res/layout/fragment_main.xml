@@ -21,59 +21,60 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@drawable/gradient_background"
   tools:context=".ui.MainActivityFragment">
 
   <ImageView
     android:id="@+id/logoImage_SRP"
-    android:layout_width="0dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
+    android:layout_marginBottom="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
     android:adjustViewBounds="true"
     android:contentDescription="@string/logoImage_SRP_contentDescription"
     android:src="@drawable/logo_srp_companies"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintHorizontal_bias="1.0"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.506"
+    app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"/>
 
-  <Button
-    android:id="@+id/newOrderButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/orderButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/orderListButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+  <!--<Button-->
+    <!--android:id="@+id/newOrderButton"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/orderButton_text"-->
+    <!--app:layout_constraintBottom_toTopOf="@+id/orderListButton"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/guideline85"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/guideline15"/>-->
 
-  <Button
-    android:id="@+id/orderListButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="24dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/viewButton_text"
-    app:layout_constraintBottom_toTopOf="@+id/settingsButton"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+  <!--<Button-->
+    <!--android:id="@+id/orderListButton"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="24dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/viewButton_text"-->
+    <!--app:layout_constraintBottom_toTopOf="@+id/settingsButton"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/guideline85"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/guideline15"/>-->
 
-  <Button
-    android:id="@+id/settingsButton"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:text="@string/settingsButton_text"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toStartOf="@+id/guideline85"
-    app:layout_constraintStart_toStartOf="@+id/guideline15"/>
+  <!--<Button-->
+    <!--android:id="@+id/settingsButton"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="16dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:text="@string/settingsButton_text"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/guideline85"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/guideline15"/>-->
 
   <android.support.constraint.Guideline
     android:id="@+id/guideline15"
@@ -102,5 +103,17 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_constraintGuide_percent="0.85"/>
+  <ProgressBar
+    android:id="@+id/progressBar2"
+    style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Small"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:indeterminate="true"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/logoImage_SRP"/>
 
 </android.support.constraint.ConstraintLayout>

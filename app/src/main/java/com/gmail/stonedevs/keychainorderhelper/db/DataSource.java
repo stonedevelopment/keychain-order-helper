@@ -1,7 +1,8 @@
 package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import java.util.List;
 
 /**
@@ -17,27 +18,35 @@ public interface DataSource {
     void onDataNotAvailable();
   }
 
-  interface LoadOrderCallback extends DataNotAvailableCallback {
+  interface LoadCallback extends DataNotAvailableCallback {
 
     void onDataLoaded(CompleteOrder order);
   }
 
-  interface LoadAllOrdersCallback extends DataNotAvailableCallback {
+  interface LoadAllCallback extends DataNotAvailableCallback {
 
-    void onDataLoaded(List<CompleteOrder> orders);
+    void onDataLoaded(List<Order> orders);
   }
 
-  void getAllOrders(@NonNull LoadAllOrdersCallback callback);
+  interface InsertCallback {
 
-  void getOrder(@NonNull String orderId, @NonNull LoadOrderCallback callback);
+    void onDataInserted();
+  }
 
-  void saveOrder(@NonNull CompleteOrder order);
+  interface DeleteCallback {
 
-  void saveOrders(@NonNull List<CompleteOrder> orders);
+    void onDataDeleted();
+  }
 
-  void refreshData();
+  void getOrder(@NonNull String orderId, @NonNull LoadCallback callback);
 
-  void deleteOrder(@NonNull CompleteOrder order);
+  void getAllOrders(@NonNull LoadAllCallback callback);
 
-  void deleteAllOrders();
+  void saveOrder(@NonNull CompleteOrder order, @NonNull InsertCallback callback);
+
+  void saveOrders(@NonNull List<CompleteOrder> orders, @NonNull InsertCallback callback);
+
+  void deleteOrder(@NonNull Order order, @NonNull DeleteCallback callback);
+
+  void deleteAllOrders(@NonNull DeleteCallback callback);
 }

@@ -16,15 +16,17 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui;
 
+import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.databinding.ObservableBoolean;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 /**
@@ -33,17 +35,11 @@ import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-  //  Observable fields
-  private final ObservableBoolean mDataIsLoading = new ObservableBoolean();
-
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  //  Events System listens to
-  private final SingleLiveEvent<Void> mCheckReadyEvent = new SingleLiveEvent<>();
-
   //  Commands directed by System
-  private final SingleLiveEvent<Void> mOpenDialogCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mOpenRequiredFieldsDialogCommand = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen buttons.
   private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
@@ -53,10 +49,26 @@ public class MainActivityViewModel extends AndroidViewModel {
   private String mRepTerritory;
 
   public MainActivityViewModel(
-      @NonNull Application application) {
+      @NonNull Application application, Repository repository) {
     super(application);
 
-    setupDefaultValues(application);
+  }
+
+  void start() {
+    //  Get values from prefs or their defaults.
+    setupDefaultValues();
+
+    checkReady();
+  }
+
+  void checkReady() {
+    //  If required fields are not empty, open main activity,
+    //  Otherwise, open dialog for User to enter name and territory.
+    if (isReady()) {
+      getOrderListCommand().call();
+    } else {
+      getOpenRequiredFieldsDialogCommand().call();
+    }
   }
 
   String getRepName() {
@@ -71,12 +83,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     return mSnackBarMessenger;
   }
 
-  SingleLiveEvent<Void> getCheckReadyEvent() {
-    return mCheckReadyEvent;
-  }
-
-  SingleLiveEvent<Void> getOpenDialogCommand() {
-    return mOpenDialogCommand;
+  SingleLiveEvent<Void> getOpenRequiredFieldsDialogCommand() {
+    return mOpenRequiredFieldsDialogCommand;
   }
 
   SingleLiveEvent<Void> getNewOrderCommand() {
@@ -91,7 +99,9 @@ public class MainActivityViewModel extends AndroidViewModel {
     return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
   }
 
-  private void setupDefaultValues(Application c) {
+  private void setupDefaultValues() {
+    Context c = getApplication().getApplicationContext();
+
     SharedPreferences prefs = PreferenceManager
         .getDefaultSharedPreferences(c);
 
@@ -101,12 +111,17 @@ public class MainActivityViewModel extends AndroidViewModel {
   }
 
   void handleActivityResult(int requestCode, int resultCode) {
-    if (NewOrderActivity.REQUEST_CODE == requestCode) {
-      switch (resultCode) {
-        case NewOrderActivity.SENT_RESULT_OK:
-          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
-          break;
-      }
+    switch (requestCode) {
+      case NewOrderActivity.REQUEST_CODE:
+        switch (resultCode) {
+          case Activity.RESULT_CANCELED:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_cancel_order_success);
+            break;
+          case NewOrderActivity.SENT_RESULT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
+            break;
+        }
+        break;
     }
   }
 }

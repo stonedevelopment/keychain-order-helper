@@ -23,6 +23,7 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
+import com.gmail.stonedevs.keychainorderhelper.ui.MainActivityViewModel;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderViewModel;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailViewModel;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListViewModel;
@@ -64,9 +65,13 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
   @NonNull
   @Override
   public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+    if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
+      //noinspection unchecked
+      return (T) new MainActivityViewModel(mApplication, mRepository);
+    }
     if (modelClass.isAssignableFrom(NewOrderViewModel.class)) {
       //noinspection unchecked
-      return (T) new NewOrderViewModel(mApplication);
+      return (T) new NewOrderViewModel(mApplication, mRepository);
     }
     if (modelClass.isAssignableFrom(OrderListViewModel.class)) {
       //noinspection unchecked
