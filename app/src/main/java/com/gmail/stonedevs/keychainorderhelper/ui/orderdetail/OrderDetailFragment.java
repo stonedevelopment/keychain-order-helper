@@ -20,22 +20,19 @@ import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 
 /**
@@ -46,7 +43,7 @@ import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
  */
 public class OrderDetailFragment extends Fragment {
 
-  private TextView mStoreNameTextView;
+  private TextView mOrderQuantityTextView;
   private TextView mOrderDateTextView;
 
   private OrderDetailViewModel mViewModel;
@@ -70,25 +67,10 @@ public class OrderDetailFragment extends Fragment {
     View view = inflater.inflate(R.layout.fragment_order_detail, container, false);
 
     //  Store Name
-    mStoreNameTextView = view.findViewById(R.id.storeNameTextView);
+    mOrderQuantityTextView = view.findViewById(R.id.orderQuantityTextView);
 
     //  Order Date
     mOrderDateTextView = view.findViewById(R.id.orderDateTextView);
-
-    //  todo keychainListRecyclerView
-
-    //  todo keychainListRecyclerView Adapter
-
-    //  Resend Order Button
-    Button resendOrderButton = view.findViewById(R.id.resendOrderButton);
-    resendOrderButton.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        //  Get view model's Send Order command.
-        CompleteOrder order = mViewModel.getOrder();
-        mViewModel.getSendOrderCommand().setValue(order);
-      }
-    });
 
     return view;
   }
@@ -99,11 +81,9 @@ public class OrderDetailFragment extends Fragment {
 
     setupAdapter();
 
-    setupFab();
-
     subscribeToSnackBarMessenger();
 
-    subscribeToUIObservableEvents();
+    subscribeToViewModelEvents();
   }
 
   @Override
@@ -116,21 +96,17 @@ public class OrderDetailFragment extends Fragment {
 
   private void setupAdapter() {
     RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
-    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+    LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+    recyclerView.setLayoutManager(layoutManager);
+
+    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+        layoutManager.getOrientation());
+    recyclerView.addItemDecoration(dividerItemDecoration);
 
     mAdapter = new OrderDetailAdapter();
 
     recyclerView.setAdapter(mAdapter);
-  }
-
-  private void setupFab() {
-    FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-    fab.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mViewModel.getSendOrderCommand().call();
-      }
-    });
   }
 
   private void subscribeToSnackBarMessenger() {
@@ -142,7 +118,7 @@ public class OrderDetailFragment extends Fragment {
     });
   }
 
-  private void subscribeToUIObservableEvents() {
+  private void subscribeToViewModelEvents() {
     mViewModel.getDataLoadingEvent().observe(this, new Observer<Boolean>() {
       @Override
       public void onChanged(@Nullable Boolean isDataLoading) {
@@ -169,21 +145,21 @@ public class OrderDetailFragment extends Fragment {
 
     mViewModel.getDataLoadedEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
-      public void onChanged(@Nullable CompleteOrder completeOrder) {
-        Order order = completeOrder.getOrder();
+      public void onChanged(@Nullable CompleteOrder order) {
+        mViewModel.getUpdateUIStoreNameTextEvent().setValue(order.getStoreName());
 
-        mStoreNameTextView.setText(order.getStoreName());
-        mOrderDateTextView.setText(DateUtil.getFormattedDateForLayout(order.getOrderDate()));
+        long orderDate = order.getOrderDate().getTime();
+        mOrderDateTextView
+            .setText(DateUtils
+                .getRelativeDateTimeString(getActivity(), orderDate, DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_NUMERIC_DATE));
 
-        mAdapter.setData(completeOrder.getOrderItems());
-      }
-    });
+        mOrderQuantityTextView
+            .setText(String
+                .format(getActivity().getString(R.string.string_format_list_item_order_total_text),
+                    order.getOrderQuantity()));
 
-    mViewModel.getErrorLoadingDataEvent().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        //  Data was not received properly.
-        ((OrderDetailActivity) getActivity()).closeWithResult(OrderDetailActivity.RESULT_ERROR);
+        mAdapter.setData(order.getOrderItems());
       }
     });
   }

@@ -102,15 +102,10 @@ public class ExcelUtils {
     CellAddress cellAddress = new CellAddress(cellLocation);
     int row = cellAddress.getRow();
     int col = cellAddress.getColumn();
-    Cell cell = sheet.getRow(row).createCell(col);
+    Cell cell = sheet.getRow(row).getCell(col);
     if (cell == null) {
       cell = sheet.getRow(row).createCell(col);
     }
     return cell;
-  }
-
-  public static Workbook getWorkbook(Context context) throws IOException, InvalidFormatException {
-    return WorkbookFactory
-        .create(context.getAssets().open(context.getString(R.string.excel_template_filename)));
   }
 }

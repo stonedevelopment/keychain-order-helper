@@ -22,6 +22,8 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +88,13 @@ public class OrderListFragment extends Fragment {
 
   private void setupAdapter() {
     RecyclerView recyclerView = getView().findViewById(R.id.orderListRecyclerView);
+
+    LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+    recyclerView.setLayoutManager(layoutManager);
+
+    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+        layoutManager.getOrientation());
+    recyclerView.addItemDecoration(dividerItemDecoration);
 
     mAdapter = new OrderListAdapter(getActivity(), mViewModel);
 

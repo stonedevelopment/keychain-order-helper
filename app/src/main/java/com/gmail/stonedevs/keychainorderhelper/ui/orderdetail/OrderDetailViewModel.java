@@ -16,37 +16,46 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
+import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderAsyncTask;
 
 /**
  * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
  * fragment's action listener.
  */
-public class OrderDetailViewModel extends AndroidViewModel implements LoadCallback {
+public class OrderDetailViewModel extends AndroidViewModel implements OrderDetailCallback,
+    LoadCallback {
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
+  private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
+
+  //  Events: UI Changes
+  private final SingleLiveEvent<String> mUpdateUIStoreNameTextEvent = new SingleLiveEvent<>();
+
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen interactions.
-  private final SingleLiveEvent<CompleteOrder> mSendOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
 
   //  Data repository
   private final Repository mRepository;
 
   //  View model's data variables
-  private CompleteOrder mOrder;
+  private CompleteOrder mCompleteOrder;
 
   public OrderDetailViewModel(
       @NonNull Application application, @NonNull Repository repository) {
@@ -57,6 +66,14 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
 
   SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
+  }
+
+  SingleLiveEvent<Intent> getIntentReadyEvent() {
+    return mIntentReadyEvent;
+  }
+
+  SingleLiveEvent<String> getUpdateUIStoreNameTextEvent() {
+    return mUpdateUIStoreNameTextEvent;
   }
 
   SingleLiveEvent<Boolean> getDataLoadingEvent() {
@@ -71,12 +88,12 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
     return mErrorLoadingDataEvent;
   }
 
-  SingleLiveEvent<CompleteOrder> getSendOrderCommand() {
+  SingleLiveEvent<Void> getSendOrderCommand() {
     return mSendOrderCommand;
   }
 
   CompleteOrder getOrder() {
-    return mOrder;
+    return mCompleteOrder;
   }
 
   public void start(@NonNull String orderId) {
@@ -84,18 +101,33 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
     mRepository.getOrder(orderId, this);
   }
 
+  void prepareToResendOrder(Activity context) {
+    executeFinalPreparations(context);
+  }
+
+  private void executeFinalPreparations(Activity context) {
+    PrepareOrderAsyncTask task = new PrepareOrderAsyncTask(context, mCompleteOrder,
+        this);
+    task.execute();
+  }
+
   @Override
   public void onDataLoaded(CompleteOrder order) {
-    mOrder = order;
+    mCompleteOrder = order;
 
-    mDataLoadedEvent.setValue(order);
     mDataLoadingEvent.setValue(false);
+    mDataLoadedEvent.setValue(order);
   }
 
   @Override
   public void onDataNotAvailable() {
     //  If for some reason the order didn't pull from database
-    mErrorLoadingDataEvent.call();
     mDataLoadingEvent.setValue(false);
+    mErrorLoadingDataEvent.call();
+  }
+
+  @Override
+  public void onOrderReadyToSend(Intent intent) {
+    mIntentReadyEvent.setValue(intent);
   }
 }

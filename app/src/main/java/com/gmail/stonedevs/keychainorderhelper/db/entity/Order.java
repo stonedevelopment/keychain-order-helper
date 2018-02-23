@@ -41,15 +41,21 @@ public class Order {
   @ColumnInfo(name = "order_date")
   private final Date mOrderDate;
 
+  @NonNull
+  @ColumnInfo(name = "order_quantity")
+  private Integer mOrderQuantity;
+
   @Ignore
   public Order(String storeName, Date orderDate) {
-    this(UUID.randomUUID().toString(), storeName, orderDate);
+    this(UUID.randomUUID().toString(), storeName, orderDate, 0);
   }
 
-  public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate) {
-    this.mId = id;
-    this.mStoreName = storeName;
-    this.mOrderDate = orderDate;
+  public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
+      @NonNull Integer orderQuantity) {
+    mId = id;
+    mStoreName = storeName;
+    mOrderDate = orderDate;
+    mOrderQuantity = orderQuantity;
   }
 
   @NonNull
@@ -62,13 +68,22 @@ public class Order {
     return mStoreName;
   }
 
-  public void setStoreName(String storeName) {
+  public void setStoreName(@NonNull String storeName) {
     mStoreName = storeName;
   }
 
   @NonNull
   public Date getOrderDate() {
     return mOrderDate;
+  }
+
+  @NonNull
+  public Integer getOrderQuantity() {
+    return mOrderQuantity;
+  }
+
+  public void setOrderQuantity(@NonNull Integer quantity) {
+    mOrderQuantity = quantity;
   }
 
   @Override

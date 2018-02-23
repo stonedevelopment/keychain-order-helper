@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.ui.prepareorder;
+
+import android.content.Intent;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailNavigator {
+public interface PrepareOrderCallback {
 
-  void showConfirmSendOrderDialog();
+  void onOrderReadyToSend(Intent intent);
 }

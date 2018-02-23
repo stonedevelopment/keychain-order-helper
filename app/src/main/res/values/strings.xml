@@ -1,64 +1,49 @@
 <resources>
-  <string name="app_name">Lanyard Keychain Order Helper</string>
-  <string name="action_settings">Settings</string>
+  <string name="app_name">Keychain Order Helper</string>
   <string name="title_activity_settings">Settings</string>
 
-  <!--  Strings related to Intents -->
+  <!--  Action Menu Labels -->
+  <string name="action_settings">Settings</string>
+  <string name="action_reset_order">Reset</string>
+  <string name="action_send_order">Send</string>
+  <string name="action_resend_order">Resend</string>
+  <string name="action_edit_store_name">Edit Store Name</string>
 
-  <!--  Email Intent: Send Order By Email -->
+  <!--  Intents -->
+  <!--  Intents: Email Intent: Send Order By Email -->
   <string name="intent_title_send_order_by_email">Send Order</string>
   <string name="intent_extra_text_body_send_order_by_email">Attached is a lanyard keychain order for %1$s.</string>
 
   <!--  Bundle Keys -->
-
-  <!--  Bundle Keys:  NewOrderFragment -->
-  <string name="bundle_key_NewOrderFragment_store_name">bundle_key_NewOrderFragment_store_name</string>
-  <string name="bundle_key_NewOrderFragment_order_date">bundle_key_NewOrderFragment_order_date</string>
-  <string name="bundle_key_NewOrderFragment_quantity_cell_values">bundle_key_NewOrderFragment_quantity_cell_values</string>
-
-  <!--  Bundle Keys:  ViewOrderFragment -->
   <string name="bundle_key_order_id">bundle_key_ViewOrderFragment_order_id</string>
-  <string name="bundle_key_ViewOrderFragment_store_name">bundle_key_ViewOrderFragment_store_name</string>
-  <string name="bundle_key_ViewOrderFragment_order_date">bundle_key_ViewOrderFragment_order_date</string>
-  <string name="bundle_key_ViewOrderFragment_order_quantities">bundle_key_ViewOrderFragment_order_quantities</string>
-  <string name="bundle_key_ViewOrderFragment_order_total">bundle_key_ViewOrderFragment_order_total</string>
+  <string name="bundle_key_store_name">bundle_key_store_name</string>
 
   <!--  Layouts -->
-  <!--  Layouts:  MainActivityFragment -->
-  <string name="action_bar_title_mainActivityFragment">@string/app_name</string>
-  <string name="logoImage_SRP_contentDescription">Logo for SRP Companies</string>
-  <string name="logoImage_TheNamePeople">Logo of The Name People</string>
-  <string name="orderButton_text">Order Keychains</string>
-  <string name="viewButton_text">View Previous Orders</string>
-  <string name="generateButton_text">DEBUG: Generate</string>
-  <string name="crashButton_text">DEBUG: Crash</string>
-  <string name="settingsButton_text">Settings</string>
+  <!--  Layouts:  NewOrderFragment -->
+  <string name="layout_actionbar_title_new_order">New Keychain Order</string>
+  <string name="layout_edit_text_hint_store_name">Store Name</string>
+  <string name="layout_edit_text_default_value_store_name">Store Name 1</string>
 
-  <!--  Layout NewOrderFragment -->
-  <string name="action_bar_title_newOrderFragment">New Keychain Order</string>
-  <string name="editStoreName_hint">Store Name</string>
-  <string name="editStoreName_debug_default_value">Store Name 1</string>
-  <string name="editOrderDate_hint">Date</string>
-  <string name="resetOrderButton_text">Reset</string>
-  <string name="sendOrderButton_text">Send Order</string>
-  <string name="snackbar_new_order_incomplete_order">Your order isn\'t complete.</string>
-
-  <!--  Layout OrderListFragment -->
-  <string name="action_bar_title_orderListFragment">Previous Orders</string>
-  <string name="textView_previousOrderFragment_noOrders_text">There are no orders.</string>
-
-  <!--  Layouts:  OrderDetailFragment -->
-  <string name="action_bar_title_orderDetailFragment">Order Details</string>
-  <string name="resendOrderButton_text">Resend Order</string>
+  <!--  Layouts:  OrderListFragment -->
+  <string name="layout_text_view_no_orders">There are currently no orders.</string>
 
   <!--  Layouts:  RequiredFieldsDialogFragment -->
   <string name="dialog_title_required_fields">Required Fields</string>
-  <string name="dialog_hint_required_fields_name">Name</string>
-  <string name="dialog_hint_required_fields_territory">Territory</string>
-  <string name="dialog_message_required_fields">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory (ex: LIT3). If you ever need to change any of these, you can do so by clicking on Settings on the main screen.</string>
+  <string name="dialog_message_required_fields">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory.</string>
+  <string name="dialog_hint_required_fields_name">Your Name</string>
+  <string name="dialog_field_error_required_fields_rep_name_text">Name field is required.</string>
+  <string name="dialog_hint_required_fields_territory">Your Territory (Ex: LIT1)</string>
+  <string name="dialog_field_error_required_fields_rep_territory_text">Territory field is required.</string>
   <string name="dialog_positive_button_required_fields">Save</string>
 
-  <!--  AlertDialog -->
+  <!--  Layouts:  StoreNameDialogFragment -->
+  <string name="dialog_title_store_name">Store Name</string>
+  <string name="dialog_edit_text_hint_store_name">Store Name</string>
+  <string name="dialog_edit_text_error_store_name">Store name is required.</string>
+  <string name="dialog_positive_button_store_name">Save</string>
+  <string name="dialog_negative_button_store_name">Cancel</string>
+
+  <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
   <string name="dialog_title_send_order">Send Order</string>
   <string name="dialog_message_send_order">Are you sure you\'re ready to send this order?</string>
@@ -87,31 +72,26 @@
   <string name="dialog_title_incomplete_order">Incomplete Order</string>
   <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t finished, please fix the following:\n\n</string>
   <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
-  <string name="dialog_message_incomplete_order_date_empty">- Order date is empty.\n</string>
   <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were ordered.</string>
+  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order atleast %1$d keychains.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
-  <!--  AlertDialog:  Prepare Email Intent -->
-  <string name="dialog_message_prepare_email_intent">Preparing your order to be sent…</string>
+  <!--  AlertDialog:  ProgressDialog:  Prepare Email Intent -->
+  <string name="dialog_message_send_order_progress_preparing">Preparing your order to be sent..</string>
 
   <!--  Toasts -->
-  <string name="toast_dialog_incomplete_order_keychains_empty">You haven\'t chosen any keychains to order.</string>
   <string name="toast_dialog_required_fields_success">Settings saved successfully.</string>
-  <string name="snackbar_dialog_required_fields_fail">Settings not saved, you must enter both your name and territory before starting an order.</string>
-  <string name="snackbar_dialog_required_fields_rep_name_empty">Settings not saved, you must enter your name before starting an order.</string>
-  <string name="snackbar_dialog_required_fields_rep_territory_empty">Settings not saved, you must enter your territory before starting an order.</string>
 
   <!--  Snackbar Messages -->
   <string name="snackbar_message_cancel_order_success">Order canceled.</string>
   <string name="snackbar_message_send_order_success">Order was sent.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
   <string name="snackbar_message_send_order_fail_no_supported_apps">There are no email apps configured on this device, order not sent.</string>
-
+  <string name="snackbar_message_send_order_fail_incomplete">Order is incomplete, order not sent.</string>
   <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
-  <string name="snackbar_message_coming_soon">Coming soon!</string>
+  <string name="snackbar_message_incomplete_order">Your order isn\'t complete.</string>
 
   <!--  Settings -->
-
   <!--  Settings: Required Fields -->
   <string name="pref_header_title_required_fields">Required Fields</string>
 
@@ -131,7 +111,9 @@
 
   <!--  String formats -->
   <!--  String formats: Filename (Ex: lanyard_keychain_order-lit3-big_red_148-20180205.xls) -->
-  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
+  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s</string>
+  <string name="string_format_filename_with_suffix">%1$s.xls</string>
+  <string name="string_format_filename_with_suffix_with_copy">%1$s (%2$d).xls</string>
 
   <!--  String formats: Compressed Date (Ex: 20180205) -->
   <string name="string_format_date_layout">%1$d/%2$d/%3$d</string>
@@ -155,12 +137,9 @@
   <string name="string_format_list_item_order_total_text_data_binding">%d keychains</string>
 
   <!--  Strings related to Excel -->
-
   <string name="excel_template_filename">template.xls</string>
 
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
-  <string name="action_reset_order_text">Reset</string>
-  <string name="action_send_order_text">Send</string>
-  <string name="dialog_required_fields_saveButton_text">Save</string>
+
 </resources>

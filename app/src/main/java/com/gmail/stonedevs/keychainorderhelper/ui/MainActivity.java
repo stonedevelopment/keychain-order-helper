@@ -18,9 +18,10 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -28,12 +29,10 @@ import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields.RequiredFieldsDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields.RequiredFieldsDialogFragment.RequiredFieldsDialogListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
-import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
 public class MainActivity extends AppCompatActivity implements MainActivityNavigation,
-    RequiredFieldsDialogListener {
+    OnDismissListener {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -41,16 +40,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
   private MainActivityViewModel mViewModel;
 
-  // TODO: 2/17/2018 Save order before sending order, after confirmation
-  // TODO: 2/17/2018 OrderDetail Adapter
-  // TODO: 2/17/2018 Settings menu option in order list activity
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    setupViewFragment();
 
     setupViewModel();
 
@@ -58,17 +51,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   @Override
-  protected void onResume() {
+  public void onResume() {
     super.onResume();
 
     mViewModel.start();
-  }
-
-  private void setupViewFragment() {
-    MainActivityFragment fragment = obtainViewFragment();
-
-    ActivityUtils
-        .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
   private void setupViewModel() {
@@ -86,30 +72,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     mViewModel.getOrderListCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        new Handler().postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            startOrderListActivity();
-          }
-        }, 1000);
+        startOrderListActivity();
       }
     });
-  }
-
-  private MainActivityFragment obtainViewFragment() {
-    MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager()
-        .findFragmentById(R.id.fragment_container);
-
-    if (fragment == null) {
-      fragment = MainActivityFragment.createInstance();
-      fragment.setArguments(obtainArguments());
-    }
-
-    return fragment;
-  }
-
-  private Bundle obtainArguments() {
-    return new Bundle();
   }
 
   public static MainActivityViewModel obtainViewModel(FragmentActivity activity) {
@@ -150,14 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   @Override
-  public void onSuccess(int resourceId) {
-    mViewModel.getOrderListCommand().call();
-
-  }
-
-  @Override
-  public void onFail(int resourceId) {
-    //  User did not fill out all fields required completely, let them know.
-    mViewModel.getSnackBarMessenger().setValue(resourceId);
+  public void onDismiss(DialogInterface dialog) {
+    startOrderListActivity();
   }
 }

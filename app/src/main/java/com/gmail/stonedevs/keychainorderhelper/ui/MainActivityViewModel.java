@@ -22,10 +22,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.Repository;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 /**
  * Exposes SingleLiveEvents and Snackbar to {@link MainActivityFragment}.
@@ -36,36 +37,20 @@ public class MainActivityViewModel extends AndroidViewModel {
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  //  Commands directed by System
+  //  Commands directed by System logic
   private final SingleLiveEvent<Void> mOpenRequiredFieldsDialogCommand = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen buttons.
   private final SingleLiveEvent<Void> mOrderListCommand = new SingleLiveEvent<>();
 
+  //  ViewModel variables
   private String mRepName;
   private String mRepTerritory;
 
-  public MainActivityViewModel(
-      @NonNull Application application, Repository repository) {
+  public MainActivityViewModel(@NonNull Application application) {
     super(application);
 
-  }
-
-  void start() {
     setupDefaultValues();
-
-    checkReady();
-  }
-
-  private void checkReady() {
-    //  If required fields are not empty, open main activity,
-    //  Otherwise, open dialog for User to enter name and territory.
-
-    if (isReady()) {
-      getOrderListCommand().call();
-    } else {
-      getOpenRequiredFieldsDialogCommand().call();
-    }
   }
 
   String getRepName() {
@@ -88,6 +73,16 @@ public class MainActivityViewModel extends AndroidViewModel {
     return mOrderListCommand;
   }
 
+  /**
+   * Called when the fragment is ready.
+   */
+  void start() {
+    validateRequiredFields();
+  }
+
+  /**
+   * Fills rep variables with saved or default values.
+   */
   private void setupDefaultValues() {
     Context c = getApplication().getApplicationContext();
 
@@ -99,7 +94,26 @@ public class MainActivityViewModel extends AndroidViewModel {
     mRepTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory), "");
   }
 
+  /**
+   * Are both required fields filled out?
+   */
   private boolean isReady() {
     return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
+  }
+
+  /**
+   * If the Required Fields are not empty, open {@link OrderListActivity},
+   * Otherwise, open dialog for user to enter their name and territory.
+   */
+  private void validateRequiredFields() {
+    if (BuildConfig.DEBUG) {
+      getOpenRequiredFieldsDialogCommand().call();
+    } else {
+      if (isReady()) {
+        getOrderListCommand().call();
+      } else {
+        getOpenRequiredFieldsDialogCommand().call();
+      }
+    }
   }
 }

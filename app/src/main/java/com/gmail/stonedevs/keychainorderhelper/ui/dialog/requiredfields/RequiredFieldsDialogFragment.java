@@ -16,19 +16,23 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
@@ -36,20 +40,13 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
 
   private static final String TAG = RequiredFieldsDialogFragment.class.getSimpleName();
 
-  private static final String KEY_REP_NAME = "rep_name";
-  private static final String KEY_REP_TERRITORY = "rep_territory";
+  private TextInputLayout mRepNameTextInputLayout;
+  private TextInputEditText mRepNameEditText;
 
-  private EditText mRepNameEditText;
-  private EditText mRepTerritoryEditText;
+  private TextInputLayout mRepTerritoryInputLayout;
+  private TextInputEditText mRepTerritoryEditText;
 
-  private RequiredFieldsDialogListener mListener;
-
-  public interface RequiredFieldsDialogListener {
-
-    void onSuccess(int resourceId);
-
-    void onFail(int resourceId);
-  }
+  private OnDismissListener mListener;
 
   public RequiredFieldsDialogFragment() {
     //  Empty constructor required for DialogFragment
@@ -68,16 +65,18 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
 
     AlertDialog.Builder builder = new Builder(getActivity());
     builder.setTitle(R.string.dialog_title_required_fields);
-    builder.setCancelable(false);
 
-    View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_required_fields, null);
+    @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
+        .inflate(R.layout.dialog_required_fields, null);
 
-    mRepNameEditText = view.findViewById(R.id.editName);
     String repName = bundle.getString(getString(R.string.pref_key_rep_name));
+    mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);
+    mRepNameEditText = view.findViewById(R.id.repNameEditText);
     mRepNameEditText.setText(repName);
 
-    mRepTerritoryEditText = view.findViewById(R.id.editTerritory);
     String repTerritory = bundle.getString(getString(R.string.pref_key_rep_territory));
+    mRepTerritoryInputLayout = view.findViewById(R.id.repTerritoryTextInputLayout);
+    mRepTerritoryEditText = view.findViewById(R.id.repTerritoryEditText);
     mRepTerritoryEditText.setText(repTerritory);
 
     Button saveButton = view.findViewById(R.id.saveButton);
@@ -94,11 +93,11 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     // Verify that the host activity implements the callback interface
     try {
       // Instantiate the NoticeDialogListener so we can send events to the host
-      mListener = (RequiredFieldsDialogListener) context;
+      mListener = (OnDismissListener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw exception
       throw new ClassCastException(context.toString()
-          + " must implement RequiredFieldsDialogListener");
+          + " must implement OnDismissListener");
     }
   }
 
@@ -118,25 +117,33 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     String nameText = mRepNameEditText.getText().toString();
     String territoryText = mRepTerritoryEditText.getText().toString();
 
-    saveRequiredFields(nameText, territoryText);
-
     if (nameText.isEmpty() || territoryText.isEmpty()) {
       if (nameText.isEmpty() && territoryText.isEmpty()) {
-        mListener.onFail(R.string.snackbar_dialog_required_fields_fail);
+        mRepNameTextInputLayout.setError(getString(R.string.dialog_field_error_required_fields_rep_name_text));
+        mRepTerritoryInputLayout
+            .setError(getString(R.string.dialog_field_error_required_fields_rep_territory_text));
       } else {
         if (nameText.isEmpty()) {
-          Toast.makeText(getActivity(), R.string.snackbar_dialog_required_fields_rep_name_empty, Toast.LENGTH_SHORT)
-              .show();
-          mListener.onFail(R.string.snackbar_dialog_required_fields_rep_name_empty);
+          mRepNameTextInputLayout.setError(getString(R.string.dialog_field_error_required_fields_rep_name_text));
+          mRepTerritoryInputLayout.setError(null);
         } else {
-          mListener.onFail(R.string.snackbar_dialog_required_fields_rep_territory_empty);
+          mRepNameTextInputLayout.setError(null);
+          mRepTerritoryInputLayout
+              .setError(getString(R.string.dialog_field_error_required_fields_rep_territory_text));
         }
       }
     } else {
-      Toast.makeText(getActivity(), R.string.toast_dialog_required_fields_success, Toast.LENGTH_SHORT)
-          .show();
-      mListener.onSuccess(R.string.toast_dialog_required_fields_success);
-      this.dismiss();
+      saveRequiredFields(nameText, territoryText);
+
+      Toast.makeText(getActivity(), R.string.toast_dialog_required_fields_success,
+          Toast.LENGTH_SHORT).show();
+
+      dismiss();
     }
+  }
+
+  @Override
+  public void onDismiss(DialogInterface dialog) {
+    mListener.onDismiss(dialog);
   }
 }

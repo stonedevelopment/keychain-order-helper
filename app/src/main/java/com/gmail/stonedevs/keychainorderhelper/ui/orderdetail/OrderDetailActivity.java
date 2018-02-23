@@ -18,16 +18,23 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
-import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.PrepareIntentDialogFragment.OrderSentListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
@@ -36,11 +43,21 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   private static final String TAG = OrderDetailActivity.class.getSimpleName();
 
   public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
-  public static final int RESULT_SENT_OK = RESULT_FIRST_USER;
-  public static final int RESULT_SENT_CANCEL = RESULT_CANCELED;
-  public static final int RESULT_ERROR = RESULT_CANCELED - 1;
+
+  private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
+
+  public static final int RESULT_SENT_OK = RESULT_OK;
+  public static final int RESULT_ERROR = RESULT_CANCELED + 1;
+
+  private CollapsingToolbarLayout mCollapsingToolbar;
 
   private OrderDetailViewModel mViewModel;
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    onBackPressed();
+    return true;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +70,49 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
     setupViewModel();
 
+    subscribeToViewModelEvents();
+
     subscribeToNavigationChanges();
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.menu_order_detail, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_send:
+        mViewModel.getSendOrderCommand().call();
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == REQUEST_CODE_ACTION_SEND) {
+      mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_send_order_success);
+    } else {
+      super.onActivityResult(requestCode, resultCode, data);
+    }
+  }
+
+  @Override
+  public void onBackPressed() {
+    finish();
+  }
+
   private void setupActionBar() {
+    mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
+
+    Toolbar toolbar = findViewById(R.id.toolbar);
+    setSupportActionBar(toolbar);
+
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
@@ -75,12 +131,45 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     mViewModel = obtainViewModel(this);
   }
 
+  private void subscribeToViewModelEvents() {
+    mViewModel.getUpdateUIStoreNameTextEvent().observe(this, new Observer<String>() {
+      @Override
+      public void onChanged(@Nullable String s) {
+        mCollapsingToolbar.setTitle(s);
+      }
+    });
+
+    mViewModel.getErrorLoadingDataEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        //  Data was not received properly.
+        finishWithResult(RESULT_ERROR);
+      }
+    });
+
+    mViewModel.getIntentReadyEvent().observe(this, new Observer<Intent>() {
+      @Override
+      public void onChanged(@Nullable Intent intent) {
+        Intent chooser = Intent
+            .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+          startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+        } else {
+          //  there are no apps on phone to handle this intent, cancel order
+          mViewModel.getSnackBarMessenger()
+              .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
+        }
+      }
+    });
+  }
+
   private void subscribeToNavigationChanges() {
     //  This event fires when User clicks Resend Order button.
-    mViewModel.getSendOrderCommand().observe(this, new Observer<CompleteOrder>() {
+    mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
-      public void onChanged(@Nullable CompleteOrder order) {
-        sendOrder(order);
+      public void onChanged(@Nullable Void aVoid) {
+        showConfirmSendOrderDialog();
       }
     });
   }
@@ -117,39 +206,30 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     return ViewModelProviders.of(activity, factory).get(OrderDetailViewModel.class);
   }
 
-  private void startPrepareIntentDialog(CompleteOrder completeOrder) {
-    PrepareIntentDialogFragment dialogFragment = PrepareIntentDialogFragment.createInstance();
-
-    dialogFragment.setListener(new OrderSentListener() {
-      @Override
-      public void onOrderSent() {
-        closeWithResult(RESULT_SENT_OK);
-      }
-
-      @Override
-      public void onOrderNotSent() {
-        mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_send_order_fail);
-      }
-
-      @Override
-      public void onOrderNotSend_NoAppsForIntent() {
-        mViewModel.getSnackBarMessenger()
-            .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
-      }
-    });
-
-    dialogFragment.setData(completeOrder);
-
-    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
-  }
-
-  void closeWithResult(int resultCode) {
+  void finishWithResult(int resultCode) {
     setResult(resultCode);
     finish();
   }
 
   @Override
-  public void sendOrder(CompleteOrder order) {
-    startPrepareIntentDialog(order);
+  public void showConfirmSendOrderDialog() {
+    AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_resend_order);
+    builder.setMessage(R.string.dialog_message_resend_order);
+    builder.setPositiveButton(R.string.dialog_positive_button_resend_order,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            mViewModel.prepareToResendOrder(OrderDetailActivity.this);
+          }
+        });
+    builder.setNegativeButton(R.string.dialog_negative_button_resend_order,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            //  do nothing, allow the user to continue their order.
+          }
+        });
+    builder.show();
   }
 }

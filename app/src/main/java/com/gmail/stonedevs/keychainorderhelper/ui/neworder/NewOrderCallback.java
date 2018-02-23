@@ -17,12 +17,13 @@
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderCallback;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface NewOrderCreationCallback {
+public interface NewOrderCallback extends PrepareOrderCallback {
 
   void onOrderCreated(CompleteOrder order);
 }

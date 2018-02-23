@@ -85,18 +85,6 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   }
 
   void handleActivityResult(int requestCode, int resultCode) {
-    if (OrderDetailActivity.REQUEST_CODE == requestCode) {
-      switch (resultCode) {
-        case OrderDetailActivity.RESULT_SENT_OK:
-          //  send success message
-          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
-          break;
-        case OrderDetailActivity.RESULT_SENT_CANCEL:
-          //  send failed message
-          mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_fail);
-      }
-    }
-
     switch (requestCode) {
       case NewOrderActivity.REQUEST_CODE:
         switch (resultCode) {
@@ -115,9 +103,9 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
             //  send success message
             mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
             break;
-          case OrderDetailActivity.RESULT_SENT_CANCEL:
+          case OrderDetailActivity.RESULT_ERROR:
             //  send failed message
-            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_fail);
+            mSnackBarMessenger.setValue(R.string.snackbar_message_data_loading_error);
         }
         break;
     }

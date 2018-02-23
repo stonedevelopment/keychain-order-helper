@@ -19,29 +19,21 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
-import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public class OrderDetailViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
-    OnLongClickListener {
+class OrderDetailViewHolder extends RecyclerView.ViewHolder {
 
   private final TextView mKeychainNameTextView;
   private final TextView mItemQuantityTextView;
 
-  private OnRecyclerViewItemClickListener mListener;
-
-  OrderDetailViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
+  OrderDetailViewHolder(View itemView) {
     super(itemView);
-
-    mListener = listener;
 
     mKeychainNameTextView = itemView.findViewById(R.id.keychainNameTextView);
     mItemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
@@ -49,16 +41,11 @@ public class OrderDetailViewHolder extends RecyclerView.ViewHolder implements On
 
   void bindItem(@NonNull OrderItem item) {
     mKeychainNameTextView.setText(item.getName());
-    mItemQuantityTextView.setText(item.getQuantity());
-  }
 
-  @Override
-  public void onClick(View v) {
-    mListener.onItemClick(getAdapterPosition());
-  }
-
-  @Override
-  public boolean onLongClick(View v) {
-    return mListener.onItemLongClick(getAdapterPosition());
+    if (item.getQuantity() > 0) {
+      mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
+    } else {
+      mItemQuantityTextView.setText("");
+    }
   }
 }

@@ -11,10 +11,7 @@
     style="?android:attr/progressBarStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
+    android:indeterminate="true"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -30,65 +27,38 @@
     app:layout_constraintTop_toTopOf="parent">
 
     <TextView
-      android:id="@+id/storeNameTextView"
-      android:layout_width="0dp"
+      android:id="@+id/orderQuantityTextView"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
       android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
-      android:textAlignment="center"
-      app:layout_constraintEnd_toStartOf="@+id/guideline"
-      app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      tools:text="Store Name 1"/>
-
+      tools:text="0 keychains"/>
     <TextView
       android:id="@+id/orderDateTextView"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
-      android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
       android:textAlignment="center"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="@+id/guideline"
       app:layout_constraintTop_toTopOf="parent"
-      tools:text="01/01/1901"/>
+      tools:text="0 minutes ago, 05:43 PM"/>
 
     <android.support.v7.widget.RecyclerView
       android:id="@+id/keychainListRecyclerView"
       android:layout_width="0dp"
       android:layout_height="0dp"
       android:layout_marginTop="8dp"
-      android:layout_marginBottom="4dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
       android:headerDividersEnabled="false"
       android:scrollbars="vertical"
-      app:layout_constraintBottom_toTopOf="@+id/resendOrderButton"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/storeNameTextView"
+      app:layout_constraintTop_toBottomOf="@+id/orderDateTextView"
       tools:listitem="@layout/list_item_keychain"/>
-
-    <android.support.constraint.Guideline
-      android:id="@+id/guideline"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:orientation="vertical"
-      app:layout_constraintGuide_percent="0.5"/>
-
-    <Button
-      android:id="@+id/resendOrderButton"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="8dp"
-      android:layout_marginEnd="8dp"
-      android:text="@string/resendOrderButton_text"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"/>
 
   </android.support.constraint.ConstraintLayout>
 

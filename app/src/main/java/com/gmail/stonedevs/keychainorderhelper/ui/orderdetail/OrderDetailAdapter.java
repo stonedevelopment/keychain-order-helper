@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
-import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +29,7 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHolder> implements
-    OnRecyclerViewItemClickListener {
+public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHolder> {
 
   private List<OrderItem> mItems;
 
@@ -44,7 +42,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHold
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.list_item_keychain, parent, false);
 
-    return new OrderDetailViewHolder(view, this);
+    return new OrderDetailViewHolder(view);
   }
 
   @Override
@@ -74,15 +72,5 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHold
   void setData(List<OrderItem> items) {
     mItems = items;
     notifyDataSetChanged();
-  }
-
-  @Override
-  public void onItemClick(int position) {
-
-  }
-
-  @Override
-  public boolean onItemLongClick(int position) {
-    return false;
   }
 }

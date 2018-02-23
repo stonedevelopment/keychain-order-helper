@@ -59,4 +59,20 @@ public class CompleteOrder {
   public List<OrderItem> getOrderItems() {
     return mOrderItems;
   }
+
+  private void updateOrderQuantity(int quantity) {
+    getOrder().setOrderQuantity(quantity);
+  }
+
+  public int getOrderQuantity() {
+    int quantity = 0;
+
+    for (OrderItem item : mOrderItems) {
+      quantity += item.getQuantity();
+    }
+
+    updateOrderQuantity(quantity);
+
+    return quantity;
+  }
 }

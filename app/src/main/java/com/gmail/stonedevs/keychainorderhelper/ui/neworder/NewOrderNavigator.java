@@ -18,6 +18,8 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 interface NewOrderNavigator {
 
+  void showEditStoreNameDialog(String storeName);
+
   void showConfirmCancelOrderDialog();
 
   void showConfirmResetOrderDialog();

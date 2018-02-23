@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.ui.dialog.storename;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailNavigator {
+public interface StoreNameDialogListener {
 
-  void showConfirmSendOrderDialog();
+  void onSave(String storeName);
+
+  void onCancel();
 }

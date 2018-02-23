@@ -16,17 +16,20 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
+import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderAsyncTask;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,7 +40,8 @@ import java.util.List;
  * ViewModel for the New Order screen.
  */
 
-public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreationCallback {
+public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallback,
+    InsertCallback {
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
@@ -45,21 +49,23 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events: Data Loading Changes
-  private final SingleLiveEvent<Boolean> mLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<List<OrderItem>> mDataReadyEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mOrderCreatedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
 
   //  Events: UI Changes
-  private final SingleLiveEvent<String> mUpdateUIStoreNameText = new SingleLiveEvent<>();
+  private final SingleLiveEvent<String> mUpdateUIStoreNameTextEvent = new SingleLiveEvent<>();
 
   //  Commands: User Direction
+  private final SingleLiveEvent<String> mEditStoreNameCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mOpenDatePickerCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mPrepareOrderCommand = new SingleLiveEvent<>();
 
   //  Data repository
   private final Repository mRepository;
+
+  private final AppExecutors mAppExecutors;
 
   //  View model's data variables
   private CompleteOrder mCompleteOrder;
@@ -68,19 +74,22 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
     super(application);
 
     mRepository = repository;
+    mAppExecutors = new AppExecutors();
   }
 
   public void start() {
     if (mCompleteOrder == null) {
-      Log.d(TAG, "start: null");
       createNewOrder();
     } else {
-      Log.d(TAG, "start: " + mCompleteOrder.getOrder().toString());
       onOrderCreated(mCompleteOrder);
     }
   }
 
-  void updateStoreName(String storeName) {
+  public String getStoreName() {
+    return mCompleteOrder.getStoreName();
+  }
+
+  void setStoreName(String storeName) {
     mCompleteOrder.setStoreName(storeName);
   }
 
@@ -88,24 +97,20 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
     return mSnackBarMessenger;
   }
 
-  SingleLiveEvent<Boolean> getDataLoadingEvent() {
-    return mLoadingEvent;
+  SingleLiveEvent<CompleteOrder> getOrderCreatedEvent() {
+    return mOrderCreatedEvent;
   }
 
-  SingleLiveEvent<List<OrderItem>> getDataLoadedEvent() {
-    return mDataReadyEvent;
+  SingleLiveEvent<Intent> getIntentReadyEvent() {
+    return mIntentReadyEvent;
   }
 
-  SingleLiveEvent<Void> getErrorLoadingDataEvent() {
-    return mErrorLoadingDataEvent;
+  SingleLiveEvent<String> getUpdateUIStoreNameTextEvent() {
+    return mUpdateUIStoreNameTextEvent;
   }
 
-  SingleLiveEvent<String> getUpdateUIStoreNameText() {
-    return mUpdateUIStoreNameText;
-  }
-
-  SingleLiveEvent<Void> getOpenDatePickerCommand() {
-    return mOpenDatePickerCommand;
+  SingleLiveEvent<String> getEditStoreNameCommand() {
+    return mEditStoreNameCommand;
   }
 
   SingleLiveEvent<Void> getCancelOrderCommand() {
@@ -120,9 +125,11 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
     return mSendOrderCommand;
   }
 
-  private void createNewOrder() {
-    mLoadingEvent.setValue(true);
+  SingleLiveEvent<Void> getPrepareOrderCommand() {
+    return mPrepareOrderCommand;
+  }
 
+  private void createNewOrder() {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -141,7 +148,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
           orderItems.add(new OrderItem(orderId, name, 0));
         }
 
-        new AppExecutors().mainThread().execute(new Runnable() {
+        mAppExecutors.mainThread().execute(new Runnable() {
           @Override
           public void run() {
             onOrderCreated(new CompleteOrder(order, orderItems));
@@ -150,18 +157,45 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCreat
       }
     };
 
-    new AppExecutors().diskIO().execute(runnable);
+    mAppExecutors.diskIO().execute(runnable);
   }
 
   void resetOrder() {
     createNewOrder();
   }
 
+  void prepareToSendOrder() {
+    saveOrder();
+  }
+
+  void executeFinalPreparations(Activity context) {
+    PrepareOrderAsyncTask task = new PrepareOrderAsyncTask(context, mCompleteOrder,
+        this);
+    task.execute();
+  }
+
+  private void saveOrder() {
+    mRepository.saveOrder(mCompleteOrder, this);
+  }
+
+  boolean isReady() {
+    return mCompleteOrder != null && !(mCompleteOrder.getStoreName().isEmpty()
+        || mCompleteOrder.getOrderQuantity() == 0);
+  }
+
   @Override
   public void onOrderCreated(CompleteOrder order) {
     mCompleteOrder = order;
+    mOrderCreatedEvent.setValue(order);
+  }
 
-    mLoadingEvent.setValue(false);
-    mDataReadyEvent.setValue(order.getOrderItems());
+  @Override
+  public void onOrderReadyToSend(Intent intent) {
+    mIntentReadyEvent.setValue(intent);
+  }
+
+  @Override
+  public void onDataInserted() {
+    mPrepareOrderCommand.call();
   }
 }

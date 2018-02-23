@@ -20,13 +20,17 @@
 
   <item
     android:id="@+id/action_reset_order"
-    android:title="@string/action_reset_order_text"
+    android:title="@string/action_reset_order"
     app:showAsAction="ifRoom|withText"/>
 
   <item
     android:id="@+id/action_send"
-    android:icon="@drawable/ic_action_send"
-    android:title="@string/action_send_order_text"
+    android:title="@string/action_send_order"
     app:showAsAction="ifRoom"/>
+
+  <item
+    android:id="@+id/action_edit_store_name"
+    android:title="@string/action_edit_store_name"
+    app:showAsAction="never"/>
 
 </menu>

@@ -19,23 +19,10 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content">
-
-  <TextView
-    android:id="@+id/messageTextView"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
-    android:layout_marginStart="24dp"
-    android:layout_marginEnd="24dp"
-    android:text="@string/dialog_message_required_fields"
-    android:textAppearance="@android:style/TextAppearance.Material.Medium"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+  android:layout_height="match_parent">
 
   <android.support.design.widget.TextInputLayout
-    android:id="@+id/repNameTextInputLayout"
+    android:id="@+id/storeNameTextInputLayout"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
@@ -43,41 +30,17 @@
     android:layout_marginEnd="24dp"
     app:errorEnabled="true"
     app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/messageTextView">
+    app:layout_constraintTop_toTopOf="parent">
 
     <android.support.design.widget.TextInputEditText
-      android:id="@+id/repNameEditText"
+      android:id="@+id/storeNameEditText"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:ems="10"
-      android:hint="@string/dialog_hint_required_fields_name"
+      android:hint="@string/dialog_edit_text_hint_store_name"
       android:inputType="textCapWords"
-      android:selectAllOnFocus="true"
-      android:singleLine="true"/>
-
-  </android.support.design.widget.TextInputLayout>
-
-  <android.support.design.widget.TextInputLayout
-    android:id="@+id/repTerritoryTextInputLayout"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:layout_marginStart="24dp"
-    android:layout_marginEnd="24dp"
-    app:errorEnabled="true"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/repNameTextInputLayout">
-
-    <android.support.design.widget.TextInputEditText
-      android:id="@+id/repTerritoryEditText"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="8dp"
-      android:ems="10"
-      android:hint="@string/dialog_hint_required_fields_territory"
-      android:inputType="textCapCharacters"
       android:selectAllOnFocus="true"
       android:singleLine="true"/>
 
@@ -92,6 +55,17 @@
     android:layout_marginEnd="8dp"
     android:text="@string/dialog_positive_button_required_fields"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/repTerritoryTextInputLayout"/>
+    app:layout_constraintTop_toBottomOf="@+id/storeNameTextInputLayout"/>
+
+  <Button
+    android:id="@+id/cancelButton"
+    style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:text="Cancel"
+    app:layout_constraintEnd_toStartOf="@+id/saveButton"
+    app:layout_constraintTop_toBottomOf="@+id/storeNameTextInputLayout"/>
 
 </android.support.constraint.ConstraintLayout>

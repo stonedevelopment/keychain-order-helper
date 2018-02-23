@@ -16,11 +16,12 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderCallback;
+
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailNavigator {
+interface OrderDetailCallback extends PrepareOrderCallback {
 
-  void showConfirmSendOrderDialog();
 }

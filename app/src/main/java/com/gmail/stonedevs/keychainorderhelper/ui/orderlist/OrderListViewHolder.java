@@ -37,7 +37,7 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
 
   private final TextView mStoreNameTextView;
   private final TextView mOrderDateTextView;
-  private final TextView mOrderTimeSinceTextView;
+  private final TextView mOrderQuantityTextView;
 
   private OnRecyclerViewItemClickListener mListener;
 
@@ -48,16 +48,23 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
 
     mStoreNameTextView = itemView.findViewById(R.id.storeNameTextView);
     mOrderDateTextView = itemView.findViewById(R.id.orderDateTextView);
-    mOrderTimeSinceTextView = itemView.findViewById(R.id.orderTimeSinceTextView);
+    mOrderQuantityTextView = itemView.findViewById(R.id.orderQuantityTextView);
+
+    itemView.setOnClickListener(this);
+    itemView.setOnLongClickListener(this);
   }
 
   void bindItem(Context context, @NonNull Order order) {
     mStoreNameTextView.setText(order.getStoreName());
 
     long orderDate = order.getOrderDate().getTime();
-    mOrderDateTextView.setText(DateUtils
-        .formatDateTime(context, orderDate, DateUtils.FORMAT_NUMERIC_DATE));
-    mOrderTimeSinceTextView.setText(DateUtils.formatElapsedTime(orderDate));
+    mOrderDateTextView
+        .setText(DateUtils.getRelativeDateTimeString(context, orderDate, DateUtils.MINUTE_IN_MILLIS,
+            DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_NUMERIC_DATE));
+
+    mOrderQuantityTextView
+        .setText(String.format(context.getString(R.string.string_format_list_item_order_total_text),
+            order.getOrderQuantity()));
   }
 
   @Override

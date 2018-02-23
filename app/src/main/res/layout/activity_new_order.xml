@@ -32,25 +32,42 @@
       android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="?attr/actionBarSize"
-      android:background="?attr/colorPrimary"
-      app:popupTheme="@style/AppTheme.PopupOverlay"/>
+      app:popupTheme="@style/AppTheme.PopupOverlay"
+      app:title="New Order">
+
+    </android.support.v7.widget.Toolbar>
+
+    <TextView
+      android:id="@+id/storeNameTextView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="8dp"
+      android:visibility="visible"
+      android:textAlignment="center"
+      android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+    <android.support.design.widget.TextInputLayout
+      android:id="@+id/storeNameTextInputLayout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:layout_margin="8dp">
+
+      <android.support.design.widget.TextInputEditText
+        android:id="@+id/storeNameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/dialog_edit_text_hint_store_name"
+        android:inputType="textCapWords"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
+
+    </android.support.design.widget.TextInputLayout>
 
   </android.support.design.widget.AppBarLayout>
 
-  <FrameLayout
-    android:id="@+id/fragment_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-  <!--<android.support.design.widget.FloatingActionButton-->
-    <!--android:id="@+id/fab"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_margin="@dimen/fab_margin"-->
-    <!--android:src="@drawable/ic_action_send"-->
-    <!--app:fabSize="normal"-->
-    <!--app:layout_anchor="@id/fragment_container"-->
-    <!--app:layout_anchorGravity="bottom|right|end"/>-->
+  <include layout="@layout/content_new_order"/>
 
 </android.support.design.widget.CoordinatorLayout>
