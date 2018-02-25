@@ -27,6 +27,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
@@ -106,10 +107,10 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
       }
     });
 
-    mViewModel.getNewOrderCommand().observe(this, new Observer<Void>() {
+    mViewModel.getNewOrderCommand().observe(this, new Observer<View>() {
       @Override
-      public void onChanged(@Nullable Void aVoid) {
-        startNewOrderActivity();
+      public void onChanged(@Nullable View v) {
+        startNewOrderActivity(v);
       }
     });
   }
@@ -138,7 +139,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   @Override
-  public void startNewOrderActivity() {
+  public void startNewOrderActivity(View fab) {
     Intent intent = new Intent(this, NewOrderActivity.class);
     startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }

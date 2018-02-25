@@ -33,7 +33,6 @@ import android.support.v4.app.DialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -286,9 +285,6 @@ public class PrepareIntentDialogFragment extends DialogFragment {
   }
 
   private void orderSent() {
-    //  Delete generated file.
-    deleteTempFile();
-
     //  Tell listener of success.
     mListener.onOrderSent();
 
@@ -297,9 +293,6 @@ public class PrepareIntentDialogFragment extends DialogFragment {
   }
 
   private void cancelOrder() {
-    //  Delete generated file.
-    deleteTempFile();
-
     //  Tell listener of failure
     mListener.onOrderNotSent();
 
@@ -308,21 +301,10 @@ public class PrepareIntentDialogFragment extends DialogFragment {
   }
 
   private void cancelOrderWithNoAppsForIntent() {
-    //  Delete generated file.
-    deleteTempFile();
-
     //  Tell listener of failure
     mListener.onOrderNotSend_NoAppsForIntent();
 
     //  Dismiss dialog, return to previous screen.
     dismiss();
-  }
-
-  private void deleteTempFile() {
-    boolean filedDeleted = Util.deleteTempFile(mUri);
-
-    if (!filedDeleted) {
-      //  Alert Firebase of file not being deleted.
-    }
   }
 }

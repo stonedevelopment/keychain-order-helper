@@ -59,9 +59,7 @@ public class NewOrderFragment extends Fragment {
 
     mViewModel = NewOrderActivity.obtainViewModel(getActivity());
 
-    View view = inflater.inflate(R.layout.fragment_new_order, container, false);
-
-    return view;
+    return inflater.inflate(R.layout.fragment_new_order, container, false);
   }
 
   @Override
@@ -92,7 +90,7 @@ public class NewOrderFragment extends Fragment {
         layoutManager.getOrientation());
     recyclerView.addItemDecoration(dividerItemDecoration);
 
-    mAdapter = new NewOrderAdapter(getActivity());
+    mAdapter = new NewOrderAdapter(getActivity(), mViewModel);
 
     recyclerView.setAdapter(mAdapter);
   }

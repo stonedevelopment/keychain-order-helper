@@ -56,7 +56,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   private final SingleLiveEvent<String> mUpdateUIStoreNameTextEvent = new SingleLiveEvent<>();
 
   //  Commands: User Direction
-  private final SingleLiveEvent<String> mEditStoreNameCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
@@ -85,12 +84,20 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     }
   }
 
-  public String getStoreName() {
+  String getStoreName() {
     return mCompleteOrder.getStoreName();
   }
 
   void setStoreName(String storeName) {
     mCompleteOrder.setStoreName(storeName);
+  }
+
+  int getOrderQuantity() {
+    return mCompleteOrder.getOrderQuantity();
+  }
+
+  void updateOrderQuantityBy(int change) {
+    mCompleteOrder.updateOrderQuantityBy(change);
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -107,10 +114,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
   SingleLiveEvent<String> getUpdateUIStoreNameTextEvent() {
     return mUpdateUIStoreNameTextEvent;
-  }
-
-  SingleLiveEvent<String> getEditStoreNameCommand() {
-    return mEditStoreNameCommand;
   }
 
   SingleLiveEvent<Void> getCancelOrderCommand() {
@@ -179,8 +182,23 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   boolean isReady() {
-    return mCompleteOrder != null && !(mCompleteOrder.getStoreName().isEmpty()
-        || mCompleteOrder.getOrderQuantity() == 0);
+    return mCompleteOrder != null && !(isStoreNameEmpty() || isOrderQuantityZero()
+        || !doesOrderQuantityMeetMinimumRequirements());
+  }
+
+  boolean isStoreNameEmpty() {
+    return mCompleteOrder.getStoreName().isEmpty();
+  }
+
+  boolean isOrderQuantityZero() {
+    return mCompleteOrder.getOrderQuantity() == 0;
+  }
+
+  boolean doesOrderQuantityMeetMinimumRequirements() {
+    int orderQuantityMinimumRequirement = getApplication().getResources()
+        .getInteger(R.integer.order_quantity_minimum_requirement);
+
+    return mCompleteOrder.getOrderQuantity() >= orderQuantityMinimumRequirement;
   }
 
   @Override

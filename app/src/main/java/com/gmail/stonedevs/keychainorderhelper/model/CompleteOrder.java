@@ -60,19 +60,23 @@ public class CompleteOrder {
     return mOrderItems;
   }
 
-  private void updateOrderQuantity(int quantity) {
-    getOrder().setOrderQuantity(quantity);
+  public int getOrderQuantity() {
+    return mOrder.getOrderQuantity();
   }
 
-  public int getOrderQuantity() {
-    int quantity = 0;
+  public void updateOrderQuantityBy(int change) {
+    int quantity = getOrderQuantity();
 
-    for (OrderItem item : mOrderItems) {
-      quantity += item.getQuantity();
+    quantity += change;
+
+    if (quantity < 0) {
+      quantity = 0;
     }
 
-    updateOrderQuantity(quantity);
+    setOrderQuantity(quantity);
+  }
 
-    return quantity;
+  private void setOrderQuantity(int quantity) {
+    mOrder.setOrderQuantity(quantity);
   }
 }

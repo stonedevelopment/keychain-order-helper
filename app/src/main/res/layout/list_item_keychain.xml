@@ -20,6 +20,7 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/list_item"
+  android:background="?android:attr/selectableItemBackground"
   android:layout_width="match_parent"
   android:layout_height="wrap_content">
 
@@ -33,7 +34,7 @@
     android:layout_marginEnd="8dp"
     android:textAppearance="@android:style/TextAppearance.Material.Medium"
     app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toStartOf="@+id/guideline2"
+    app:layout_constraintEnd_toStartOf="@+id/guideline"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:text="Ashley"/>
@@ -49,12 +50,12 @@
     android:textAppearance="@android:style/TextAppearance.Material.Medium"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/guideline2"
+    app:layout_constraintStart_toStartOf="@+id/guideline"
     app:layout_constraintTop_toTopOf="parent"
     tools:text="0"/>
 
   <android.support.constraint.Guideline
-    android:id="@+id/guideline2"
+    android:id="@+id/guideline"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"

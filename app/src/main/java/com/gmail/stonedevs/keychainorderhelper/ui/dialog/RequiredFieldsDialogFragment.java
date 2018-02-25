@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields;
+package com.gmail.stonedevs.keychainorderhelper.ui.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

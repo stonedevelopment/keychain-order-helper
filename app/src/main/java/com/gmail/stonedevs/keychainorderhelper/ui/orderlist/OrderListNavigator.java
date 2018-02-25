@@ -16,13 +16,15 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
+import android.view.View;
+
 /**
  * TODO: Add a class header comment!
  */
 
 public interface OrderListNavigator {
 
-  void startNewOrderActivity();
+  void startNewOrderActivity(View v);
 
   void startOrderDetailActivity(String orderId);
 }

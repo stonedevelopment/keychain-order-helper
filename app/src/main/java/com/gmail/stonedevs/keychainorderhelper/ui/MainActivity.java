@@ -28,7 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.requiredfields.RequiredFieldsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 public class MainActivity extends AppCompatActivity implements MainActivityNavigation,

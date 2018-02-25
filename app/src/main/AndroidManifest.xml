@@ -14,7 +14,7 @@
 
     <activity
       android:name=".ui.MainActivity"
-      android:theme="@style/SplashTheme">
+      android:theme="@style/AppTheme.NoActionBar.SplashTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
@@ -23,18 +23,19 @@
     </activity>
 
     <activity
+      android:label="@string/title_activity_orderlist"
       android:name=".ui.orderlist.OrderListActivity"
       android:theme="@style/AppTheme.NoActionBar">
     </activity>
 
     <activity
-      android:label=""
+      android:label="@string/title_activity_neworder"
       android:name=".ui.neworder.NewOrderActivity"
       android:theme="@style/AppTheme.NoActionBar">
     </activity>
 
     <activity
-      android:label=""
+      android:label="@string/title_activity_orderdetail"
       android:name=".ui.orderdetail.OrderDetailActivity"
       android:theme="@style/AppTheme.NoActionBar">
     </activity>

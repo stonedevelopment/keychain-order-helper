@@ -106,7 +106,7 @@ public class OrderListFragment extends Fragment {
     fab.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        mViewModel.getNewOrderCommand().call();
+        mViewModel.getNewOrderCommand().setValue(v);
       }
     });
   }

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
+import android.view.View;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -45,7 +46,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen interactions.
-  private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<View> mNewOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
 
   //  Data repository
@@ -72,7 +73,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mNoDataLoadedEvent;
   }
 
-  SingleLiveEvent<Void> getNewOrderCommand() {
+  SingleLiveEvent<View> getNewOrderCommand() {
     return mNewOrderCommand;
   }
 

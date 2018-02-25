@@ -18,6 +18,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,16 +35,22 @@ import java.util.List;
 public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> implements
     OnRecyclerViewItemClickListener {
 
+  private static final String TAG = NewOrderAdapter.class.getSimpleName();
+
   private static int mMinOrderQuantity;
   private static int mMaxOrderQuantity;
 
+  private NewOrderViewModel mViewModel;
+
   private List<OrderItem> mItems;
 
-  NewOrderAdapter(Context c) {
+  NewOrderAdapter(Context c, NewOrderViewModel viewModel) {
 
     //  set min/max quantity attributes
-    mMinOrderQuantity = c.getResources().getInteger(R.integer.excel_min_order_quantity_value);
-    mMaxOrderQuantity = c.getResources().getInteger(R.integer.excel_max_order_quantity_value);
+    mMinOrderQuantity = c.getResources().getInteger(R.integer.order_item_quantity_lower_value);
+    mMaxOrderQuantity = c.getResources().getInteger(R.integer.order_item_quantity_higher_value);
+
+    mViewModel = viewModel;
 
     setData(new ArrayList<OrderItem>(0));
   }
@@ -99,6 +106,14 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
       item.setQuantity(0);
     }
 
+    int newQuantity = item.getQuantity();
+
+    int change = newQuantity - quantity;
+
+    Log.d(TAG, "onItemClick: " + newQuantity + " - " + quantity + " = " + change);
+
+    mViewModel.updateOrderQuantityBy(change);
+
     notifyItemChanged(position);
   }
 
@@ -108,11 +123,15 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
     int quantity = item.getQuantity();
 
-    if (quantity < mMaxOrderQuantity) {
-      item.setQuantity(mMaxOrderQuantity);
-    } else {
-      item.setQuantity(0);
-    }
+    item.setQuantity(0);
+
+    int newQuantity = item.getQuantity();
+
+    int change = newQuantity - quantity;
+
+    Log.d(TAG, "onItemLongClick: " + newQuantity + " - " + quantity + " = " + change);
+
+    mViewModel.updateOrderQuantityBy(change);
 
     notifyItemChanged(position);
     return true;

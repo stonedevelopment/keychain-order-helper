@@ -18,6 +18,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -32,33 +33,29 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.storename.StoreNameDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.storename.StoreNameDialogListener;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
 public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
-    StoreNameDialogListener {
+    OnFocusChangeListener {
 
   private static final String TAG = NewOrderActivity.class.getSimpleName();
 
   public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
+  public static final int SENT_RESULT_OK = 1;
 
   private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
 
-  public static final int SENT_RESULT_OK = 1;
-
-  private TextView mStoreNameTextView;
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mStoreNameEditText;
 
@@ -102,8 +99,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       case R.id.action_send:
         mViewModel.getSendOrderCommand().call();
         return true;
-      case R.id.action_edit_store_name:
-        showEditStoreNameDialog();
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -133,17 +128,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       actionBar.setDisplayShowHomeEnabled(true);
     }
 
-    mStoreNameTextView = findViewById(R.id.storeNameTextView);
-    mStoreNameTextView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mStoreNameTextView.setVisibility(View.GONE);
-        mTextInputLayout.setVisibility(View.VISIBLE);
-      }
-    });
-
     mTextInputLayout = findViewById(R.id.storeNameTextInputLayout);
     mStoreNameEditText = findViewById(R.id.storeNameEditText);
+    mStoreNameEditText.setOnFocusChangeListener(this);
     mStoreNameEditText.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -152,15 +139,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
-        Log.d(TAG, "onTextChanged: " + s);
       }
 
       @Override
       public void afterTextChanged(Editable s) {
-        mStoreNameTextView.setText(s.toString());
+        mViewModel.setStoreName(s.toString());
 
-        mTextInputLayout.setVisibility(View.GONE);
-        mStoreNameTextView.setVisibility(View.VISIBLE);
+        validateEditText(s);
       }
     });
   }
@@ -204,25 +189,25 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         if (mViewModel.isReady()) {
           showConfirmSendOrderDialog();
         } else {
-          mViewModel.getSnackBarMessenger()
-              .setValue(R.string.snackbar_message_send_order_fail_incomplete);
+          if (mViewModel.isStoreNameEmpty()) {
+            mStoreNameEditText.requestFocus();
+
+            InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mStoreNameEditText, InputMethodManager.SHOW_IMPLICIT);
+          } else {
+            showOrderRequirementsDialog();
+          }
         }
       }
     });
   }
 
   private void subscribeToViewModelEvents() {
-    mViewModel.getEditStoreNameCommand().observe(this, new Observer<String>() {
-      @Override
-      public void onChanged(@Nullable String s) {
-//        showEditStoreNameDialog(s);
-      }
-    });
-
     mViewModel.getUpdateUIStoreNameTextEvent().observe(this, new Observer<String>() {
       @Override
       public void onChanged(@Nullable String s) {
-        updateActionBarTitle(s);
+        mStoreNameEditText.setText(s);
       }
     });
 
@@ -261,44 +246,52 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     return ViewModelProviders.of(activity, factory).get(NewOrderViewModel.class);
   }
 
+  private void validateEditText(Editable s) {
+    if (TextUtils.isEmpty(s)) {
+      if (!mTextInputLayout.isErrorEnabled()) {
+        mTextInputLayout.setErrorEnabled(true);
+      }
+
+      mTextInputLayout.setError(getString(R.string.dialog_edit_text_error_store_name));
+    } else {
+      mTextInputLayout.setErrorEnabled(false);
+    }
+  }
+
   void finishWithResult(int resultCode) {
     setResult(resultCode);
     finish();
   }
 
-  private void updateActionBarTitle(String s) {
-    mStoreNameTextView.setText(s);
-    mStoreNameEditText.setText(s);
-
-    if (s.isEmpty()) {
-      mStoreNameTextView.setVisibility(View.GONE);
-      mTextInputLayout.setVisibility(View.VISIBLE);
-    }
-  }
-
-  public void showEditStoreNameDialog() {
-//    showEditStoreNameDialog(mViewModel.getStoreName());
-  }
-
   @Override
-  public void showEditStoreNameDialog(String s) {
-    Bundle args = new Bundle();
+  public void showOrderRequirementsDialog() {
+    AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_incomplete_order);
 
-    //  Fill argument bundle with either provided, if debugging fill with default values :)
-    if (s.isEmpty()) {
-      args.putString(getString(R.string.bundle_key_store_name),
-          BuildConfig.DEBUG ? getString(R.string.layout_edit_text_default_value_store_name)
-              : s);
-    } else {
-      args.putString(getString(R.string.bundle_key_store_name), s);
+    StringBuilder stringBuilder = new StringBuilder(
+        getString(R.string.dialog_message_incomplete_order));
+
+    if (mViewModel.isOrderQuantityZero()) {
+      stringBuilder.append(getString(R.string.dialog_message_incomplete_order_keychains_empty));
+    } else if (!mViewModel.doesOrderQuantityMeetMinimumRequirements()) {
+      int minimum = getResources().getInteger(R.integer.order_quantity_minimum_requirement);
+      int quantity = mViewModel.getOrderQuantity();
+      int difference = minimum - quantity;
+
+      stringBuilder.append(String.format(getString(
+          R.string.dialog_message_incomplete_order_keychains_minimum_not_met),
+          difference, minimum));
     }
+    builder.setMessage(stringBuilder);
 
-    //  Create instance of dialog fragment use to help User fill in the blanks.
-    StoreNameDialogFragment dialogFragment = StoreNameDialogFragment
-        .createInstance(args);
-
-    //  Initializations complete, show that dialog!
-    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+    builder.setNegativeButton(R.string.dialog_negative_button_incomplete_order,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            //  do nothing, allow the user to fix issues.
+          }
+        });
+    builder.show();
   }
 
   @Override
@@ -368,13 +361,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
-  public void onSave(String s) {
-    mViewModel.setStoreName(s);
-    updateActionBarTitle(s);
-  }
-
-  @Override
-  public void onCancel() {
-    //  do nothing, let User continue as they please.
+  public void onFocusChange(View v, boolean hasFocus) {
+    if (!hasFocus) {
+      InputMethodManager mImMan = (InputMethodManager) getSystemService(
+          Context.INPUT_METHOD_SERVICE);
+      if (mImMan != null) {
+        mImMan.hideSoftInputFromWindow(v.getWindowToken(), 0);
+      }
+    }
   }
 }

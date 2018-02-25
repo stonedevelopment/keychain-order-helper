@@ -12,14 +12,18 @@
     <item name="windowNoTitle">true</item>
   </style>
 
-  <style name="SplashTheme" parent="AppTheme.NoActionBar">
+  <style name="AppTheme.NoActionBar.SplashTheme">
     <item name="android:statusBarColor">@android:color/transparent</item>
-    <item name="android:windowBackground">@drawable/splash</item>
+    <item name="android:windowBackground">@drawable/splash_with_background</item>
   </style>
 
   <style name="AppTheme.AppBarOverlay"/>
   <!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark"/>-->
 
   <style name="AppTheme.PopupOverlay"/>
+
+  <style name="Error">
+    <item name="android:textColor">?attr/colorError</item>
+  </style>
 
 </resources>

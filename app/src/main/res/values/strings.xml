@@ -1,5 +1,8 @@
 <resources>
   <string name="app_name">Keychain Order Helper</string>
+  <string name="title_activity_orderlist">@string/app_name</string>
+  <string name="title_activity_neworder">New Order</string>
+  <string name="title_activity_orderdetail">Order Details</string>
   <string name="title_activity_settings">Settings</string>
 
   <!--  Action Menu Labels -->
@@ -73,7 +76,7 @@
   <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t finished, please fix the following:\n\n</string>
   <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
   <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were ordered.</string>
-  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order atleast %1$d keychains.</string>
+  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order at least %1$d more keychains to meet the minimum requirement of %2$d.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
   <!--  AlertDialog:  ProgressDialog:  Prepare Email Intent -->
@@ -87,7 +90,8 @@
   <string name="snackbar_message_send_order_success">Order was sent.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
   <string name="snackbar_message_send_order_fail_no_supported_apps">There are no email apps configured on this device, order not sent.</string>
-  <string name="snackbar_message_send_order_fail_incomplete">Order is incomplete, order not sent.</string>
+  <string name="snackbar_message_send_order_fail_quantity_zero">Order quantity is 0, order not sent.</string>
+  <string name="snackbar_message_send_order_fail_quantity_minimum_not_met">Minimum order quantity of %1$d not met, order not sent.</string>
   <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
   <string name="snackbar_message_incomplete_order">Your order isn\'t complete.</string>
 
