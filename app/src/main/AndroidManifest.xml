@@ -23,7 +23,6 @@
     </activity>
 
     <activity
-      android:label="@string/title_activity_orderlist"
       android:name=".ui.orderlist.OrderListActivity"
       android:theme="@style/AppTheme.NoActionBar">
     </activity>

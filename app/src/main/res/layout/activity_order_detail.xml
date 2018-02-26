@@ -28,21 +28,54 @@
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay">
 
-    <android.support.design.widget.CollapsingToolbarLayout
-      android:id="@+id/collapsingToolbar"
+    <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
       android:layout_width="match_parent"
-      android:layout_height="200dp"
-      app:layout_scrollFlags="scroll|exitUntilCollapsed"
-      app:toolbarId="@+id/toolbar">
+      android:layout_height="?attr/actionBarSize"
+      app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-      <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    <android.support.constraint.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
 
-    </android.support.design.widget.CollapsingToolbarLayout>
+      <TextView
+        android:id="@+id/storeNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Store Name 1"/>
+
+      <TextView
+        android:id="@+id/orderQuantityTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/storeNameTextView"
+        tools:text="0 keychains"/>
+
+      <TextView
+        android:id="@+id/orderDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/storeNameTextView"
+        tools:text="0 minutes ago, 05:43 PM"/>
+
+    </android.support.constraint.ConstraintLayout>
 
   </android.support.design.widget.AppBarLayout>
 

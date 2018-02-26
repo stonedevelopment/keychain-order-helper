@@ -108,7 +108,7 @@ public class NewOrderFragment extends Fragment {
     mViewModel.getOrderCreatedEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
-        mViewModel.getUpdateUIStoreNameTextEvent().setValue(order.getStoreName());
+        mViewModel.getUpdateUIEvent().setValue(order);
         mAdapter.replaceData(order.getOrderItems());
       }
     });

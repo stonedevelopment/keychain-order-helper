@@ -41,10 +41,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
     OnFocusChangeListener {
@@ -52,12 +55,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   private static final String TAG = NewOrderActivity.class.getSimpleName();
 
   public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
-  public static final int SENT_RESULT_OK = 1;
+  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_FIRST_USER + 1;
 
   private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mStoreNameEditText;
+  private TextView mOrderQuantityTextView;
 
   private NewOrderViewModel mViewModel;
 
@@ -107,7 +111,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE_ACTION_SEND) {
-      finishWithResult(SENT_RESULT_OK);
+      finishWithResult(RESULT_OK);
     } else {
       super.onActivityResult(requestCode, resultCode, data);
     }
@@ -148,6 +152,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         validateEditText(s);
       }
     });
+
+    mOrderQuantityTextView = findViewById(R.id.orderQuantityTextView);
   }
 
   private void setupViewFragment() {
@@ -204,10 +210,14 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   private void subscribeToViewModelEvents() {
-    mViewModel.getUpdateUIStoreNameTextEvent().observe(this, new Observer<String>() {
+    mViewModel.getUpdateUIEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
-      public void onChanged(@Nullable String s) {
-        mStoreNameEditText.setText(s);
+      public void onChanged(@Nullable CompleteOrder order) {
+        mStoreNameEditText.setText(order.getStoreName());
+
+        int quantity = order.getOrderQuantity();
+        mOrderQuantityTextView
+            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
       }
     });
 
@@ -221,8 +231,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
           startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
         } else {
           //  there are no apps on phone to handle this intent, cancel order
-          mViewModel.getSnackBarMessenger()
-              .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
+          finishWithResult(RESULT_SENT_ERROR_NO_APPS);
         }
       }
     });

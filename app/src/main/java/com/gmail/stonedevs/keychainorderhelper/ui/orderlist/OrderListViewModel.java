@@ -20,10 +20,12 @@ import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
+import android.support.v7.view.ActionMode;
 import android.view.View;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
@@ -35,7 +37,10 @@ import java.util.List;
  * TODO: Add a class header comment!
  */
 
-public class OrderListViewModel extends AndroidViewModel implements LoadAllCallback {
+public class OrderListViewModel extends AndroidViewModel implements LoadAllCallback,
+    DeleteCallback {
+
+  private static final String TAG = OrderListViewModel.class.getSimpleName();
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
@@ -44,6 +49,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<List<Order>> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<ActionMode> mDataDeletedEvent = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen interactions.
   private final SingleLiveEvent<View> mNewOrderCommand = new SingleLiveEvent<>();
@@ -51,6 +57,8 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
 
   //  Data repository
   private final Repository mRepository;
+
+  private ActionMode mActionMode;
 
   public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
@@ -73,6 +81,10 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mNoDataLoadedEvent;
   }
 
+  SingleLiveEvent<ActionMode> getDataDeletedEvent() {
+    return mDataDeletedEvent;
+  }
+
   SingleLiveEvent<View> getNewOrderCommand() {
     return mNewOrderCommand;
   }
@@ -92,19 +104,19 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
           case Activity.RESULT_CANCELED:
             mSnackBarMessenger.setValue(R.string.snackbar_message_cancel_order_success);
             break;
-          case NewOrderActivity.SENT_RESULT_OK:
+          case Activity.RESULT_OK:
             mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
+            break;
+          case NewOrderActivity.RESULT_SENT_ERROR_NO_APPS:
+            mSnackBarMessenger
+                .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
             break;
         }
         break;
 
       case OrderDetailActivity.REQUEST_CODE:
         switch (resultCode) {
-          case OrderDetailActivity.RESULT_SENT_OK:
-            //  send success message
-            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
-            break;
-          case OrderDetailActivity.RESULT_ERROR:
+          case OrderDetailActivity.RESULT_DATA_LOAD_ERROR:
             //  send failed message
             mSnackBarMessenger.setValue(R.string.snackbar_message_data_loading_error);
         }
@@ -117,6 +129,12 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     mDataLoadingEvent.setValue(true);
     //  Start retrieval of order data.
     mRepository.getAllOrders(this);
+  }
+
+  void startDeleteModeProcess(ActionMode mode, List<Order> orders) {
+    mDataLoadingEvent.setValue(true);
+    mActionMode = mode;
+    mRepository.deleteOrders(orders, this);
   }
 
   @Override
@@ -133,5 +151,11 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     mDataLoadedEvent.setValue(orders);
     //  Finally, enable layout to view items
     mDataLoadingEvent.setValue(false);
+  }
+
+  @Override
+  public void onDataDeleted(int rowsDeleted) {
+    mDataDeletedEvent.setValue(mActionMode);
+    mRepository.getAllOrders(this);
   }
 }

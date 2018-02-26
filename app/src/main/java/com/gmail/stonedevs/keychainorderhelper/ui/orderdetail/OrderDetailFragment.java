@@ -19,17 +19,14 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
@@ -42,9 +39,6 @@ import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
  * Users can resend the order if need be.
  */
 public class OrderDetailFragment extends Fragment {
-
-  private TextView mOrderQuantityTextView;
-  private TextView mOrderDateTextView;
 
   private OrderDetailViewModel mViewModel;
 
@@ -64,15 +58,7 @@ public class OrderDetailFragment extends Fragment {
 
     mViewModel = OrderDetailActivity.obtainViewModel(getActivity());
 
-    View view = inflater.inflate(R.layout.fragment_order_detail, container, false);
-
-    //  Store Name
-    mOrderQuantityTextView = view.findViewById(R.id.orderQuantityTextView);
-
-    //  Order Date
-    mOrderDateTextView = view.findViewById(R.id.orderDateTextView);
-
-    return view;
+    return inflater.inflate(R.layout.fragment_order_detail, container, false);
   }
 
   @Override
@@ -128,17 +114,17 @@ public class OrderDetailFragment extends Fragment {
           ProgressBar progressBar = getView().findViewById(R.id.progressBar);
           progressBar.setVisibility(View.VISIBLE);
 
-          //  Hide container layout.
-          ConstraintLayout layout = getView().findViewById(R.id.layout);
-          layout.setVisibility(View.GONE);
+          //  Hide recyclerView.
+          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+          recyclerView.setVisibility(View.GONE);
         } else {
           //  Hide progress bar.
           ProgressBar progressBar = getView().findViewById(R.id.progressBar);
           progressBar.setVisibility(View.GONE);
 
-          //  Show container layout.
-          ConstraintLayout layout = getView().findViewById(R.id.layout);
-          layout.setVisibility(View.VISIBLE);
+          //  Show recyclerView.
+          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+          recyclerView.setVisibility(View.VISIBLE);
         }
       }
     });
@@ -146,20 +132,9 @@ public class OrderDetailFragment extends Fragment {
     mViewModel.getDataLoadedEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
-        mViewModel.getUpdateUIStoreNameTextEvent().setValue(order.getStoreName());
-
-        long orderDate = order.getOrderDate().getTime();
-        mOrderDateTextView
-            .setText(DateUtils
-                .getRelativeDateTimeString(getActivity(), orderDate, DateUtils.MINUTE_IN_MILLIS,
-                    DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_NUMERIC_DATE));
-
-        mOrderQuantityTextView
-            .setText(String
-                .format(getActivity().getString(R.string.string_format_list_item_order_total_text),
-                    order.getOrderQuantity()));
-
         mAdapter.setData(order.getOrderItems());
+
+        mViewModel.getUpdateUIEvent().setValue(order);
       }
     });
   }

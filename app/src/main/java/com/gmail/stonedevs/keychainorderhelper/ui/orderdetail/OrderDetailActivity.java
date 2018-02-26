@@ -23,7 +23,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -33,10 +32,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator {
 
@@ -47,9 +49,12 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
 
   public static final int RESULT_SENT_OK = RESULT_OK;
-  public static final int RESULT_ERROR = RESULT_CANCELED + 1;
+  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_FIRST_USER + 1;
+  public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 
-  private CollapsingToolbarLayout mCollapsingToolbar;
+  private TextView mStoreNameTextView;
+  private TextView mOrderQuantityTextView;
+  private TextView mOrderDateTextView;
 
   private OrderDetailViewModel mViewModel;
 
@@ -108,16 +113,18 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   }
 
   private void setupActionBar() {
-    mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
-
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
 
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
-      actionBar.setDisplayHomeAsUpEnabled(true);
       actionBar.setDisplayShowHomeEnabled(true);
+      actionBar.setDisplayHomeAsUpEnabled(true);
     }
+
+    mStoreNameTextView = findViewById(R.id.storeNameTextView);
+    mOrderQuantityTextView = findViewById(R.id.orderQuantityTextView);
+    mOrderDateTextView = findViewById(R.id.orderDateTextView);
   }
 
   private void setupViewFragment() {
@@ -132,10 +139,18 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   }
 
   private void subscribeToViewModelEvents() {
-    mViewModel.getUpdateUIStoreNameTextEvent().observe(this, new Observer<String>() {
+    mViewModel.getUpdateUIEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
-      public void onChanged(@Nullable String s) {
-        mCollapsingToolbar.setTitle(s);
+      public void onChanged(@Nullable CompleteOrder order) {
+        mStoreNameTextView.setText(order.getStoreName());
+
+        long orderDate = order.getOrderDate().getTime();
+        mOrderDateTextView
+            .setText(StringUtils.formatSentOrderDate(getApplicationContext(), orderDate));
+
+        int quantity = order.getOrderQuantity();
+        mOrderQuantityTextView
+            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
       }
     });
 
@@ -143,7 +158,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
       @Override
       public void onChanged(@Nullable Void aVoid) {
         //  Data was not received properly.
-        finishWithResult(RESULT_ERROR);
+        finishWithResult(RESULT_DATA_LOAD_ERROR);
       }
     });
 

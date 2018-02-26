@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,6 +45,8 @@ import java.util.List;
  * todo Generate report per Daran.
  */
 public class OrderListFragment extends Fragment {
+
+  private static final String TAG = OrderListFragment.class.getSimpleName();
 
   private OrderListAdapter mAdapter;
 
@@ -91,10 +93,6 @@ public class OrderListFragment extends Fragment {
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
     recyclerView.setLayoutManager(layoutManager);
-
-    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-        layoutManager.getOrientation());
-    recyclerView.addItemDecoration(dividerItemDecoration);
 
     mAdapter = new OrderListAdapter(getActivity(), mViewModel);
 
@@ -170,6 +168,15 @@ public class OrderListFragment extends Fragment {
         //  Show no data textView
         TextView textView = getView().findViewById(R.id.noOrdersFoundText);
         textView.setVisibility(View.VISIBLE);
+      }
+    });
+
+    mViewModel.getDataDeletedEvent().observe(this, new Observer<ActionMode>() {
+      @Override
+      public void onChanged(@Nullable ActionMode mode) {
+        mViewModel.getSnackBarMessenger()
+            .setValue(R.string.snackbar_message_data_deleted_success);
+        mAdapter.finishActionMode(mode);
       }
     });
   }

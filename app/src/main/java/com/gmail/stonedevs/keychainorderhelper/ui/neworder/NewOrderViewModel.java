@@ -21,6 +21,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -53,7 +54,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
 
   //  Events: UI Changes
-  private final SingleLiveEvent<String> mUpdateUIStoreNameTextEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
 
   //  Commands: User Direction
   private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
@@ -98,6 +99,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
   void updateOrderQuantityBy(int change) {
     mCompleteOrder.updateOrderQuantityBy(change);
+    mUpdateUIEvent.setValue(mCompleteOrder);
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -112,8 +114,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mIntentReadyEvent;
   }
 
-  SingleLiveEvent<String> getUpdateUIStoreNameTextEvent() {
-    return mUpdateUIStoreNameTextEvent;
+  SingleLiveEvent<CompleteOrder> getUpdateUIEvent() {
+    return mUpdateUIEvent;
   }
 
   SingleLiveEvent<Void> getCancelOrderCommand() {
@@ -136,7 +138,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        String storeName = "";
+        String storeName = BuildConfig.DEBUG ? getApplication()
+            .getString(R.string.layout_edit_text_default_value_store_name) : "";
         Date orderDate = Calendar.getInstance().getTime();
 
         final Order order = new Order(storeName, orderDate);
@@ -182,8 +185,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   boolean isReady() {
-    return mCompleteOrder != null && !(isStoreNameEmpty() || isOrderQuantityZero()
-        || !doesOrderQuantityMeetMinimumRequirements());
+    return BuildConfig.DEBUG || mCompleteOrder != null && !(isStoreNameEmpty()
+        || isOrderQuantityZero() || !doesOrderQuantityMeetMinimumRequirements());
   }
 
   boolean isStoreNameEmpty() {

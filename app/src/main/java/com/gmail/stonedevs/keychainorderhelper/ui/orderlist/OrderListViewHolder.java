@@ -19,14 +19,15 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
+import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 /**
  * ViewHolder for {@link OrderListAdapter} with binding to its item layout.
@@ -35,17 +36,21 @@ import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItem
 public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
     OnLongClickListener {
 
+  private final CheckBox mSelectCheckBox;
   private final TextView mStoreNameTextView;
   private final TextView mOrderDateTextView;
   private final TextView mOrderQuantityTextView;
 
   private OnRecyclerViewItemClickListener mListener;
 
+  private boolean mIsMultiSelect;
+
   OrderListViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
     super(itemView);
 
     mListener = listener;
 
+    mSelectCheckBox = itemView.findViewById(R.id.selectCheckBox);
     mStoreNameTextView = itemView.findViewById(R.id.storeNameTextView);
     mOrderDateTextView = itemView.findViewById(R.id.orderDateTextView);
     mOrderQuantityTextView = itemView.findViewById(R.id.orderQuantityTextView);
@@ -54,26 +59,38 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
     itemView.setOnLongClickListener(this);
   }
 
-  void bindItem(Context context, @NonNull Order order) {
+  void bindItem(Context c, @NonNull Order order, boolean isMultiSelect) {
+    mIsMultiSelect = isMultiSelect;
+
+    mSelectCheckBox.setChecked(isMultiSelect && mSelectCheckBox.isChecked());
+    mSelectCheckBox.setVisibility(isMultiSelect ? View.VISIBLE : View.GONE);
+
     mStoreNameTextView.setText(order.getStoreName());
 
     long orderDate = order.getOrderDate().getTime();
-    mOrderDateTextView
-        .setText(DateUtils.getRelativeDateTimeString(context, orderDate, DateUtils.MINUTE_IN_MILLIS,
-            DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_NUMERIC_DATE));
+    mOrderDateTextView.setText(StringUtils.formatSentOrderDate(c, orderDate));
 
-    mOrderQuantityTextView
-        .setText(String.format(context.getString(R.string.string_format_list_item_order_total_text),
-            order.getOrderQuantity()));
+    int quantity = order.getOrderQuantity();
+    mOrderQuantityTextView.setText(StringUtils.formatOrderQuantity(c, quantity));
+  }
+
+  private void selectItem() {
+    mSelectCheckBox.setChecked(!mSelectCheckBox.isChecked());
   }
 
   @Override
   public void onClick(View v) {
+    if (mIsMultiSelect) {
+      selectItem();
+    }
+
     mListener.onItemClick(getAdapterPosition());
   }
 
   @Override
   public boolean onLongClick(View v) {
+    selectItem();
+
     return mListener.onItemLongClick(getAdapterPosition());
   }
 }

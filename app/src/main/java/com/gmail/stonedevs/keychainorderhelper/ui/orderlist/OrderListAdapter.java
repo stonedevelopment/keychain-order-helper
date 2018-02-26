@@ -17,8 +17,12 @@
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.gmail.stonedevs.keychainorderhelper.R;
@@ -32,7 +36,9 @@ import java.util.List;
  */
 
 public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> implements
-    OnRecyclerViewItemClickListener {
+    OnRecyclerViewItemClickListener, ActionMode.Callback {
+
+  private static final String TAG = OrderListAdapter.class.getSimpleName();
 
   private final Context mContext;
 
@@ -40,9 +46,15 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
 
   private List<Order> mOrders;
 
+  private boolean mMultiSelect;
+  private List<Order> mSelectedOrders;
+
   OrderListAdapter(Context context, OrderListViewModel viewModel) {
     mContext = context;
     mViewModel = viewModel;
+
+    mMultiSelect = false;
+    mSelectedOrders = new ArrayList<>(0);
 
     setData(new ArrayList<Order>(0));
   }
@@ -58,7 +70,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   @Override
   public void onBindViewHolder(OrderListViewHolder holder, int position) {
     Order order = getItem(position);
-    holder.bindItem(mContext, order);
+    holder.bindItem(mContext, order, mMultiSelect);
   }
 
   @Override
@@ -84,14 +96,67 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     notifyDataSetChanged();
   }
 
+  void finishActionMode(ActionMode mode) {
+    mOrders.removeAll(mSelectedOrders);
+    mode.finish();
+  }
+
   @Override
   public void onItemClick(int position) {
     Order order = getItem(position);
-    mViewModel.getOrderDetailCommand().setValue(order.getId());
+
+    if (mMultiSelect) {
+      if (mSelectedOrders.contains(order)) {
+        mSelectedOrders.remove(order);
+      } else {
+        mSelectedOrders.add(order);
+      }
+    } else {
+      mViewModel.getOrderDetailCommand().setValue(order.getId());
+    }
   }
 
   @Override
   public boolean onItemLongClick(int position) {
+    Order order = getItem(position);
+
+    if (mSelectedOrders.contains(order)) {
+      mSelectedOrders.remove(order);
+    } else {
+      mSelectedOrders.add(order);
+    }
+
+    if (!mMultiSelect) {
+      ((AppCompatActivity) mContext).startSupportActionMode(this);
+    }
+
     return false;
+  }
+
+  @Override
+  public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+    menu.add("Delete");
+
+    mMultiSelect = true;
+    notifyDataSetChanged();
+    return true;
+  }
+
+  @Override
+  public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+    return false;
+  }
+
+  @Override
+  public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+    mViewModel.startDeleteModeProcess(mode, mSelectedOrders);
+    return false;
+  }
+
+  @Override
+  public void onDestroyActionMode(ActionMode mode) {
+    mMultiSelect = false;
+    mSelectedOrders.clear();
+    notifyDataSetChanged();
   }
 }

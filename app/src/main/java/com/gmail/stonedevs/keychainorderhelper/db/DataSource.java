@@ -35,7 +35,7 @@ public interface DataSource {
 
   interface DeleteCallback {
 
-    void onDataDeleted();
+    void onDataDeleted(int rowsDeleted);
   }
 
   void getOrder(@NonNull String orderId, @NonNull LoadCallback callback);
@@ -47,6 +47,8 @@ public interface DataSource {
   void saveOrders(@NonNull List<CompleteOrder> orders, @NonNull InsertCallback callback);
 
   void deleteOrder(@NonNull Order order, @NonNull DeleteCallback callback);
+
+  void deleteOrders(@NonNull List<Order> orders, @NonNull DeleteCallback callback);
 
   void deleteAllOrders(@NonNull DeleteCallback callback);
 }

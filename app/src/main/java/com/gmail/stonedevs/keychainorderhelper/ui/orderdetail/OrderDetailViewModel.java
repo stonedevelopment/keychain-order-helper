@@ -42,7 +42,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
 
   //  Events: UI Changes
-  private final SingleLiveEvent<String> mUpdateUIStoreNameTextEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
 
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
@@ -72,8 +72,8 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     return mIntentReadyEvent;
   }
 
-  SingleLiveEvent<String> getUpdateUIStoreNameTextEvent() {
-    return mUpdateUIStoreNameTextEvent;
+  SingleLiveEvent<CompleteOrder> getUpdateUIEvent() {
+    return mUpdateUIEvent;
   }
 
   SingleLiveEvent<Boolean> getDataLoadingEvent() {
