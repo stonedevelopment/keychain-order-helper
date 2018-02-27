@@ -25,15 +25,12 @@ import android.arch.persistence.room.Query;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import java.util.List;
 
-/**
- * TODO: Add a class header comment!
- */
-
 @Dao
 public interface OrderItemDao {
 
   @Query("select * from orderitem "
-      + "where order_id = :orderId")
+      + "where order_id = :orderId "
+      + "and quantity > 0")
   List<OrderItem> get(String orderId);
 
   @Insert(onConflict = REPLACE)
@@ -44,9 +41,6 @@ public interface OrderItemDao {
 
   @Delete
   void delete(OrderItem orderItem);
-
-  @Delete
-  void delete(OrderItem... orderItems);
 
   @Delete
   void delete(List<OrderItem> orderItemList);

@@ -89,12 +89,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     Bundle args = new Bundle();
 
     //  Fill argument bundle with either saved, if debugging fill with default values :)
-    args.putString(getString(R.string.pref_key_rep_name),
-        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_name)
-            : mViewModel.getRepName());
-    args.putString(getString(R.string.pref_key_rep_territory),
-        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_rep_territory)
-            : mViewModel.getRepTerritory());
+    String repName = mViewModel.getRepName();
+    if (repName.isEmpty() && BuildConfig.DEBUG) {
+      repName = getString(R.string.pref_debug_default_value_rep_name);
+    }
+    String repTerritory = mViewModel.getRepTerritory();
+    if (repTerritory.isEmpty() && BuildConfig.DEBUG) {
+      repTerritory = getString(R.string.pref_debug_default_value_rep_territory);
+    }
+
+    args.putString(getString(R.string.pref_key_rep_name), repName);
+    args.putString(getString(R.string.pref_key_rep_territory), repTerritory);
 
     //  Create instance of dialog fragment use to help User fill in the blanks.
     RequiredFieldsDialogFragment dialogFragment = RequiredFieldsDialogFragment

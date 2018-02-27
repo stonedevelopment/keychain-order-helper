@@ -41,13 +41,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
-import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
     OnFocusChangeListener {
@@ -61,7 +60,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mStoreNameEditText;
-  private TextView mOrderQuantityTextView;
+//  private TextView mOrderQuantityTextView;
 
   private NewOrderViewModel mViewModel;
 
@@ -102,6 +101,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         return true;
       case R.id.action_send:
         mViewModel.getSendOrderCommand().call();
+        return true;
+      case R.id.action_settings:
+        startActivity(new Intent(this, SettingsActivity.class));
         return true;
       default:
         return super.onOptionsItemSelected(item);
@@ -153,7 +155,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       }
     });
 
-    mOrderQuantityTextView = findViewById(R.id.orderQuantityTextView);
+//    mOrderQuantityTextView = findViewById(R.id.orderQuantityTextView);
   }
 
   private void setupViewFragment() {
@@ -215,9 +217,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       public void onChanged(@Nullable CompleteOrder order) {
         mStoreNameEditText.setText(order.getStoreName());
 
-        int quantity = order.getOrderQuantity();
-        mOrderQuantityTextView
-            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
+//        int quantity = order.getOrderQuantity();
+//        mOrderQuantityTextView
+//            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
       }
     });
 

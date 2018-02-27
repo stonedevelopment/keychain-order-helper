@@ -33,7 +33,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHold
 
   private List<OrderItem> mItems;
 
-  public OrderDetailAdapter() {
+  OrderDetailAdapter() {
     setData(new ArrayList<OrderItem>(0));
   }
 

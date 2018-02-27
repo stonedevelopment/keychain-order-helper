@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
@@ -48,7 +49,6 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
   private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
 
-  public static final int RESULT_SENT_OK = RESULT_OK;
   public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_FIRST_USER + 1;
   public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 
@@ -92,6 +92,9 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     switch (item.getItemId()) {
       case R.id.action_send:
         mViewModel.getSendOrderCommand().call();
+        return true;
+      case R.id.action_settings:
+        startActivity(new Intent(this, SettingsActivity.class));
         return true;
       default:
         return super.onOptionsItemSelected(item);

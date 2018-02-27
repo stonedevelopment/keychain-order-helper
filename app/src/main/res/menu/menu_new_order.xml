@@ -28,4 +28,9 @@
     android:title="@string/action_send_order"
     app:showAsAction="ifRoom"/>
 
+  <item
+    android:id="@+id/action_settings"
+    android:title="@string/action_settings"
+    app:showAsAction="never"/>
+
 </menu>

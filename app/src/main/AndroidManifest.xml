@@ -41,11 +41,7 @@
 
     <activity
       android:label="@string/title_activity_settings"
-      android:name=".ui.SettingsActivity"
-      android:parentActivityName=".ui.orderlist.OrderListActivity">
-      <meta-data
-        android:name="android.support.PARENT_ACTIVITY"
-        android:value=".ui.orderlist.OrderListActivity"/>
+      android:name=".ui.SettingsActivity">
     </activity>
 
   </application>
