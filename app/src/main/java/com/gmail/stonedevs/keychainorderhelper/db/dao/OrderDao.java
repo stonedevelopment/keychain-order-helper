@@ -13,11 +13,11 @@ import java.util.List;
 @Dao
 public interface OrderDao {
 
-  @Query("select * from `order` "
+  @Query("select * from orders "
       + "where id = :id")
   Order get(String id);
 
-  @Query("select * from `order` "
+  @Query("select * from orders "
       + "order by order_date desc")
   List<Order> getAll();
 
@@ -30,7 +30,7 @@ public interface OrderDao {
   @Update
   void update(Order order);
 
-  @Query("delete from `order`")
+  @Query("delete from orders")
   int deleteAll();
 
   @Delete

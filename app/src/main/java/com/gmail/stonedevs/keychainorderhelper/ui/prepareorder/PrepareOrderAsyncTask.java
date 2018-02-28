@@ -124,8 +124,9 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
     String repName = prefs.getString(getContext().getString(R.string.pref_key_rep_name),
         getContext().getString(R.string.pref_error_default_value_rep_name));
-    String repTerritory = prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
-        getContext().getString(R.string.pref_error_default_value_rep_territory));
+    String repTerritory = mOrder.hasOrderTerritory() ? mOrder.getOrderTerritory()
+        : prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
+            getContext().getString(R.string.pref_error_default_value_rep_territory));
 
     String[] repNameCellLocations = getContext().getResources()
         .getStringArray(R.array.excel_cell_locations_rep_name);
@@ -170,9 +171,10 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     SimpleDateFormat format = new SimpleDateFormat(
         getContext().getString(R.string.string_date_filename), Locale.getDefault());
     String filenameDateFormat = format.format(orderDate);
-
     String filename = String.format(getContext().getString(R.string.string_format_filename),
-        repTerritory.toLowerCase(), storeName.toLowerCase().replace(" ", "_"), filenameDateFormat);
+        repTerritory.toLowerCase(),
+        storeName.toLowerCase().replaceAll("[^a-zA-Z0-9.\\-]", "_"),
+        filenameDateFormat);
 
     File file = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
         String.format(getContext().getString(R.string.string_format_filename_with_suffix),
@@ -210,8 +212,8 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
 
     //  set email address from preferences
     String sendtoEmail =
-        BuildConfig.DEBUG ? getContext().getString(R.string.pref_debug_default_value_sendto_email)
-            : getContext().getString(R.string.pref_default_value_sendto_email);
+        BuildConfig.DEBUG ? getContext().getString(R.string.intent_extra_email_default_value_debug)
+            : getContext().getString(R.string.intent_extra_email_default_value);
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
@@ -221,8 +223,7 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     // the mail subject
     String subject = String
         .format(getContext().getString(R.string.intent_extra_subject_send_order_by_email),
-            repTerritory,
-            storeName);
+            repTerritory, storeName);
     intent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
     //  the mail body

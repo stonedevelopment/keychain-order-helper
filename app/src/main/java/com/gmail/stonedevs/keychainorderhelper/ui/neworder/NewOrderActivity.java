@@ -46,10 +46,12 @@ import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment.DialogListener;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
 public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
-    OnFocusChangeListener {
+    OnFocusChangeListener, DialogListener {
 
   private static final String TAG = NewOrderActivity.class.getSimpleName();
 
@@ -195,7 +197,11 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       @Override
       public void onChanged(@Nullable Void aVoid) {
         if (mViewModel.isReady()) {
-          showConfirmSendOrderDialog();
+          if (mViewModel.hasTerritory()) {
+            showConfirmSendOrderDialog();
+          } else {
+            showTerritoryDialog();
+          }
         } else {
           if (mViewModel.isStoreNameEmpty()) {
             mStoreNameEditText.requestFocus();
@@ -216,10 +222,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
         mStoreNameEditText.setText(order.getStoreName());
-
-//        int quantity = order.getOrderQuantity();
-//        mOrderQuantityTextView
-//            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
       }
     });
 
@@ -306,6 +308,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
+  public void showTerritoryDialog() {
+    TerritoryDialogFragment dialogFragment = TerritoryDialogFragment.createInstance(new Bundle());
+    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+  }
+
+  @Override
   public void showConfirmCancelOrderDialog() {
     AlertDialog.Builder builder = new Builder(this);
     builder.setTitle(R.string.dialog_title_cancel_order);
@@ -371,6 +379,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     builder.show();
   }
 
+  /**
+   * Override method to fix annoying display bug where the edit text doesn't close keyboard.
+   */
   @Override
   public void onFocusChange(View v, boolean hasFocus) {
     if (!hasFocus) {
@@ -379,6 +390,23 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       if (mImMan != null) {
         mImMan.hideSoftInputFromWindow(v.getWindowToken(), 0);
       }
+    }
+  }
+
+  /**
+   * Callback method called from {@link TerritoryDialogFragment}.
+   *
+   * Called when User presses Continue, or canceling. If {@param territory} is not empty, save to
+   * view model and trigger send order commmand again.
+   */
+  @Override
+  public void onDismissDialog(String territory) {
+    if (!TextUtils.isEmpty(territory)) {
+      //  save Territory to view model
+      mViewModel.setTerritory(territory);
+
+      //  re-call send order command to start process again.
+      mViewModel.getSendOrderCommand().call();
     }
   }
 }

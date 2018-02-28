@@ -21,8 +21,21 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
+  <TextView
+    android:id="@+id/messageTextView"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:text="@string/dialog_message_territory"
+    android:visibility="gone"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"/>
+
   <android.support.design.widget.TextInputLayout
-    android:id="@+id/territoryTextInputLayout"
+    android:id="@+id/textInputLayout"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
@@ -31,15 +44,15 @@
     app:errorEnabled="true"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent">
+    app:layout_constraintTop_toTopOf="@id/messageTextView">
 
     <android.support.design.widget.TextInputEditText
-      android:id="@+id/territoryEditText"
+      android:id="@+id/editText"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:ems="10"
       android:hint="@string/dialog_edit_text_hint_territory"
-      android:inputType="textCapWords"
+      android:inputType="textCapCharacters"
       android:selectAllOnFocus="true"
       android:singleLine="true"/>
 
@@ -54,7 +67,7 @@
     android:layout_marginEnd="8dp"
     android:text="@string/dialog_positive_button_territory"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/territoryTextInputLayout"/>
+    app:layout_constraintTop_toBottomOf="@id/textInputLayout"/>
 
   <Button
     android:id="@+id/cancelButton"
@@ -65,6 +78,6 @@
     android:layout_marginEnd="8dp"
     android:text="@string/dialog_negative_button_territory"
     app:layout_constraintEnd_toStartOf="@+id/saveButton"
-    app:layout_constraintTop_toBottomOf="@+id/territoryTextInputLayout"/>
+    app:layout_constraintTop_toBottomOf="@id/textInputLayout"/>
 
 </android.support.constraint.ConstraintLayout>

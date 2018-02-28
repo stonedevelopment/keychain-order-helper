@@ -21,7 +21,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -85,12 +84,16 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     }
   }
 
-  String getStoreName() {
-    return mCompleteOrder.getStoreName();
-  }
-
   void setStoreName(String storeName) {
     mCompleteOrder.setStoreName(storeName);
+  }
+
+  boolean hasTerritory() {
+    return mCompleteOrder.hasOrderTerritory();
+  }
+
+  void setTerritory(String territory) {
+    mCompleteOrder.setOrderTerritory(territory);
   }
 
   int getOrderQuantity() {
@@ -138,8 +141,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        String storeName = BuildConfig.DEBUG ? getApplication()
-            .getString(R.string.layout_edit_text_default_value_store_name) : "";
+        String storeName = "";
         Date orderDate = Calendar.getInstance().getTime();
 
         final Order order = new Order(storeName, orderDate);
@@ -185,7 +187,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   boolean isReady() {
-    return BuildConfig.DEBUG || mCompleteOrder != null && !(isStoreNameEmpty()
+    return mCompleteOrder != null && !(isStoreNameEmpty()
         || isOrderQuantityZero() || !doesOrderQuantityMeetMinimumRequirements());
   }
 

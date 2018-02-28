@@ -21,11 +21,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
 import java.util.UUID;
 
-@Entity
+@Entity(tableName = "orders")
 public class Order {
 
   @NonNull
@@ -45,16 +46,21 @@ public class Order {
   @ColumnInfo(name = "order_quantity")
   private Integer mOrderQuantity;
 
+  @Nullable
+  @ColumnInfo(name = "order_territory")
+  private String mOrderTerritory;
+
   @Ignore
   public Order(String storeName, Date orderDate) {
-    this(UUID.randomUUID().toString(), storeName, orderDate, 0);
+    this(UUID.randomUUID().toString(), storeName, orderDate, null, 0);
   }
 
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @NonNull Integer orderQuantity) {
+      @Nullable String orderTerritory, @NonNull Integer orderQuantity) {
     mId = id;
     mStoreName = storeName;
     mOrderDate = orderDate;
+    mOrderTerritory = orderTerritory;
     mOrderQuantity = orderQuantity;
   }
 
@@ -86,9 +92,21 @@ public class Order {
     mOrderQuantity = quantity;
   }
 
+  @Nullable
+  public String getOrderTerritory() {
+    return mOrderTerritory;
+  }
+
+  public void setOrderTerritory(@Nullable String orderTerritory) {
+    mOrderTerritory = orderTerritory;
+  }
+
   @Override
   public String toString() {
-    return "id:" + getId() + ", store_name:" + getStoreName() + ", order_date:" + getOrderDate()
+    return "id:" + getId()
+        + ", store_name:" + getStoreName()
+        + ", order_date:" + getOrderDate()
+        + ", order_territory:" + getOrderTerritory()
         + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")";
   }
 }

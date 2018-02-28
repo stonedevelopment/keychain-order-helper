@@ -16,6 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.model;
 
+import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import java.util.Date;
@@ -58,6 +59,18 @@ public class CompleteOrder {
 
   public List<OrderItem> getOrderItems() {
     return mOrderItems;
+  }
+
+  public boolean hasOrderTerritory() {
+    return !TextUtils.isEmpty(getOrderTerritory());
+  }
+
+  public String getOrderTerritory() {
+    return mOrder.getOrderTerritory();
+  }
+
+  public void setOrderTerritory(String orderTerritory) {
+    mOrder.setOrderTerritory(orderTerritory);
   }
 
   public int getOrderQuantity() {

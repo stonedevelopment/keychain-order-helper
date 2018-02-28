@@ -44,11 +44,11 @@
   <string name="dialog_positive_button_initial_settings">Save</string>
 
   <!--  Layouts:  TerritoryDialogFragment -->
-  <string name="dialog_title_territory">Territory</string>
-  <string name="dialog_message_territory">Enter the territory you\'re ordering for.</string>
+  <string name="dialog_title_territory">Set Territory</string>
+  <string name="dialog_message_territory">Enter the territory you\'re ordering for:</string>
   <string name="dialog_edit_text_hint_territory">Territory</string>
   <string name="dialog_edit_text_error_territory">This field is required.</string>
-  <string name="dialog_positive_button_territory">Set Territory</string>
+  <string name="dialog_positive_button_territory">Continue</string>
   <string name="dialog_negative_button_territory">Go Back</string>
 
   <!--  AlertDialogs -->
@@ -106,8 +106,8 @@
   <string name="snackbar_message_send_order_fail_quantity_minimum_not_met">Minimum order quantity
     of %1$d not met, order not sent.</string>
   <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
-  <string name="snackbar_message_data_deleted_success">Order(s) deleted.</string>
-  <string name="snackbar_message_data_deleted_fail">Order(s) were not deleted.</string>
+  <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
+  <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
 
   <!--  Settings -->
 

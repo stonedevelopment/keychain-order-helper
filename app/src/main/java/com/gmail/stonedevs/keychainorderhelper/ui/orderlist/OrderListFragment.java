@@ -174,8 +174,6 @@ public class OrderListFragment extends Fragment {
     mViewModel.getDataDeletedEvent().observe(this, new Observer<ActionMode>() {
       @Override
       public void onChanged(@Nullable ActionMode mode) {
-        mViewModel.getSnackBarMessenger()
-            .setValue(R.string.snackbar_message_data_deleted_success);
         mAdapter.finishActionMode(mode);
       }
     });
