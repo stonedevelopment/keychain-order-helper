@@ -126,6 +126,7 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
         getContext().getString(R.string.pref_error_default_value_rep_name));
     String repTerritory = prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
         getContext().getString(R.string.pref_error_default_value_rep_territory));
+
     String[] repNameCellLocations = getContext().getResources()
         .getStringArray(R.array.excel_cell_locations_rep_name);
     for (String cellLocation : repNameCellLocations) {
@@ -195,31 +196,6 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     return file;
   }
 
-  private File createFile(File dir, String filename) {
-    File file = new File(dir,
-        String.format(getContext().getString(R.string.string_format_filename_with_suffix),
-            filename));
-
-    if (file.exists()) {
-      file.delete();
-    }
-
-    return file;
-  }
-
-  private File createFile(File dir, String filename, int copyNum) {
-
-    File file = new File(dir,
-        String.format(getContext().getString(R.string.string_format_filename_with_suffix_with_copy),
-            filename, copyNum));
-
-    if (file.exists()) {
-      return createFile(dir, filename, ++copyNum);
-    }
-
-    return file;
-  }
-
   private Intent createEmailIntent(Uri uri) {
     String storeName = mOrder.getStoreName();
 
@@ -244,7 +220,8 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
 
     // the mail subject
     String subject = String
-        .format(getContext().getString(R.string.string_format_email_subject), repTerritory,
+        .format(getContext().getString(R.string.intent_extra_subject_send_order_by_email),
+            repTerritory,
             storeName);
     intent.putExtra(Intent.EXTRA_SUBJECT, subject);
 

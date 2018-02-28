@@ -30,30 +30,34 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
-public class RequiredFieldsDialogFragment extends DialogFragment implements OnClickListener {
+public class InitialSettingsDialogFragment extends DialogFragment implements OnClickListener {
 
-  private static final String TAG = RequiredFieldsDialogFragment.class.getSimpleName();
+  private static final String TAG = InitialSettingsDialogFragment.class.getSimpleName();
 
   private TextInputLayout mRepNameTextInputLayout;
   private TextInputEditText mRepNameEditText;
+  private Button mSaveButton;
 
-  private TextInputLayout mRepTerritoryInputLayout;
-  private TextInputEditText mRepTerritoryEditText;
+  private EditText mRepTerritoryEditText;
 
-  private OnDismissListener mListener;
+  private OnDismissListener mDismissListener;
 
-  public RequiredFieldsDialogFragment() {
+  public InitialSettingsDialogFragment() {
     //  Empty constructor required for DialogFragment
   }
 
-  public static RequiredFieldsDialogFragment createInstance(Bundle args) {
-    RequiredFieldsDialogFragment dialogFragment = new RequiredFieldsDialogFragment();
+  public static InitialSettingsDialogFragment createInstance(Bundle args) {
+    InitialSettingsDialogFragment dialogFragment = new InitialSettingsDialogFragment();
     dialogFragment.setArguments(args);
     return dialogFragment;
   }
@@ -64,23 +68,47 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     Bundle bundle = getArguments();
 
     AlertDialog.Builder builder = new Builder(getActivity());
-    builder.setTitle(R.string.dialog_title_required_fields);
+    builder.setTitle(R.string.dialog_title_initial_settings);
 
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
-        .inflate(R.layout.dialog_required_fields, null);
+        .inflate(R.layout.dialog_initial_settings, null);
 
-    String repName = bundle.getString(getString(R.string.pref_key_rep_name));
+    mSaveButton = view.findViewById(R.id.saveButton);
+    mSaveButton.setOnClickListener(this);
+
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);
     mRepNameEditText = view.findViewById(R.id.repNameEditText);
+    mRepNameEditText.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        if (TextUtils.isEmpty(s)) {
+          mRepNameTextInputLayout.setErrorEnabled(true);
+          mRepNameTextInputLayout
+              .setError(getString(R.string.dialog_field_error_initial_settings_rep_name_text));
+          mSaveButton.setEnabled(false);
+        } else {
+          mRepNameTextInputLayout.setErrorEnabled(false);
+          mSaveButton.setEnabled(true);
+        }
+      }
+    });
+
+    String repName = bundle.getString(getString(R.string.pref_key_rep_name));
     mRepNameEditText.setText(repName);
 
     String repTerritory = bundle.getString(getString(R.string.pref_key_rep_territory));
-    mRepTerritoryInputLayout = view.findViewById(R.id.repTerritoryTextInputLayout);
     mRepTerritoryEditText = view.findViewById(R.id.repTerritoryEditText);
     mRepTerritoryEditText.setText(repTerritory);
-
-    Button saveButton = view.findViewById(R.id.saveButton);
-    saveButton.setOnClickListener(this);
 
     builder.setView(view);
 
@@ -93,7 +121,7 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     // Verify that the host activity implements the callback interface
     try {
       // Instantiate the NoticeDialogListener so we can send events to the host
-      mListener = (OnDismissListener) context;
+      mDismissListener = (OnDismissListener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw exception
       throw new ClassCastException(context.toString()
@@ -101,7 +129,7 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     }
   }
 
-  void saveRequiredFields(String repName, String repTerritory) {
+  void saveInitialSettings(String repName, String repTerritory) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
     prefs.edit()
@@ -117,25 +145,10 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
     String nameText = mRepNameEditText.getText().toString();
     String territoryText = mRepTerritoryEditText.getText().toString();
 
-    if (nameText.isEmpty() || territoryText.isEmpty()) {
-      if (nameText.isEmpty() && territoryText.isEmpty()) {
-        mRepNameTextInputLayout.setError(getString(R.string.dialog_field_error_required_fields_rep_name_text));
-        mRepTerritoryInputLayout
-            .setError(getString(R.string.dialog_field_error_required_fields_rep_territory_text));
-      } else {
-        if (nameText.isEmpty()) {
-          mRepNameTextInputLayout.setError(getString(R.string.dialog_field_error_required_fields_rep_name_text));
-          mRepTerritoryInputLayout.setError(null);
-        } else {
-          mRepNameTextInputLayout.setError(null);
-          mRepTerritoryInputLayout
-              .setError(getString(R.string.dialog_field_error_required_fields_rep_territory_text));
-        }
-      }
-    } else {
-      saveRequiredFields(nameText, territoryText);
+    if (!TextUtils.isEmpty(nameText)) {
+      saveInitialSettings(nameText, territoryText);
 
-      Toast.makeText(getActivity(), R.string.toast_dialog_required_fields_success,
+      Toast.makeText(getActivity(), R.string.toast_dialog_settings_success,
           Toast.LENGTH_SHORT).show();
 
       dismiss();
@@ -144,6 +157,6 @@ public class RequiredFieldsDialogFragment extends DialogFragment implements OnCl
 
   @Override
   public void onDismiss(DialogInterface dialog) {
-    mListener.onDismiss(dialog);
+    mDismissListener.onDismiss(dialog);
   }
 }

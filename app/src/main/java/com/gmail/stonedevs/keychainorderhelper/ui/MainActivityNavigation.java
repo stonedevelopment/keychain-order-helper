@@ -21,7 +21,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
  */
 public interface MainActivityNavigation {
 
-  void startRequiredFieldsDialogFragment();
+  void startInitialSettingsDialogFragment();
 
   void startOrderListActivity();
 }

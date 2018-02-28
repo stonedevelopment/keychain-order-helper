@@ -22,14 +22,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
+import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 /**
- * Exposes SingleLiveEvents and Snackbar to {@link MainActivityFragment}.
+ * Exposes SingleLiveEvents and Snackbar to {@link MainActivity}.
  */
 
 public class MainActivityViewModel extends AndroidViewModel {
@@ -38,7 +38,7 @@ public class MainActivityViewModel extends AndroidViewModel {
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Commands directed by System logic
-  private final SingleLiveEvent<Void> mOpenRequiredFieldsDialogCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mOpenInitialSettingsDialogCommand = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen buttons.
   private final SingleLiveEvent<Void> mOrderListCommand = new SingleLiveEvent<>();
@@ -65,8 +65,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     return mSnackBarMessenger;
   }
 
-  SingleLiveEvent<Void> getOpenRequiredFieldsDialogCommand() {
-    return mOpenRequiredFieldsDialogCommand;
+  SingleLiveEvent<Void> getOpenInitialSettingsDialogCommand() {
+    return mOpenInitialSettingsDialogCommand;
   }
 
   SingleLiveEvent<Void> getOrderListCommand() {
@@ -98,7 +98,7 @@ public class MainActivityViewModel extends AndroidViewModel {
    * Are both required fields filled out?
    */
   private boolean isReady() {
-    return !mRepName.isEmpty() && !mRepTerritory.isEmpty();
+    return !TextUtils.isEmpty(mRepName);
   }
 
   /**
@@ -106,14 +106,10 @@ public class MainActivityViewModel extends AndroidViewModel {
    * Otherwise, open dialog for user to enter their name and territory.
    */
   private void validateRequiredFields() {
-    if (BuildConfig.DEBUG) {
-      getOpenRequiredFieldsDialogCommand().call();
+    if (isReady()) {
+      getOrderListCommand().call();
     } else {
-      if (isReady()) {
-        getOrderListCommand().call();
-      } else {
-        getOpenRequiredFieldsDialogCommand().call();
-      }
+      getOpenInitialSettingsDialogCommand().call();
     }
   }
 }

@@ -25,10 +25,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.RequiredFieldsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.InitialSettingsDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 public class MainActivity extends AppCompatActivity implements MainActivityNavigation,
@@ -62,10 +61,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   private void subscribeToNavigationChanges() {
-    mViewModel.getOpenRequiredFieldsDialogCommand().observe(this, new Observer<Void>() {
+    mViewModel.getOpenInitialSettingsDialogCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        startRequiredFieldsDialogFragment();
+        startInitialSettingsDialogFragment();
       }
     });
 
@@ -85,26 +84,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   @Override
-  public void startRequiredFieldsDialogFragment() {
+  public void startInitialSettingsDialogFragment() {
     Bundle args = new Bundle();
 
     //  Fill argument bundle with either saved, if debugging fill with default values :)
     String repName = mViewModel.getRepName();
-    if (repName.isEmpty() && BuildConfig.DEBUG) {
-      repName = getString(R.string.pref_debug_default_value_rep_name);
-    }
-    String repTerritory = mViewModel.getRepTerritory();
-    if (repTerritory.isEmpty() && BuildConfig.DEBUG) {
-      repTerritory = getString(R.string.pref_debug_default_value_rep_territory);
-    }
-
     args.putString(getString(R.string.pref_key_rep_name), repName);
+
+    String repTerritory = mViewModel.getRepTerritory();
     args.putString(getString(R.string.pref_key_rep_territory), repTerritory);
 
     //  Create instance of dialog fragment use to help User fill in the blanks.
-    RequiredFieldsDialogFragment dialogFragment = RequiredFieldsDialogFragment
+    InitialSettingsDialogFragment dialogFragment = InitialSettingsDialogFragment
         .createInstance(args);
 
+    //  Make sure dialog can not be cancelable.
     dialogFragment.setCancelable(false);
 
     //  Initializations complete, show that dialog!

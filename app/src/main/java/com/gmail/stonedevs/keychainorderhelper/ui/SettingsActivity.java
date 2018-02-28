@@ -52,7 +52,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             index >= 0
                 ? listPreference.getEntries()[index]
                 : null);
-
       } else {
         // For all other preferences, set the summary to the value's
         // simple string representation.

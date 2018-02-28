@@ -54,7 +54,7 @@
           android:id="@+id/storeNameEditText"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="@string/dialog_edit_text_hint_store_name"
+          android:hint="@string/layout_edit_text_hint_store_name"
           android:inputType="textCapWords"
           android:selectAllOnFocus="true"
           android:singleLine="true"

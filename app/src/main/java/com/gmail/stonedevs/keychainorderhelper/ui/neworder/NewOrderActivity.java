@@ -263,7 +263,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mTextInputLayout.setErrorEnabled(true);
       }
 
-      mTextInputLayout.setError(getString(R.string.dialog_edit_text_error_store_name));
+      mTextInputLayout.setError(getString(R.string.layout_edit_text_hint_store_name));
     } else {
       mTextInputLayout.setErrorEnabled(false);
     }
