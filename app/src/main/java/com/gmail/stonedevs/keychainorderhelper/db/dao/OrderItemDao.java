@@ -29,8 +29,7 @@ import java.util.List;
 public interface OrderItemDao {
 
   @Query("select * from orderitem "
-      + "where order_id = :orderId "
-      + "and quantity > 0")
+      + "where order_id = :orderId")
   List<OrderItem> get(String orderId);
 
   @Insert(onConflict = REPLACE)

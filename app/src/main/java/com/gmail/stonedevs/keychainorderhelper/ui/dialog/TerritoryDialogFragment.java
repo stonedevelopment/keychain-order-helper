@@ -48,9 +48,13 @@ public class TerritoryDialogFragment extends DialogFragment {
   private String mText;
   private boolean mSendOrderAfter;
 
+  private boolean mCanceled;
+
   public interface DialogListener {
 
-    void onDismissDialog(String text, boolean sendOrderAfter);
+    void onContinue(@NonNull String text, boolean sendOrderAfter);
+
+    void onCancel();
   }
 
   public TerritoryDialogFragment() {
@@ -85,11 +89,8 @@ public class TerritoryDialogFragment extends DialogFragment {
     mSaveButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        String text = mEditText.getText().toString();
-
-        if (!TextUtils.isEmpty(text)) {
-          dismiss();
-        }
+        mCanceled = false;
+        dismiss();
       }
     });
 
@@ -97,6 +98,7 @@ public class TerritoryDialogFragment extends DialogFragment {
     mCancelButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
+        mCanceled = true;
         dismiss();
       }
     });
@@ -131,6 +133,7 @@ public class TerritoryDialogFragment extends DialogFragment {
     });
 
     //  nullify edit text to lazily trigger error layout
+    //  or  set text to preference value.
     mEditText.setText(mText);
 
     builder.setView(view);
@@ -154,6 +157,10 @@ public class TerritoryDialogFragment extends DialogFragment {
 
   @Override
   public void onDismiss(DialogInterface dialog) {
-    mListener.onDismissDialog(mText, mSendOrderAfter);
+    if (mCanceled) {
+      mListener.onCancel();
+    } else {
+      mListener.onContinue(mText, mSendOrderAfter);
+    }
   }
 }

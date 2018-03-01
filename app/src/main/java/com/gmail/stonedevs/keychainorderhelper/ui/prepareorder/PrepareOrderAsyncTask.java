@@ -204,8 +204,9 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     String storeName = mOrder.getStoreName();
 
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-    String repTerritory = prefs
-        .getString(getContext().getString(R.string.pref_key_rep_territory), null);
+    String repTerritory = mOrder.hasOrderTerritory() ? mOrder.getOrderTerritory()
+        : prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
+            getContext().getString(R.string.pref_error_default_value_rep_territory));
 
     Intent intent = new Intent(Intent.ACTION_SEND);
 

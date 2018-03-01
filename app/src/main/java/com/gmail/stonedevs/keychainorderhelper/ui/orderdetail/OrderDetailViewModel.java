@@ -92,10 +92,6 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     return mSendOrderCommand;
   }
 
-  CompleteOrder getOrder() {
-    return mCompleteOrder;
-  }
-
   public void start(@NonNull String orderId) {
     mDataLoadingEvent.setValue(true);
     mRepository.getOrder(orderId, this);
@@ -115,8 +111,8 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   public void onDataLoaded(CompleteOrder order) {
     mCompleteOrder = order;
 
-    mDataLoadingEvent.setValue(false);
     mDataLoadedEvent.setValue(order);
+    mDataLoadingEvent.setValue(false);
   }
 
   @Override

@@ -29,8 +29,11 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main UI for Order Detail screen.
@@ -132,7 +135,15 @@ public class OrderDetailFragment extends Fragment {
     mViewModel.getDataLoadedEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
-        mAdapter.setData(order.getOrderItems());
+        //  Strip out the items without a quantity, but retain original list for email.
+        List<OrderItem> orders = new ArrayList<>(0);
+        for (OrderItem item : order.getOrderItems()) {
+          if (item.getQuantity() > 0) {
+            orders.add(item);
+          }
+        }
+
+        mAdapter.setData(orders);
 
         mViewModel.getUpdateUIEvent().setValue(order);
       }

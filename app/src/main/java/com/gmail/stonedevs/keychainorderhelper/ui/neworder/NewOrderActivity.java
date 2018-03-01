@@ -22,7 +22,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -49,6 +52,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment.DialogListener;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
+import java.util.Objects;
 
 public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
     OnFocusChangeListener, DialogListener {
@@ -412,19 +416,32 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   /**
    * Callback method called from {@link TerritoryDialogFragment}.
    *
-   * Called when User presses Continue, or canceling. If {@param territory} is not empty, save to
-   * view model and trigger send order commmand again.
+   * Called when User presses Continue button. Set territory in View Model, then send if triggered
+   * to do so.
    */
   @Override
-  public void onDismissDialog(String territory, boolean sendOrderAfter) {
-    if (!TextUtils.isEmpty(territory)) {
+  public void onContinue(@NonNull String territory, boolean sendOrderAfter) {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+    String prefsTerritory = prefs
+        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+
+    if (!Objects.equals(prefsTerritory, territory)) {
       //  save Territory to view model
       mViewModel.setTerritory(territory);
-
-      //  re-call send order command to start process again.
-      if (sendOrderAfter) {
-        mViewModel.getSendOrderCommand().call();
-      }
     }
+    //  re-call send order command to start process again.
+    if (sendOrderAfter) {
+      mViewModel.getSendOrderCommand().call();
+    }
+  }
+
+  /**
+   * Callback method from {@link TerritoryDialogFragment}.
+   *
+   * Called when User presses the Cancel button.
+   */
+  @Override
+  public void onCancel() {
+    //  do nothing, User canceled dialog.
   }
 }

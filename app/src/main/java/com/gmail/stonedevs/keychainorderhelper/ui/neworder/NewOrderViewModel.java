@@ -20,7 +20,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -90,11 +93,20 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   boolean hasTerritory() {
-    return mCompleteOrder.hasOrderTerritory();
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+    String prefsTerritory = prefs
+        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+
+    return mCompleteOrder.hasOrderTerritory() || !TextUtils.isEmpty(prefsTerritory);
   }
 
+  /**
+   * Return Territory if saved to ViewModel or saved in sharedPreferences.
+   */
   String getTerritory() {
-    return mCompleteOrder.getOrderTerritory();
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+    return mCompleteOrder.hasOrderTerritory() ? mCompleteOrder.getOrderTerritory() : prefs
+        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
   }
 
   void setTerritory(String territory) {

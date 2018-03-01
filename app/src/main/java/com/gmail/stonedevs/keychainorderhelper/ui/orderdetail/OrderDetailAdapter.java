@@ -65,10 +65,6 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHold
     return mItems.get(position);
   }
 
-  void replaceData(List<OrderItem> items) {
-    setData(items);
-  }
-
   void setData(List<OrderItem> items) {
     mItems = items;
     notifyDataSetChanged();
