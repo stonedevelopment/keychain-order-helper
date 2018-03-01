@@ -325,6 +325,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     args.putBoolean(getString(R.string.bundle_key_order_send_after), sendOrderAfter);
 
     TerritoryDialogFragment dialogFragment = TerritoryDialogFragment.createInstance(args);
+    dialogFragment.setCancelable(false);
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
   }
 

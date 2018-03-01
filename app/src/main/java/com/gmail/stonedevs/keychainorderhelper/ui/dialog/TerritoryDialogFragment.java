@@ -66,6 +66,10 @@ public class TerritoryDialogFragment extends DialogFragment {
   @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
+    if (getDialog() != null) {
+      dismiss();
+    }
+
     Builder builder = new Builder(getActivity());
     builder.setTitle(R.string.dialog_title_territory);
 

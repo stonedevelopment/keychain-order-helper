@@ -46,7 +46,7 @@
   <string name="dialog_positive_button_initial_settings">Save</string>
 
   <!--  Layouts:  TerritoryDialogFragment -->
-  <string name="dialog_title_territory">Rep Territory</string>
+  <string name="dialog_title_territory">Order Territory</string>
   <string name="dialog_message_territory">Please enter the territory you are ordering for:</string>
   <string name="dialog_edit_text_hint_territory">Territory</string>
   <string name="dialog_edit_text_error_territory">This field is required.</string>

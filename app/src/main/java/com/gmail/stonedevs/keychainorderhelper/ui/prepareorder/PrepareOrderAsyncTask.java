@@ -33,6 +33,7 @@ import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -138,10 +139,11 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
     }
 
     //  Write Current Date.
+    String dateFormat = DateUtil.getFormattedDateForLayout(orderDate);
     String[] dateCellLocations = getContext().getResources()
         .getStringArray(R.array.excel_cell_locations_order_date);
     for (String cellLocation : dateCellLocations) {
-      getCellByAddress(sheet, cellLocation).setCellValue(orderDate);
+      getCellByAddress(sheet, cellLocation).setCellValue(dateFormat);
     }
 
     //  Write Order Item data.
