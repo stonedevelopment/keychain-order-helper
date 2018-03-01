@@ -33,7 +33,7 @@
   <string name="layout_edit_text_default_value_store_name">Store Name 1</string>
 
   <!--  Layouts:  OrderListFragment -->
-  <string name="layout_text_view_no_orders">There are currently no orders.</string>
+  <string name="layout_text_view_no_orders">There are currently no keychain orders.</string>
 
   <!--  Layouts:  InitialSettingsDialogFragment -->
   <string name="dialog_title_initial_settings">Initial Settings</string>
