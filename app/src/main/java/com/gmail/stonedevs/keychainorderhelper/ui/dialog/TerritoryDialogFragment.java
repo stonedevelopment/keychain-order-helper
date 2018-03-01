@@ -34,21 +34,23 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
-public class TerritoryDialogFragment extends DialogFragment implements OnClickListener {
+public class TerritoryDialogFragment extends DialogFragment {
 
   private static final String TAG = TerritoryDialogFragment.class.getSimpleName();
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mEditText;
   private Button mSaveButton;
+  private Button mCancelButton;
 
   private DialogListener mListener;
 
   private String mText;
+  private boolean mSendOrderAfter;
 
   public interface DialogListener {
 
-    void onDismissDialog(String text);
+    void onDismissDialog(String text, boolean sendOrderAfter);
   }
 
   public TerritoryDialogFragment() {
@@ -67,11 +69,33 @@ public class TerritoryDialogFragment extends DialogFragment implements OnClickLi
     Builder builder = new Builder(getActivity());
     builder.setTitle(R.string.dialog_title_territory);
 
+    Bundle args = getArguments();
+
+    mText = args.getString(getString(R.string.bundle_key_order_territory));
+    mSendOrderAfter = args.getBoolean(getString(R.string.bundle_key_order_send_after));
+
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_prompt_with_edit_text, null);
 
     mSaveButton = view.findViewById(R.id.saveButton);
-    mSaveButton.setOnClickListener(this);
+    mSaveButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        String text = mEditText.getText().toString();
+
+        if (!TextUtils.isEmpty(text)) {
+          dismiss();
+        }
+      }
+    });
+
+    mCancelButton = view.findViewById(R.id.cancelButton);
+    mCancelButton.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        dismiss();
+      }
+    });
 
     mTextInputLayout = view.findViewById(R.id.textInputLayout);
     mEditText = view.findViewById(R.id.editText);
@@ -103,7 +127,7 @@ public class TerritoryDialogFragment extends DialogFragment implements OnClickLi
     });
 
     //  nullify edit text to lazily trigger error layout
-    mEditText.setText(null);
+    mEditText.setText(mText);
 
     builder.setView(view);
 
@@ -125,16 +149,7 @@ public class TerritoryDialogFragment extends DialogFragment implements OnClickLi
   }
 
   @Override
-  public void onClick(View v) {
-    String text = mEditText.getText().toString();
-
-    if (!TextUtils.isEmpty(text)) {
-      dismiss();
-    }
-  }
-
-  @Override
   public void onDismiss(DialogInterface dialog) {
-    mListener.onDismissDialog(mText);
+    mListener.onDismissDialog(mText, mSendOrderAfter);
   }
 }

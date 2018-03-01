@@ -29,6 +29,11 @@
     app:showAsAction="ifRoom"/>
 
   <item
+    android:id="@+id/action_edit_territory"
+    android:title="@string/action_edit_territory"
+    app:showAsAction="never"/>
+
+  <item
     android:id="@+id/action_settings"
     android:title="@string/action_settings"
     app:showAsAction="never"/>

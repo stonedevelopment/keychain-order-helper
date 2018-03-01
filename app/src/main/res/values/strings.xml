@@ -20,8 +20,10 @@
     %1$s.</string>
 
   <!--  Bundle Keys -->
-  <string name="bundle_key_order_id">bundle_key_order_id</string>
-  <string name="bundle_key_store_name">bundle_key_store_name</string>
+  <string name="bundle_key_store_name">store_name</string>
+  <string name="bundle_key_order_id">order_id</string>
+  <string name="bundle_key_order_territory">order_territory</string>
+  <string name="bundle_key_order_send_after">order_send_after</string>
 
   <!--  Layouts -->
   <!--  Layouts:  NewOrderFragment -->
@@ -44,8 +46,8 @@
   <string name="dialog_positive_button_initial_settings">Save</string>
 
   <!--  Layouts:  TerritoryDialogFragment -->
-  <string name="dialog_title_territory">Set Territory</string>
-  <string name="dialog_message_territory">Enter the territory you\'re ordering for:</string>
+  <string name="dialog_title_territory">Rep Territory</string>
+  <string name="dialog_message_territory">Please enter the territory you are ordering for:</string>
   <string name="dialog_edit_text_hint_territory">Territory</string>
   <string name="dialog_edit_text_error_territory">This field is required.</string>
   <string name="dialog_positive_button_territory">Continue</string>
@@ -158,5 +160,6 @@
 
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
+  <string name="action_edit_territory">Edit Territory</string>
 
 </resources>

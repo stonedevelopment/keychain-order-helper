@@ -85,7 +85,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
     subscribeToViewModelEvents();
 
-    subscribeToNavigationChanges();
+    subscribeToViewModelCommands();
   }
 
   @Override
@@ -103,6 +103,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         return true;
       case R.id.action_send:
         mViewModel.getSendOrderCommand().call();
+        return true;
+      case R.id.action_edit_territory:
+        mViewModel.getEditTerritoryCommand().setValue(false);
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -171,7 +174,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel = obtainViewModel(this);
   }
 
-  private void subscribeToNavigationChanges() {
+  private void subscribeToViewModelCommands() {
     mViewModel.getCancelOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
@@ -200,12 +203,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
           if (mViewModel.hasTerritory()) {
             showConfirmSendOrderDialog();
           } else {
-            showTerritoryDialog();
+            showTerritoryDialog(true);
           }
         } else {
           if (mViewModel.isStoreNameEmpty()) {
             mStoreNameEditText.requestFocus();
 
+            //  forcibly show keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(mStoreNameEditText, InputMethodManager.SHOW_IMPLICIT);
@@ -213,6 +217,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
             showOrderRequirementsDialog();
           }
         }
+      }
+    });
+
+    mViewModel.getEditTerritoryCommand().observe(this, new Observer<Boolean>() {
+      @Override
+      public void onChanged(@Nullable Boolean sendOrderAfter) {
+        showTerritoryDialog(sendOrderAfter);
       }
     });
   }
@@ -308,8 +319,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
-  public void showTerritoryDialog() {
-    TerritoryDialogFragment dialogFragment = TerritoryDialogFragment.createInstance(new Bundle());
+  public void showTerritoryDialog(boolean sendOrderAfter) {
+    Bundle args = new Bundle();
+    args.putString(getString(R.string.bundle_key_order_territory), mViewModel.getTerritory());
+    args.putBoolean(getString(R.string.bundle_key_order_send_after), sendOrderAfter);
+
+    TerritoryDialogFragment dialogFragment = TerritoryDialogFragment.createInstance(args);
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
   }
 
@@ -400,13 +415,15 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
    * view model and trigger send order commmand again.
    */
   @Override
-  public void onDismissDialog(String territory) {
+  public void onDismissDialog(String territory, boolean sendOrderAfter) {
     if (!TextUtils.isEmpty(territory)) {
       //  save Territory to view model
       mViewModel.setTerritory(territory);
 
       //  re-call send order command to start process again.
-      mViewModel.getSendOrderCommand().call();
+      if (sendOrderAfter) {
+        mViewModel.getSendOrderCommand().call();
+      }
     }
   }
 }

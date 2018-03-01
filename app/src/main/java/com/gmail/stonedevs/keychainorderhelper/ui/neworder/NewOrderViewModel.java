@@ -58,8 +58,9 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   //  Commands: User Direction
   private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mPrepareOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Boolean> mEditTerritoryCommand = new SingleLiveEvent<>();
 
   //  Data repository
   private final Repository mRepository;
@@ -90,6 +91,10 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
   boolean hasTerritory() {
     return mCompleteOrder.hasOrderTerritory();
+  }
+
+  String getTerritory() {
+    return mCompleteOrder.getOrderTerritory();
   }
 
   void setTerritory(String territory) {
@@ -129,12 +134,16 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mResetOrderCommand;
   }
 
+  SingleLiveEvent<Void> getPrepareOrderCommand() {
+    return mPrepareOrderCommand;
+  }
+
   SingleLiveEvent<Void> getSendOrderCommand() {
     return mSendOrderCommand;
   }
 
-  SingleLiveEvent<Void> getPrepareOrderCommand() {
-    return mPrepareOrderCommand;
+  SingleLiveEvent<Boolean> getEditTerritoryCommand() {
+    return mEditTerritoryCommand;
   }
 
   private void createNewOrder() {
