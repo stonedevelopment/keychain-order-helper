@@ -86,8 +86,8 @@
   <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
   <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were
     ordered.</string>
-  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order at
-    least %1$d more keychains to meet the minimum requirement of %2$d.</string>
+  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order %1$d
+    more keychains to meet the minimum requirement of %2$d.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
   <!--  AlertDialog:  ProgressDialog:  Prepare Email Intent -->
@@ -130,7 +130,7 @@
   <string name="pref_error_default_value_rep_territory">NOT_SET</string>
 
   <!--  String formats -->
-  <!--  String formats: Filename (Ex: lanyard_keychain_order-lit3-big_red_148-20180205.xls) -->
+  <!--  String formats: Filename (Ex: app_keychain_order-lit3-big_red_148-20180205.xls) -->
   <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s</string>
   <string name="string_format_filename_with_suffix">%1$s.xls</string>
   <string name="string_format_filename_with_suffix_with_copy">%1$s (%2$d).xls</string>

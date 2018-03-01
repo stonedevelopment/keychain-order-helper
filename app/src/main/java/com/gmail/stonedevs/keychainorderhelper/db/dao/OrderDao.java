@@ -18,7 +18,8 @@ public interface OrderDao {
   Order get(String id);
 
   @Query("select * from orders "
-      + "order by order_date desc")
+      + "order by order_date desc "
+      + "limit 30")
   List<Order> getAll();
 
   @Insert(onConflict = REPLACE)

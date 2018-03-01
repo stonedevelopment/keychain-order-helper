@@ -96,7 +96,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   }
 
   void finishActionMode(ActionMode mode) {
-    mOrders.removeAll(mSelectedOrders);
     mode.finish();
   }
 
@@ -156,6 +155,5 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   public void onDestroyActionMode(ActionMode mode) {
     mMultiSelect = false;
     mSelectedOrders.clear();
-    notifyDataSetChanged();
   }
 }

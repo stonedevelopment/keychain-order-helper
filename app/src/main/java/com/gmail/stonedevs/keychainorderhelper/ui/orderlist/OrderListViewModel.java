@@ -164,7 +164,9 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     //  if orders were deleted, show snackbar, retrieve orders to fill list with new data,
     //  otherwise, stop loading animation
     if (rowsDeleted > 0) {
-      mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_multiple);
+      int resourceId = rowsDeleted > 1 ? R.string.snackbar_message_data_deleted_success_multiple
+          : R.string.snackbar_message_data_deleted_success_one;
+      mSnackBarMessenger.setValue(resourceId);
       mRepository.getAllOrders(this);
     } else {
       mDataLoadingEvent.setValue(false);
