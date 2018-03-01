@@ -40,6 +40,7 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
   private final TextView mStoreNameTextView;
   private final TextView mOrderDateTextView;
   private final TextView mOrderQuantityTextView;
+  private final TextView mOrderTerritoryTextView;
 
   private OnRecyclerViewItemClickListener mListener;
 
@@ -54,6 +55,7 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
     mStoreNameTextView = itemView.findViewById(R.id.storeNameTextView);
     mOrderDateTextView = itemView.findViewById(R.id.orderDateTextView);
     mOrderQuantityTextView = itemView.findViewById(R.id.orderQuantityTextView);
+    mOrderTerritoryTextView = itemView.findViewById(R.id.orderTerritoryTextView);
 
     itemView.setOnClickListener(this);
     itemView.setOnLongClickListener(this);
@@ -72,6 +74,9 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
 
     int quantity = order.getOrderQuantity();
     mOrderQuantityTextView.setText(StringUtils.formatOrderQuantity(c, quantity));
+
+    String orderTerritory = order.getOrderTerritory();
+    mOrderTerritoryTextView.setText(orderTerritory);
   }
 
   private void selectItem() {
