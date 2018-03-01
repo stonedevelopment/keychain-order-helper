@@ -55,6 +55,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   private TextView mStoreNameTextView;
   private TextView mOrderQuantityTextView;
   private TextView mOrderDateTextView;
+  private TextView mOrderTerritoryTextView;
 
   private OrderDetailViewModel mViewModel;
 
@@ -128,6 +129,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     mStoreNameTextView = findViewById(R.id.storeNameTextView);
     mOrderQuantityTextView = findViewById(R.id.orderQuantityTextView);
     mOrderDateTextView = findViewById(R.id.orderDateTextView);
+    mOrderTerritoryTextView = findViewById(R.id.orderTerritoryTextView);
   }
 
   private void setupViewFragment() {
@@ -151,9 +153,12 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         mOrderDateTextView
             .setText(StringUtils.formatSentOrderDate(getApplicationContext(), orderDate));
 
-        int quantity = order.getOrderQuantity();
+        int orderQuantity = order.getOrderQuantity();
         mOrderQuantityTextView
-            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), quantity));
+            .setText(StringUtils.formatOrderQuantity(getApplicationContext(), orderQuantity));
+
+        String orderTerritory = order.getOrderTerritory();
+        mOrderTerritoryTextView.setText(orderTerritory);
       }
     });
 
