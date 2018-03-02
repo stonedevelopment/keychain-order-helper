@@ -24,6 +24,11 @@
     app:showAsAction="ifRoom"/>
 
   <item
+    android:id="@+id/action_edit_store_name"
+    android:title="@string/action_edit_store_name"
+    app:showAsAction="never"/>
+
+  <item
     android:id="@+id/action_settings"
     android:title="@string/action_settings"
     app:showAsAction="never"/>

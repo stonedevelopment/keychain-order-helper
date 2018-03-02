@@ -32,11 +32,18 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
-public class TerritoryDialogFragment extends DialogFragment {
+public class UserPromptDialogFragment extends DialogFragment {
 
-  private static final String TAG = TerritoryDialogFragment.class.getSimpleName();
+  private static final String TAG = UserPromptDialogFragment.class.getSimpleName();
+
+  private static final String BUNDLE_KEY_TITLE = "title";
+  private static final String BUNDLE_KEY_MESSAGE = "message";
+  private static final String BUNDLE_KEY_HINT = "hint";
+  private static final String BUNDLE_KEY_INPUT_TEXT = "input_text";
+  private static final String BUNDLE_KEY_INPUT_TYPE = "input_type";
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mEditText;
@@ -45,26 +52,43 @@ public class TerritoryDialogFragment extends DialogFragment {
 
   private DialogListener mListener;
 
-  private String mText;
-  private boolean mSendOrderAfter;
+  private String mInputText;
 
   private boolean mCanceled;
 
   public interface DialogListener {
 
-    void onContinue(@NonNull String text, boolean sendOrderAfter);
+    void onContinue(@NonNull String inputText);
 
     void onCancel();
   }
 
-  public TerritoryDialogFragment() {
+  public UserPromptDialogFragment() {
     //  Empty constructor required for DialogFragment
   }
 
-  public static TerritoryDialogFragment createInstance(Bundle args) {
-    TerritoryDialogFragment dialogFragment = new TerritoryDialogFragment();
+  public static UserPromptDialogFragment createInstance(int title, int message, int hint,
+      int inputType,
+      String inputText) {
+    Bundle args = new Bundle();
+    args.putInt(BUNDLE_KEY_TITLE, title);
+    args.putInt(BUNDLE_KEY_MESSAGE, message);
+    args.putInt(BUNDLE_KEY_HINT, hint);
+    args.putInt(BUNDLE_KEY_INPUT_TYPE, inputType);
+    args.putString(BUNDLE_KEY_INPUT_TEXT, inputText);
+
+    UserPromptDialogFragment dialogFragment = new UserPromptDialogFragment();
     dialogFragment.setArguments(args);
+    dialogFragment.setCancelable(false);
     return dialogFragment;
+  }
+
+  boolean didUserCancel() {
+    return mCanceled;
+  }
+
+  String getInputText() {
+    return mInputText;
   }
 
   @NonNull
@@ -74,13 +98,12 @@ public class TerritoryDialogFragment extends DialogFragment {
       dismiss();
     }
 
-    Builder builder = new Builder(getActivity());
-    builder.setTitle(R.string.dialog_title_territory);
-
     Bundle args = getArguments();
 
-    mText = args.getString(getString(R.string.bundle_key_order_territory));
-    mSendOrderAfter = args.getBoolean(getString(R.string.bundle_key_order_send_after));
+    Builder builder = new Builder(getActivity());
+
+    int title = args.getInt(BUNDLE_KEY_TITLE);
+    builder.setTitle(title);
 
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_prompt_with_edit_text, null);
@@ -103,8 +126,19 @@ public class TerritoryDialogFragment extends DialogFragment {
       }
     });
 
+    int message = args.getInt(BUNDLE_KEY_MESSAGE);
+    TextView messageTextView = view.findViewById(R.id.messageTextView);
+    messageTextView.setText(message);
+
     mTextInputLayout = view.findViewById(R.id.textInputLayout);
     mEditText = view.findViewById(R.id.editText);
+
+    int hint = args.getInt(BUNDLE_KEY_HINT);
+    mEditText.setHint(hint);
+
+    int inputType = args.getInt(BUNDLE_KEY_INPUT_TYPE);
+    mEditText.setInputType(inputType);
+
     mEditText.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -118,12 +152,12 @@ public class TerritoryDialogFragment extends DialogFragment {
 
       @Override
       public void afterTextChanged(Editable s) {
-        mText = s.toString();
+        mInputText = s.toString();
 
         if (TextUtils.isEmpty(s)) {
           mTextInputLayout.setErrorEnabled(true);
           mTextInputLayout
-              .setError(getString(R.string.dialog_edit_text_error_territory));
+              .setError(getString(R.string.dialog_edit_text_error_user_prompt));
           mSaveButton.setEnabled(false);
         } else {
           mTextInputLayout.setErrorEnabled(false);
@@ -133,8 +167,9 @@ public class TerritoryDialogFragment extends DialogFragment {
     });
 
     //  nullify edit text to lazily trigger error layout
-    //  or  set text to preference value.
-    mEditText.setText(mText);
+    //  or  set text to given arguments value.
+    String inputText = args.getString(BUNDLE_KEY_INPUT_TEXT);
+    mEditText.setText(inputText);
 
     builder.setView(view);
 
@@ -157,10 +192,10 @@ public class TerritoryDialogFragment extends DialogFragment {
 
   @Override
   public void onDismiss(DialogInterface dialog) {
-    if (mCanceled) {
+    if (didUserCancel()) {
       mListener.onCancel();
     } else {
-      mListener.onContinue(mText, mSendOrderAfter);
+      mListener.onContinue(mInputText);
     }
   }
 }

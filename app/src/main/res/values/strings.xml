@@ -11,6 +11,7 @@
   <string name="action_send_order">Send</string>
   <string name="action_resend_order">Resend</string>
   <string name="action_edit_store_name">Edit Store Name</string>
+  <string name="action_edit_territory">Edit Territory</string>
 
   <!--  Intents -->
   <!--  Intents: Email Intent: Send Order By Email -->
@@ -20,6 +21,7 @@
     %1$s.</string>
 
   <!--  Bundle Keys -->
+  <string name="bundle_key_input_text">input_text</string>
   <string name="bundle_key_store_name">store_name</string>
   <string name="bundle_key_order_id">order_id</string>
   <string name="bundle_key_order_territory">order_territory</string>
@@ -52,6 +54,16 @@
   <string name="dialog_edit_text_error_territory">This field is required.</string>
   <string name="dialog_positive_button_territory">Continue</string>
   <string name="dialog_negative_button_territory">Go Back</string>
+
+  <!--  Layouts:  UserPromptDialogFragment -->
+  <string name="dialog_edit_text_error_user_prompt">This field is required.</string>
+  <string name="dialog_positive_button_user_prompt">Continue</string>
+  <string name="dialog_negative_button_user_prompt">Go Back</string>
+
+  <!--  Layouts:  UserPromptDialogFragment: Edit Store Name -->
+  <string name="dialog_title_edit_store_name">Edit Store Name</string>
+  <string name="dialog_message_edit_store_name">Please enter the new store name:</string>
+  <string name="dialog_edit_text_hint_edit_store_name">Store Name</string>
 
   <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
@@ -110,6 +122,7 @@
   <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
   <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
   <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
+  <string name="snackbar_message_no_changes">No changes were made.</string>
 
   <!--  Settings -->
 
@@ -160,6 +173,5 @@
 
   <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
-  <string name="action_edit_territory">Edit Territory</string>
 
 </resources>

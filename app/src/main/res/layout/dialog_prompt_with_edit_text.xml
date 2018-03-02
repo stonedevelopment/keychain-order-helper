@@ -28,7 +28,6 @@
     android:layout_marginTop="24dp"
     android:layout_marginStart="24dp"
     android:layout_marginEnd="24dp"
-    android:text="@string/dialog_message_territory"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"/>
@@ -50,9 +49,6 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:ems="10"
-      android:hint="@string/dialog_edit_text_hint_territory"
-      android:inputType="textCapCharacters"
-      android:selectAllOnFocus="true"
       android:singleLine="true"/>
 
   </android.support.design.widget.TextInputLayout>
@@ -64,7 +60,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
-    android:text="@string/dialog_positive_button_territory"
+    android:text="@string/dialog_positive_button_user_prompt"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toBottomOf="@id/textInputLayout"/>
 
@@ -75,7 +71,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
-    android:text="@string/dialog_negative_button_territory"
+    android:text="@string/dialog_negative_button_user_prompt"
     app:layout_constraintEnd_toStartOf="@+id/saveButton"
     app:layout_constraintTop_toBottomOf="@id/textInputLayout"/>
 

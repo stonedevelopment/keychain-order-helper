@@ -22,5 +22,7 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
 public interface OrderDetailNavigator {
 
+  void showEditStoreNameDialog();
+
   void showConfirmSendOrderDialog();
 }

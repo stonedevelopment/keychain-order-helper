@@ -36,6 +36,7 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -49,8 +50,8 @@ import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.TerritoryDialogFragment.DialogListener;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment.DialogListener;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import java.util.Objects;
 
@@ -69,6 +70,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 //  private TextView mOrderQuantityTextView;
 
   private NewOrderViewModel mViewModel;
+
+  private boolean mSendOrderAfter;
 
   @Override
   public boolean onSupportNavigateUp() {
@@ -109,7 +112,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mViewModel.getSendOrderCommand().call();
         return true;
       case R.id.action_edit_territory:
-        mViewModel.getEditTerritoryCommand().setValue(false);
+        showTerritoryDialog(false);
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -210,24 +213,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
             showTerritoryDialog(true);
           }
         } else {
-          if (mViewModel.isStoreNameEmpty()) {
-            mStoreNameEditText.requestFocus();
-
-            //  forcibly show keyboard
-            InputMethodManager imm = (InputMethodManager) getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(mStoreNameEditText, InputMethodManager.SHOW_IMPLICIT);
-          } else {
-            showOrderRequirementsDialog();
-          }
+          showOrderRequirementsDialog();
         }
-      }
-    });
-
-    mViewModel.getEditTerritoryCommand().observe(this, new Observer<Boolean>() {
-      @Override
-      public void onChanged(@Nullable Boolean sendOrderAfter) {
-        showTerritoryDialog(sendOrderAfter);
       }
     });
   }
@@ -299,6 +286,10 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     StringBuilder stringBuilder = new StringBuilder(
         getString(R.string.dialog_message_incomplete_order));
 
+    if (mViewModel.isStoreNameEmpty()) {
+      stringBuilder.append(getString(R.string.dialog_message_incomplete_order_store_name_empty));
+    }
+
     if (mViewModel.isOrderQuantityZero()) {
       stringBuilder.append(getString(R.string.dialog_message_incomplete_order_keychains_empty));
     } else if (!mViewModel.doesOrderQuantityMeetMinimumRequirements()) {
@@ -324,12 +315,16 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
   @Override
   public void showTerritoryDialog(boolean sendOrderAfter) {
-    Bundle args = new Bundle();
-    args.putString(getString(R.string.bundle_key_order_territory), mViewModel.getTerritory());
-    args.putBoolean(getString(R.string.bundle_key_order_send_after), sendOrderAfter);
+    int title = R.string.dialog_title_territory;
+    int message = R.string.dialog_message_territory;
+    int hint = R.string.dialog_edit_text_hint_territory;
+    int inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+    String inputText = mViewModel.getTerritory();
 
-    TerritoryDialogFragment dialogFragment = TerritoryDialogFragment.createInstance(args);
-    dialogFragment.setCancelable(false);
+    mSendOrderAfter = sendOrderAfter;
+
+    UserPromptDialogFragment dialogFragment = UserPromptDialogFragment
+        .createInstance(title, message, hint, inputType, inputText);
     dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
   }
 
@@ -414,13 +409,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   /**
-   * Callback method called from {@link TerritoryDialogFragment}.
+   * Callback method called from {@link UserPromptDialogFragment}.
    *
    * Called when User presses Continue button. Set territory in View Model, then send if triggered
    * to do so.
    */
   @Override
-  public void onContinue(@NonNull String territory, boolean sendOrderAfter) {
+  public void onContinue(@NonNull String territory) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
     String prefsTerritory = prefs
         .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
@@ -429,19 +424,21 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       //  save Territory to view model
       mViewModel.setTerritory(territory);
     }
+
     //  re-call send order command to start process again.
-    if (sendOrderAfter) {
+    if (mSendOrderAfter) {
       mViewModel.getSendOrderCommand().call();
+      mSendOrderAfter = false;
     }
   }
 
   /**
-   * Callback method from {@link TerritoryDialogFragment}.
+   * Callback method from {@link UserPromptDialogFragment}.
    *
    * Called when User presses the Cancel button.
    */
   @Override
   public void onCancel() {
-    //  do nothing, User canceled dialog.
+    mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_no_changes);
   }
 }

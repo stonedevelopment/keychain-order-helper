@@ -63,7 +63,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mPrepareOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Boolean> mEditTerritoryCommand = new SingleLiveEvent<>();
 
   //  Data repository
   private final Repository mRepository;
@@ -152,10 +151,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
   SingleLiveEvent<Void> getSendOrderCommand() {
     return mSendOrderCommand;
-  }
-
-  SingleLiveEvent<Boolean> getEditTerritoryCommand() {
-    return mEditTerritoryCommand;
   }
 
   private void createNewOrder() {

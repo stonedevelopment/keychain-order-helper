@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
@@ -33,7 +34,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderAsync
  * fragment's action listener.
  */
 public class OrderDetailViewModel extends AndroidViewModel implements OrderDetailCallback,
-    LoadCallback {
+    LoadCallback, InsertCallback {
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
@@ -62,6 +63,15 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     super(application);
 
     mRepository = repository;
+  }
+
+  String getStoreName() {
+    return mCompleteOrder.getStoreName();
+  }
+
+  void updateStoreName(String newStoreName) {
+    mCompleteOrder.setStoreName(newStoreName);
+    mRepository.saveOrder(mCompleteOrder, this);
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -125,5 +135,10 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   @Override
   public void onOrderReadyToSend(Intent intent) {
     mIntentReadyEvent.setValue(intent);
+  }
+
+  @Override
+  public void onDataInserted() {
+    mDataLoadedEvent.setValue(mCompleteOrder);
   }
 }
