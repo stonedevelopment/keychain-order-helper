@@ -61,6 +61,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     mViewModel.handleActivityResult(requestCode, resultCode);
+
+    mViewModel.start();
   }
 
   @Override
@@ -110,7 +112,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     mViewModel.getNewOrderCommand().observe(this, new Observer<View>() {
       @Override
       public void onChanged(@Nullable View v) {
-        startNewOrderActivity(v);
+        startNewOrderActivity();
       }
     });
   }
@@ -139,7 +141,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   }
 
   @Override
-  public void startNewOrderActivity(View fab) {
+  public void startNewOrderActivity() {
     Intent intent = new Intent(this, NewOrderActivity.class);
     startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }

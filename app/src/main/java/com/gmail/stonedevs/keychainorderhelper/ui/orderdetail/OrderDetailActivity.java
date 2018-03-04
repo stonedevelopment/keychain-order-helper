@@ -22,7 +22,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
@@ -30,7 +29,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -39,22 +37,26 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment;
-import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment.DialogListener;
-import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
-public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator,
-    DialogListener {
+public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator {
 
   private static final String TAG = OrderDetailActivity.class.getSimpleName();
 
-  public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
+  public static final int REQUEST_CODE = NewOrderActivity.REQUEST_CODE + 1;
 
-  private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
+  public static final int REQUEST_CODE_ACTION_SEND = NewOrderActivity.REQUEST_CODE_ACTION_SEND;
 
-  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_FIRST_USER + 1;
+  //  RESULT_OK
+  public static final int RESULT_SAVE_OK = NewOrderActivity.RESULT_SAVE_OK;
+  public static final int RESULT_SENT_OK = RESULT_SAVE_OK - 1;
+
+  //  RESULT_CANCELED
+  public static final int RESULT_SAVE_CANCEL = NewOrderActivity.RESULT_CANCELED;
+  public static final int RESULT_SENT_CANCEL = RESULT_SAVE_CANCEL + 1;
+  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_SENT_CANCEL + 1;
   public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 
   private TextView mStoreNameTextView;
@@ -63,12 +65,6 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   private TextView mOrderTerritoryTextView;
 
   private OrderDetailViewModel mViewModel;
-
-  @Override
-  public boolean onSupportNavigateUp() {
-    onBackPressed();
-    return true;
-  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +92,11 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-      case R.id.action_send:
-        mViewModel.getSendOrderCommand().call();
+      case R.id.action_edit:
+        mViewModel.getEditOrderCommand().call();
         return true;
-      case R.id.action_edit_store_name:
-        showEditStoreNameDialog();
+      case R.id.action_send_save:
+        mViewModel.getSendOrderCommand().call();
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -112,11 +108,29 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_CODE_ACTION_SEND) {
-      mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_send_order_success);
-    } else {
-      super.onActivityResult(requestCode, resultCode, data);
+    mViewModel.handleActivityResult(requestCode, resultCode);
+
+    switch (requestCode) {
+      case NewOrderActivity.REQUEST_CODE:
+        switch (resultCode) {
+          case NewOrderActivity.RESULT_SAVE_CANCEL:
+            //  do nothing, user didn't save changes
+            //  allow case to bleed into RESULT_SAVE_OK just in case persisted data was changed.
+          case NewOrderActivity.RESULT_SAVE_OK:
+            String orderId = data.getStringExtra(getString(R.string.bundle_key_order_id));
+            mViewModel.refresh(orderId);
+            break;
+        }
+        break;
+      default:
+        super.onActivityResult(requestCode, resultCode, data);
     }
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    onBackPressed();
+    return true;
   }
 
   @Override
@@ -189,7 +203,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         } else {
           //  there are no apps on phone to handle this intent, cancel order
           mViewModel.getSnackBarMessenger()
-              .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
+              .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
         }
       }
     });
@@ -200,7 +214,16 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
+        // TODO: 3/4/2018 check for readiness, just like new order
+        //  this is an issue that could result from persistent order save without full data
         showConfirmSendOrderDialog();
+      }
+    });
+
+    mViewModel.getEditOrderCommand().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        startEditOrderActivity();
       }
     });
   }
@@ -243,16 +266,10 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   }
 
   @Override
-  public void showEditStoreNameDialog() {
-    int title = R.string.dialog_title_edit_store_name;
-    int message = R.string.dialog_message_edit_store_name;
-    int hint = R.string.dialog_edit_text_hint_edit_store_name;
-    int inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS;
-    String inputText = mViewModel.getStoreName();
-
-    UserPromptDialogFragment dialogFragment = UserPromptDialogFragment
-        .createInstance(title, message, hint, inputType, inputText);
-    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+  public void startEditOrderActivity() {
+    Intent intent = new Intent(this, NewOrderActivity.class);
+    intent.putExtra(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
+    startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }
 
   @Override
@@ -275,15 +292,5 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
           }
         });
     builder.show();
-  }
-
-  @Override
-  public void onContinue(@NonNull String storeName) {
-    mViewModel.updateStoreName(storeName);
-  }
-
-  @Override
-  public void onCancel() {
-    mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_no_changes);
   }
 }

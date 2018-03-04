@@ -22,7 +22,7 @@ import android.content.Intent;
  * TODO: Add a class header comment!
  */
 
-public interface PrepareOrderCallback {
+public interface PrepareIntentCallback {
 
-  void onOrderReadyToSend(Intent intent);
+  void onIntentReadyForAction(Intent intent);
 }

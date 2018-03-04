@@ -20,9 +20,11 @@ import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +61,32 @@ public class NewOrderFragment extends Fragment {
 
     mViewModel = NewOrderActivity.obtainViewModel(getActivity());
 
+    boolean isNewOrder;
+    String orderId;
+    if (savedInstanceState != null) {
+      orderId = savedInstanceState.getString(getString(R.string.bundle_key_order_id));
+      isNewOrder = savedInstanceState.getBoolean(getString(R.string.bundle_key_is_new_order));
+
+      Log.w(TAG,
+          "onCreateView: savedInstanceState: orderId: " + orderId + ", isNewOrder: " + isNewOrder);
+    } else {
+      if (getArguments() == null ||
+          getArguments().getString(getString(R.string.bundle_key_order_id)) == null) {
+        orderId = null;
+        isNewOrder = true;
+
+        Log.w(TAG, "onCreateView: arguments null:  new order");
+      } else {
+        orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
+        isNewOrder = false;
+
+        Log.w(TAG, "onCreateView: arguments not null, orderId: " + orderId);
+      }
+    }
+
+    mViewModel.setOrderId(orderId);
+    mViewModel.setIsNewOrder(isNewOrder);
+
     return inflater.inflate(R.layout.fragment_new_order, container, false);
   }
 
@@ -66,18 +94,46 @@ public class NewOrderFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
+    setupActionBar();
+
     setupAdapter();
 
     subscribeToSnackBarMessenger();
 
     subscribeToViewModelEvents();
+
+    startViewModel();
   }
 
   @Override
-  public void onResume() {
-    super.onResume();
+  public void onSaveInstanceState(Bundle outState) {
+    Log.w(TAG, "onSaveInstanceState: " + mViewModel.getOrderId() + ", isNewOrder: " + mViewModel
+        .isNewOrder());
 
-    mViewModel.start();
+    mViewModel.persistOrder();
+
+    outState.putString(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
+    outState.putBoolean(getString(R.string.bundle_key_is_new_order), mViewModel.isNewOrder());
+    super.onSaveInstanceState(outState);
+  }
+
+  @Override
+  public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+    super.onViewStateRestored(savedInstanceState);
+  }
+
+  private void setupActionBar() {
+    ActionBar actionBar = ((NewOrderActivity) getActivity()).getSupportActionBar();
+    if (actionBar == null) {
+      return;
+    }
+
+    Bundle args = getArguments();
+    if (args == null) {
+      actionBar.setTitle(R.string.layout_actionbar_title_new_order);
+    } else {
+      actionBar.setTitle(R.string.layout_actionbar_title_edit_order);
+    }
   }
 
   private void setupAdapter() {
@@ -105,12 +161,16 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void subscribeToViewModelEvents() {
-    mViewModel.getOrderCreatedEvent().observe(this, new Observer<CompleteOrder>() {
+    mViewModel.getOrderReadyEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
         mViewModel.getUpdateUIEvent().setValue(order);
         mAdapter.replaceData(order.getOrderItems());
       }
     });
+  }
+
+  private void startViewModel() {
+    mViewModel.start();
   }
 }

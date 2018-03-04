@@ -53,7 +53,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  * TODO: Add a class header comment!
  */
 
-public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
+public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Intent> {
 
   private WeakReference<Activity> mContext;
 
@@ -61,10 +61,10 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
 
   private CompleteOrder mOrder;
 
-  private PrepareOrderCallback mCallback;
+  private PrepareIntentCallback mCallback;
 
-  public PrepareOrderAsyncTask(Activity context, CompleteOrder order,
-      PrepareOrderCallback callback) {
+  public PrepareSendActionIntentAsyncTask(Activity context, CompleteOrder order,
+      PrepareIntentCallback callback) {
     mContext = new WeakReference<>(context);
     mProgressDialog = new ProgressDialog(context);
 
@@ -104,7 +104,7 @@ public class PrepareOrderAsyncTask extends AsyncTask<Void, Void, Intent> {
   protected void onPostExecute(Intent intent) {
     mProgressDialog.dismiss();
 
-    mCallback.onOrderReadyToSend(intent);
+    mCallback.onIntentReadyForAction(intent);
     super.onPostExecute(intent);
   }
 

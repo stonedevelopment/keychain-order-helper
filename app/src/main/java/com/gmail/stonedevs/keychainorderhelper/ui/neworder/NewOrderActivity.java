@@ -48,10 +48,10 @@ import android.view.inputmethod.InputMethodManager;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment.DialogListener;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import java.util.Objects;
 
@@ -60,10 +60,18 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
   private static final String TAG = NewOrderActivity.class.getSimpleName();
 
-  public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
-  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_FIRST_USER + 1;
+  public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
 
-  private static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
+  public static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
+
+  //  RESULT_OK
+  public static final int RESULT_SAVE_OK = RESULT_OK;
+  public static final int RESULT_SENT_OK = RESULT_SAVE_OK - 1;
+
+  //  RESULT_CANCELED
+  public static final int RESULT_SAVE_CANCEL = RESULT_CANCELED;
+  public static final int RESULT_SENT_CANCEL = RESULT_SAVE_CANCEL + 1;
+  public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_SENT_CANCEL + 1;
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mStoreNameEditText;
@@ -72,6 +80,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   private NewOrderViewModel mViewModel;
 
   private boolean mSendOrderAfter;
+  private boolean mCancelChangesMade;
 
   @Override
   public boolean onSupportNavigateUp() {
@@ -96,6 +105,20 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    MenuItem action = menu.findItem(R.id.action_send_save);
+
+    //  determine if we have a new order, if so show Send command, else show Save command
+    if (mViewModel.isNewOrder()) {
+      action.setTitle(R.string.action_send_order);
+    } else {
+      action.setTitle(R.string.action_save_order);
+    }
+
+    return super.onPrepareOptionsMenu(menu);
+  }
+
+  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.menu_new_order, menu);
@@ -108,8 +131,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       case R.id.action_reset_order:
         mViewModel.getResetOrderCommand().call();
         return true;
-      case R.id.action_send:
-        mViewModel.getSendOrderCommand().call();
+      case R.id.action_send_save:
+        if (mViewModel.isNewOrder()) {
+          mViewModel.getSendOrderCommand().call();
+        } else {
+          mViewModel.saveChanges();
+        }
         return true;
       case R.id.action_edit_territory:
         showTerritoryDialog(false);
@@ -125,7 +152,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (requestCode == REQUEST_CODE_ACTION_SEND) {
-      finishWithResult(RESULT_OK);
+      finishWithResult(RESULT_SENT_OK);
     } else {
       super.onActivityResult(requestCode, resultCode, data);
     }
@@ -161,7 +188,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
       @Override
       public void afterTextChanged(Editable s) {
-        mViewModel.setStoreName(s.toString());
+        mViewModel.updateStoreName(s.toString());
 
         validateEditText(s);
       }
@@ -185,7 +212,11 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel.getCancelOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        showConfirmCancelOrderDialog();
+        if (mViewModel.isNewOrder()) {
+          showConfirmCancelOrderDialog();
+        } else {
+          showConfirmSaveChangesDialog();
+        }
       }
     });
 
@@ -196,7 +227,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       }
     });
 
-    mViewModel.getPrepareOrderCommand().observe(this, new Observer<Void>() {
+    mViewModel.getPrepareIntentCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
         mViewModel.executeFinalPreparations(NewOrderActivity.this);
@@ -206,7 +237,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        if (mViewModel.isReady()) {
+        if (mViewModel.readyToSend()) {
           if (mViewModel.hasTerritory()) {
             showConfirmSendOrderDialog();
           } else {
@@ -241,6 +272,20 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         }
       }
     });
+
+    mViewModel.getOrderCanceledEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        finishWithResult(RESULT_SENT_CANCEL);
+      }
+    });
+
+    mViewModel.getSavedChangesEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        finishWithResultData(RESULT_SAVE_OK);
+      }
+    });
   }
 
   private NewOrderFragment obtainViewFragment() {
@@ -249,6 +294,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
     if (fragment == null) {
       fragment = NewOrderFragment.createInstance();
+
+      //  Send orderId to fragment
+      Bundle args = new Bundle();
+      args.putString(getString(R.string.bundle_key_order_id),
+          getIntent().getStringExtra(getString(R.string.bundle_key_order_id)));
+      fragment.setArguments(args);
     }
 
     return fragment;
@@ -275,6 +326,13 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
   void finishWithResult(int resultCode) {
     setResult(resultCode);
+    finish();
+  }
+
+  void finishWithResultData(int resultCode) {
+    Intent data = new Intent();
+    data.putExtra(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
+    setResult(resultCode, data);
     finish();
   }
 
@@ -337,7 +395,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            finishWithResult(RESULT_CANCELED);
+            mViewModel.cancelOrder();
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_cancel_order,
@@ -389,6 +447,28 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
           @Override
           public void onClick(DialogInterface dialog, int which) {
             //  do nothing, allow the user to continue their order.
+          }
+        });
+    builder.show();
+  }
+
+  @Override
+  public void showConfirmSaveChangesDialog() {
+    AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_save_changes);
+    builder.setMessage(R.string.dialog_message_save_changes);
+    builder.setPositiveButton(R.string.dialog_positive_button_save_changes,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            mViewModel.saveChanges();
+          }
+        });
+    builder.setNegativeButton(R.string.dialog_negative_button_save_changes,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            finishWithResultData(RESULT_SAVE_CANCEL);
           }
         });
     builder.show();

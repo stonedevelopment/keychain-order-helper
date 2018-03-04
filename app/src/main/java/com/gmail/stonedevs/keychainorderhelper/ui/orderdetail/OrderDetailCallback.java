@@ -16,12 +16,10 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareOrderCallback;
-
 /**
  * TODO: Add a class header comment!
  */
 
-interface OrderDetailCallback extends PrepareOrderCallback {
+interface OrderDetailCallback {
 
 }

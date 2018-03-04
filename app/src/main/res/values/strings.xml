@@ -9,7 +9,9 @@
   <string name="action_settings">Settings</string>
   <string name="action_reset_order">Reset</string>
   <string name="action_send_order">Send</string>
+  <string name="action_save_order">Save</string>
   <string name="action_resend_order">Resend</string>
+  <string name="action_edit_order">Edit</string>
   <string name="action_edit_store_name">Edit Store Name</string>
   <string name="action_edit_territory">Edit Territory</string>
 
@@ -24,18 +26,21 @@
   <string name="bundle_key_input_text">input_text</string>
   <string name="bundle_key_store_name">store_name</string>
   <string name="bundle_key_order_id">order_id</string>
+  <string name="bundle_key_is_new_order">is_new_order</string>
   <string name="bundle_key_order_territory">order_territory</string>
   <string name="bundle_key_order_send_after">order_send_after</string>
 
   <!--  Layouts -->
   <!--  Layouts:  NewOrderFragment -->
-  <string name="layout_actionbar_title_new_order">New Keychain Order</string>
+  <string name="layout_actionbar_title_new_order">New Order</string>
+  <string name="layout_actionbar_title_edit_order">Edit Order</string>
   <string name="layout_edit_text_hint_store_name">Store Name</string>
   <string name="layout_edit_text_error_field_store_name">This field is required.</string>
   <string name="layout_edit_text_default_value_store_name">Store Name 1</string>
 
   <!--  Layouts:  OrderListFragment -->
   <string name="layout_text_view_no_orders">There are currently no keychain orders.</string>
+  <string name="layout_list_item_text_store_name_empty">Unnamed Store</string>
 
   <!--  Layouts:  InitialSettingsDialogFragment -->
   <string name="dialog_title_initial_settings">Initial Settings</string>
@@ -78,18 +83,24 @@
   <string name="dialog_positive_button_resend_order">Resend Order</string>
   <string name="dialog_negative_button_resend_order">Go Back</string>
 
-  <!--  AlertDialog:  Cancel Order -->
-  <string name="dialog_title_cancel_order">Cancel Order</string>
-  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>
-  <string name="dialog_positive_button_cancel_order">Cancel Order</string>
-  <string name="dialog_negative_button_cancel_order">Go Back</string>
-
   <!--  AlertDialog:  Reset Order -->
   <string name="dialog_title_reset_order">Reset Order</string>
   <string name="dialog_message_reset_order">Are you sure you want to reset the current
     order?</string>
   <string name="dialog_positive_button_reset_order">Reset Order</string>
   <string name="dialog_negative_button_reset_order">Go Back</string>
+
+  <!--  AlertDialog:  Cancel Order -->
+  <string name="dialog_title_cancel_order">Cancel Order</string>
+  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>
+  <string name="dialog_positive_button_cancel_order">Cancel Order</string>
+  <string name="dialog_negative_button_cancel_order">Go Back</string>
+
+  <!--  AlertDialog:  Save Changes -->
+  <string name="dialog_title_save_changes">Save Changes</string>
+  <string name="dialog_message_save_changes">Do you wish to save changes to order?</string>
+  <string name="dialog_positive_button_save_changes">Save Changes</string>
+  <string name="dialog_negative_button_save_changes">No</string>
 
   <!--  AlertDialog:  Incomplete Order -->
   <string name="dialog_title_incomplete_order">Incomplete Order</string>
@@ -110,10 +121,12 @@
   <string name="toast_dialog_settings_success">Settings saved successfully.</string>
 
   <!--  Snackbar Messages -->
-  <string name="snackbar_message_cancel_order_success">Order canceled.</string>
-  <string name="snackbar_message_send_order_success">Order was sent.</string>
+  <string name="snackbar_message_save_order_ok">Order was saved.</string>
+  <string name="snackbar_message_save_order_cancel">No changes were made.</string>
+  <string name="snackbar_message_send_order_ok">Order was sent.</string>
+  <string name="snackbar_message_send_order_cancel">Order canceled.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
-  <string name="snackbar_message_send_order_fail_no_supported_apps">There are no email apps
+  <string name="snackbar_message_send_order_error_no_supported_apps">There are no email apps
     configured on this device, order not sent.</string>
   <string name="snackbar_message_send_order_fail_quantity_zero">Order quantity is 0, order not
     sent.</string>
@@ -165,8 +178,8 @@
   <!--  String formats: Order list item's total for layout -->
   <string name="string_format_list_item_order_total_text">%1$d keychains</string>
 
-  <!--  String formats: Order sent time (Ex: Sent 10 minutes ago) -->
-  <string name="string_format_list_item_order_sent_text">Sent %1$s</string>
+  <!--  String formats: Order sent time (Ex: 10 minutes ago) -->
+  <string name="string_format_list_item_order_sent_text">%1$s</string>
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename">template.xls</string>

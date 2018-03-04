@@ -16,7 +16,6 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
-import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
@@ -101,15 +100,15 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     switch (requestCode) {
       case NewOrderActivity.REQUEST_CODE:
         switch (resultCode) {
-          case Activity.RESULT_CANCELED:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_cancel_order_success);
+          case NewOrderActivity.RESULT_SENT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
             break;
-          case Activity.RESULT_OK:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_success);
+          case NewOrderActivity.RESULT_SENT_CANCEL:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_cancel);
             break;
           case NewOrderActivity.RESULT_SENT_ERROR_NO_APPS:
             mSnackBarMessenger
-                .setValue(R.string.snackbar_message_send_order_fail_no_supported_apps);
+                .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
             break;
         }
         break;
