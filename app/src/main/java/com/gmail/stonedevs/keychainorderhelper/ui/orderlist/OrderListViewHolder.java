@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -37,6 +38,8 @@ import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
     OnLongClickListener {
 
+  private static final String TAG = OrderListViewHolder.class.getSimpleName();
+
   private final CheckBox mSelectCheckBox;
   private final TextView mStoreNameTextView;
   private final TextView mOrderDateTextView;
@@ -46,10 +49,10 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
   private OnRecyclerViewItemClickListener mListener;
 
   private boolean mIsMultiSelect;
+  private boolean mIsSelected;
 
   OrderListViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
     super(itemView);
-
     mListener = listener;
 
     mSelectCheckBox = itemView.findViewById(R.id.selectCheckBox);
@@ -62,10 +65,11 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
     itemView.setOnLongClickListener(this);
   }
 
-  void bindItem(Context c, @NonNull Order order, boolean isMultiSelect) {
+  void bindItem(Context c, @NonNull Order order, boolean isMultiSelect, boolean isSelected) {
+
     mIsMultiSelect = isMultiSelect;
 
-    mSelectCheckBox.setChecked(isMultiSelect && mSelectCheckBox.isChecked());
+    mSelectCheckBox.setChecked(isSelected);
     mSelectCheckBox.setVisibility(isMultiSelect ? View.VISIBLE : View.GONE);
 
     String storeName = order.getStoreName();
@@ -95,12 +99,16 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
       selectItem();
     }
 
+    Log.w(TAG, "onClick: " + getAdapterPosition());
+
     mListener.onItemClick(getAdapterPosition());
   }
 
   @Override
   public boolean onLongClick(View v) {
     selectItem();
+
+    Log.w(TAG, "onLongClick: " + getAdapterPosition());
 
     return mListener.onItemLongClick(getAdapterPosition());
   }

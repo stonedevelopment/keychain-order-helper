@@ -70,7 +70,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   @Override
   public void onBindViewHolder(OrderListViewHolder holder, int position) {
     Order order = getItem(position);
-    holder.bindItem(mContext, order, mMultiSelect);
+    holder.bindItem(mContext, order, mMultiSelect, mSelectedOrders.contains(order));
   }
 
   @Override
@@ -105,11 +105,14 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     Order order = getItem(position);
 
     if (mMultiSelect) {
+      Log.w(TAG, "onItemClick: " + position + ": " + order.toString());
+      Log.w(TAG, "onItemClick: before: " + mSelectedOrders.toString());
       if (mSelectedOrders.contains(order)) {
         mSelectedOrders.remove(order);
       } else {
         mSelectedOrders.add(order);
       }
+      Log.w(TAG, "onItemClick: after: " + mSelectedOrders.toString());
     } else {
       mViewModel.getOrderDetailCommand().setValue(order.getId());
     }
@@ -119,13 +122,15 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   public boolean onItemLongClick(int position) {
     Order order = getItem(position);
 
+    Log.d(TAG, "onItemLongClick: " + position + ": " + order.toString());
+
+    Log.d(TAG, "onItemLongClick: before: " + mSelectedOrders.toString());
     if (mSelectedOrders.contains(order)) {
       mSelectedOrders.remove(order);
     } else {
       mSelectedOrders.add(order);
     }
-
-    Log.d(TAG, "onItemLongClick: " + order.toString());
+    Log.d(TAG, "onItemLongClick: after: " + mSelectedOrders.toString());
 
     if (!mMultiSelect) {
       ((OrderListActivity) mContext).startSupportActionMode(this);
@@ -158,5 +163,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   public void onDestroyActionMode(ActionMode mode) {
     mMultiSelect = false;
     mSelectedOrders.clear();
+    notifyDataSetChanged();
   }
 }
