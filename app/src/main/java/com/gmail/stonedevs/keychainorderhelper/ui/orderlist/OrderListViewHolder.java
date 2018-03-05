@@ -20,7 +20,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -49,7 +48,6 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
   private OnRecyclerViewItemClickListener mListener;
 
   private boolean mIsMultiSelect;
-  private boolean mIsSelected;
 
   OrderListViewHolder(View itemView, OnRecyclerViewItemClickListener listener) {
     super(itemView);
@@ -99,16 +97,12 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
       selectItem();
     }
 
-    Log.w(TAG, "onClick: " + getAdapterPosition());
-
     mListener.onItemClick(getAdapterPosition());
   }
 
   @Override
   public boolean onLongClick(View v) {
     selectItem();
-
-    Log.w(TAG, "onLongClick: " + getAdapterPosition());
 
     return mListener.onItemLongClick(getAdapterPosition());
   }

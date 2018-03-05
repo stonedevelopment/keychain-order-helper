@@ -19,7 +19,6 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 import android.content.Context;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -105,14 +104,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     Order order = getItem(position);
 
     if (mMultiSelect) {
-      Log.w(TAG, "onItemClick: " + position + ": " + order.toString());
-      Log.w(TAG, "onItemClick: before: " + mSelectedOrders.toString());
       if (mSelectedOrders.contains(order)) {
         mSelectedOrders.remove(order);
       } else {
         mSelectedOrders.add(order);
       }
-      Log.w(TAG, "onItemClick: after: " + mSelectedOrders.toString());
     } else {
       mViewModel.getOrderDetailCommand().setValue(order.getId());
     }
@@ -122,15 +118,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   public boolean onItemLongClick(int position) {
     Order order = getItem(position);
 
-    Log.d(TAG, "onItemLongClick: " + position + ": " + order.toString());
-
-    Log.d(TAG, "onItemLongClick: before: " + mSelectedOrders.toString());
     if (mSelectedOrders.contains(order)) {
       mSelectedOrders.remove(order);
     } else {
       mSelectedOrders.add(order);
     }
-    Log.d(TAG, "onItemLongClick: after: " + mSelectedOrders.toString());
 
     if (!mMultiSelect) {
       ((OrderListActivity) mContext).startSupportActionMode(this);
