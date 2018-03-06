@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.gmail.stonedevs.keychainorderhelper.util.Util;
 import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment;
 import com.gmail.stonedevs.keychainorderhelper.view.BackHandledFragment.BackHandlerInterface;
 import java.io.File;
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
 
         //  attempt to delete temp file
         if (mSendOrderByEmailFile != null) {
-          Util.deleteTempFile(mSendOrderByEmailFile);
+//          Util.deleteTempFile(mSendOrderByEmailFile);
           mSendOrderByEmailFile = null;
         }
 
@@ -159,8 +158,8 @@ public class MainActivity extends AppCompatActivity implements BackHandlerInterf
 
     //  set email address from preferences
     String sendtoEmail =
-        BuildConfig.DEBUG ? getString(R.string.pref_debug_default_value_sendto_email)
-            : getString(R.string.pref_default_value_sendto_email);
+        BuildConfig.DEBUG ? getString(R.string.intent_extra_email_default_value_debug)
+            : getString(R.string.intent_extra_email_default_value);
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
