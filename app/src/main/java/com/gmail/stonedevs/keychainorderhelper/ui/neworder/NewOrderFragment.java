@@ -106,20 +106,10 @@ public class NewOrderFragment extends Fragment {
   }
 
   @Override
-  public void onSaveInstanceState(Bundle outState) {
-    Log.w(TAG, "onSaveInstanceState: " + mViewModel.getOrderId() + ", isNewOrder: " + mViewModel
-        .isNewOrder());
+  public void onStop() {
+    super.onStop();
 
-    mViewModel.persistOrder();
-
-    outState.putString(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
-    outState.putBoolean(getString(R.string.bundle_key_is_new_order), mViewModel.isNewOrder());
-    super.onSaveInstanceState(outState);
-  }
-
-  @Override
-  public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-    super.onViewStateRestored(savedInstanceState);
+    stopViewModel();
   }
 
   private void setupActionBar() {
@@ -172,5 +162,9 @@ public class NewOrderFragment extends Fragment {
 
   private void startViewModel() {
     mViewModel.start();
+  }
+
+  private void stopViewModel() {
+    mViewModel.stop();
   }
 }

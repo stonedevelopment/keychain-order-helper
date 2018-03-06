@@ -80,13 +80,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   private NewOrderViewModel mViewModel;
 
   private boolean mSendOrderAfter;
-  private boolean mCancelChangesMade;
-
-  @Override
-  public boolean onSupportNavigateUp() {
-    onBackPressed();
-    return true;
-  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -105,17 +98,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
-  public boolean onPrepareOptionsMenu(Menu menu) {
-    MenuItem action = menu.findItem(R.id.action_send_save);
-
-    //  determine if we have a new order, if so show Send command, else show Save command
-    if (mViewModel.isNewOrder()) {
-      action.setTitle(R.string.action_send_order);
-    } else {
-      action.setTitle(R.string.action_save_order);
-    }
-
-    return super.onPrepareOptionsMenu(menu);
+  protected void onStop() {
+    super.onStop();
+    mViewModel.stop();
   }
 
   @Override
@@ -132,11 +117,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mViewModel.getResetOrderCommand().call();
         return true;
       case R.id.action_send_save:
-        if (mViewModel.isNewOrder()) {
-          mViewModel.getSendOrderCommand().call();
-        } else {
-          mViewModel.saveChanges();
-        }
+        mViewModel.getSendOrderCommand().call();
         return true;
       case R.id.action_edit_territory:
         showTerritoryDialog(false);
@@ -161,6 +142,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void onBackPressed() {
     mViewModel.getCancelOrderCommand().call();
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    onBackPressed();
+    return true;
   }
 
   private void setupActionBar() {
@@ -212,11 +199,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel.getCancelOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        if (mViewModel.isNewOrder()) {
-          showConfirmCancelOrderDialog();
-        } else {
-          showConfirmSaveChangesDialog();
-        }
+        showConfirmCancelOrderDialog();
       }
     });
 
@@ -261,15 +244,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel.getIntentReadyEvent().observe(this, new Observer<Intent>() {
       @Override
       public void onChanged(@Nullable Intent intent) {
-        Intent chooser = Intent
-            .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-          startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-        } else {
-          //  there are no apps on phone to handle this intent, cancel order
-          finishWithResult(RESULT_SENT_ERROR_NO_APPS);
-        }
+        sendOrderByEmail(intent);
       }
     });
 
@@ -321,6 +296,18 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       mTextInputLayout.setError(getString(R.string.layout_edit_text_error_field_store_name));
     } else {
       mTextInputLayout.setErrorEnabled(false);
+    }
+  }
+
+  void sendOrderByEmail(Intent intent) {
+    Intent chooser = Intent
+        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      //  there are no apps on phone to handle this intent, cancel order
+      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
     }
   }
 
@@ -447,28 +434,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
           @Override
           public void onClick(DialogInterface dialog, int which) {
             //  do nothing, allow the user to continue their order.
-          }
-        });
-    builder.show();
-  }
-
-  @Override
-  public void showConfirmSaveChangesDialog() {
-    AlertDialog.Builder builder = new Builder(this);
-    builder.setTitle(R.string.dialog_title_save_changes);
-    builder.setMessage(R.string.dialog_message_save_changes);
-    builder.setPositiveButton(R.string.dialog_positive_button_save_changes,
-        new OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            mViewModel.saveChanges();
-          }
-        });
-    builder.setNegativeButton(R.string.dialog_negative_button_save_changes,
-        new OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            finishWithResultData(RESULT_SAVE_CANCEL);
           }
         });
     builder.show();

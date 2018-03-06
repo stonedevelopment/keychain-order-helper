@@ -168,6 +168,8 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
       mSnackBarMessenger.setValue(resourceId);
       mRepository.getAllOrders(this);
     } else {
+      mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_zero
+      );
       mDataLoadingEvent.setValue(false);
     }
   }

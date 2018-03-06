@@ -27,6 +27,4 @@ interface NewOrderNavigator {
   void showConfirmResetOrderDialog();
 
   void showConfirmSendOrderDialog();
-
-  void showConfirmSaveChangesDialog();
 }

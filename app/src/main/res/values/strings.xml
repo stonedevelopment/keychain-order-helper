@@ -92,15 +92,10 @@
 
   <!--  AlertDialog:  Cancel Order -->
   <string name="dialog_title_cancel_order">Cancel Order</string>
-  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>
+  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order? Any changes
+    made will not be saved.</string>
   <string name="dialog_positive_button_cancel_order">Cancel Order</string>
   <string name="dialog_negative_button_cancel_order">Go Back</string>
-
-  <!--  AlertDialog:  Save Changes -->
-  <string name="dialog_title_save_changes">Save Changes</string>
-  <string name="dialog_message_save_changes">Do you wish to save changes to order?</string>
-  <string name="dialog_positive_button_save_changes">Save Changes</string>
-  <string name="dialog_negative_button_save_changes">No</string>
 
   <!--  AlertDialog:  Incomplete Order -->
   <string name="dialog_title_incomplete_order">Incomplete Order</string>
@@ -135,6 +130,7 @@
   <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
   <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
   <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
+  <string name="snackbar_message_data_deleted_success_zero">No orders were deleted.</string>
   <string name="snackbar_message_no_changes">No changes were made.</string>
 
   <!--  Settings -->
