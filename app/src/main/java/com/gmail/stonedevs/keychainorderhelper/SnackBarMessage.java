@@ -29,7 +29,7 @@ import android.support.annotation.StringRes;
  */
 public class SnackBarMessage extends SingleLiveEvent<Integer> {
 
-  public void observe(LifecycleOwner owner, final SnackbarObserver observer) {
+  public void observe(LifecycleOwner owner, final SnackBarObserver observer) {
     super.observe(owner, new Observer<Integer>() {
       @Override
       public void onChanged(@Nullable Integer t) {
@@ -41,7 +41,7 @@ public class SnackBarMessage extends SingleLiveEvent<Integer> {
     });
   }
 
-  public interface SnackbarObserver {
+  public interface SnackBarObserver {
 
     /**
      * Called when there is a new message to be shown.

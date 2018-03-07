@@ -23,6 +23,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -30,7 +31,6 @@ import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
 
@@ -39,7 +39,9 @@ import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendAction
  * fragment's action listener.
  */
 public class OrderDetailViewModel extends AndroidViewModel implements OrderDetailCallback,
-    LoadCallback, InsertCallback, PrepareIntentCallback {
+    LoadCallback, PrepareIntentCallback, InsertCallback {
+
+  private static final String TAG = OrderDetailViewModel.class.getSimpleName();
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
@@ -58,11 +60,18 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mEditOrderCommand = new SingleLiveEvent<>();
 
-  //  Data repository
   private final Repository mRepository;
 
-  //  View model's data variables
+  private String mOrderId;
+
+  //  Object that contains the Order and its OrderItems.
   private CompleteOrder mCompleteOrder;
+
+  //  Are we getting data from database?
+  private boolean mLoadingData;
+
+  //  Are we in the sending order process?
+  private boolean mSendingOrder;
 
   public OrderDetailViewModel(
       @NonNull Application application, @NonNull Repository repository) {
@@ -71,17 +80,24 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     mRepository = repository;
   }
 
+  public void start(String orderId) {
+    if (mLoadingData) {
+      //  Loading data, ignore.
+      return;
+    }
+
+    mOrderId = orderId;
+
+    beginLoadingPhase();
+    loadOrder();
+  }
+
   String getOrderId() {
     return mCompleteOrder.getOrderId();
   }
 
-  String getStoreName() {
-    return mCompleteOrder.getStoreName();
-  }
-
-  void updateStoreName(String newStoreName) {
-    mCompleteOrder.setStoreName(newStoreName);
-    mRepository.saveOrder(mCompleteOrder, this);
+  private void updateOrderDate() {
+    mCompleteOrder.updateOrderDate();
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -116,17 +132,55 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     return mEditOrderCommand;
   }
 
-  public void start(@NonNull String orderId) {
+  private void beginLoadingPhase() {
+    mLoadingData = true;
     mDataLoadingEvent.setValue(true);
-    mRepository.getOrder(orderId, this);
   }
 
-  void refresh(String orderId) {
-    start(orderId);
+  private void endLoadingPhase() {
+    mLoadingData = false;
+    mDataLoadingEvent.setValue(false);
   }
 
-  void prepareToResendOrder(Activity context) {
+  private void loadOrder() {
+    mRepository.getOrder(mOrderId, this);
+  }
+
+  private void saveOrder() {
+    mRepository.saveOrder(mCompleteOrder, this);
+  }
+
+  /**
+   * Helper method for dialogs that show before send order dialog.
+   */
+  void initializeSendPhase() {
+    mSendingOrder = true;
+  }
+
+  /**
+   * Save Order to database, start preparations for email intent.
+   */
+  void beginSendPhase(Activity context) {
+    //  Update order date to now.
+    updateOrderDate();
+
+    //  Save order to database.
+    saveOrder();
+
+    //  Execute prepare send task.
     executeFinalPreparations(context);
+  }
+
+  /**
+   * Ends order process, essentially a helper method for future dialogs that don't need to
+   * immediately show send order dialog.
+   */
+  void endSendPhase() {
+    mSendingOrder = false;
+  }
+
+  private void updateUI() {
+    mUpdateUIEvent.setValue(mCompleteOrder);
   }
 
   private void executeFinalPreparations(Activity context) {
@@ -141,42 +195,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
       case REQUEST_CODE_ACTION_SEND:
         mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
         break;
-      case NewOrderActivity.REQUEST_CODE:
-        switch (resultCode) {
-          case NewOrderActivity.RESULT_SAVE_OK:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_save_order_ok);
-            break;
-          case NewOrderActivity.RESULT_SAVE_CANCEL:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_save_order_cancel);
-            break;
-          case NewOrderActivity.RESULT_SENT_OK:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
-            break;
-          case NewOrderActivity.RESULT_SENT_CANCEL:
-            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_cancel);
-            break;
-          case NewOrderActivity.RESULT_SENT_ERROR_NO_APPS:
-            mSnackBarMessenger
-                .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
-            break;
-        }
-        break;
     }
-  }
-
-  @Override
-  public void onDataLoaded(CompleteOrder order) {
-    mCompleteOrder = order;
-
-    mDataLoadedEvent.setValue(order);
-    mDataLoadingEvent.setValue(false);
-  }
-
-  @Override
-  public void onDataNotAvailable() {
-    //  If for some reason the order didn't pull from database
-    mDataLoadingEvent.setValue(false);
-    mErrorLoadingDataEvent.call();
   }
 
   @Override
@@ -185,7 +204,27 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   }
 
   @Override
+  public void onDataLoaded(CompleteOrder order) {
+    mCompleteOrder = order;
+
+    updateUI();
+
+    mDataLoadedEvent.setValue(order);
+
+    endLoadingPhase();
+  }
+
+  @Override
+  public void onDataNotAvailable() {
+    Log.e(TAG, "onDataNotAvailable: " + mCompleteOrder.getOrder().toString());
+
+    endLoadingPhase();
+
+    mErrorLoadingDataEvent.call();
+  }
+
+  @Override
   public void onDataInserted() {
-    mDataLoadedEvent.setValue(mCompleteOrder);
+    updateUI();
   }
 }

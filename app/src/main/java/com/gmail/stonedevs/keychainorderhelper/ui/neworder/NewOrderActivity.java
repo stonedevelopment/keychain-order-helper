@@ -65,21 +65,18 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   public static final int REQUEST_CODE_ACTION_SEND = REQUEST_CODE + 1;
 
   //  RESULT_OK
-  public static final int RESULT_SAVE_OK = RESULT_OK;
-  public static final int RESULT_SENT_OK = RESULT_SAVE_OK - 1;
+  public static final int RESULT_SENT_OK = RESULT_OK;
 
   //  RESULT_CANCELED
-  public static final int RESULT_SAVE_CANCEL = RESULT_CANCELED;
-  public static final int RESULT_SENT_CANCEL = RESULT_SAVE_CANCEL + 1;
+  public static final int RESULT_SENT_CANCEL = RESULT_CANCELED;
   public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_SENT_CANCEL + 1;
+  public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 
   private TextInputLayout mTextInputLayout;
   private TextInputEditText mStoreNameEditText;
 //  private TextView mOrderQuantityTextView;
 
   private NewOrderViewModel mViewModel;
-
-  private boolean mSendOrderAfter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +92,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     subscribeToViewModelEvents();
 
     subscribeToViewModelCommands();
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-    mViewModel.stop();
   }
 
   @Override
@@ -120,7 +111,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mViewModel.getSendOrderCommand().call();
         return true;
       case R.id.action_edit_territory:
-        showTerritoryDialog(false);
+        showTerritoryDialog();
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -210,21 +201,16 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       }
     });
 
-    mViewModel.getPrepareIntentCommand().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        mViewModel.executeFinalPreparations(NewOrderActivity.this);
-      }
-    });
-
     mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
         if (mViewModel.readyToSend()) {
+          mViewModel.initializeSendPhase();
+
           if (mViewModel.hasTerritory()) {
             showConfirmSendOrderDialog();
           } else {
-            showTerritoryDialog(true);
+            showTerritoryDialog();
           }
         } else {
           showOrderRequirementsDialog();
@@ -241,24 +227,18 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
       }
     });
 
+    mViewModel.getErrorLoadingDataEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        //  Data was not received properly.
+        finishWithResult(RESULT_DATA_LOAD_ERROR);
+      }
+    });
+
     mViewModel.getIntentReadyEvent().observe(this, new Observer<Intent>() {
       @Override
       public void onChanged(@Nullable Intent intent) {
         sendOrderByEmail(intent);
-      }
-    });
-
-    mViewModel.getOrderCanceledEvent().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        finishWithResult(RESULT_SENT_CANCEL);
-      }
-    });
-
-    mViewModel.getSavedChangesEvent().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        finishWithResultData(RESULT_SAVE_OK);
       }
     });
   }
@@ -268,13 +248,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         .findFragmentById(R.id.fragment_container);
 
     if (fragment == null) {
-      fragment = NewOrderFragment.createInstance();
-
-      //  Send orderId to fragment
-      Bundle args = new Bundle();
-      args.putString(getString(R.string.bundle_key_order_id),
-          getIntent().getStringExtra(getString(R.string.bundle_key_order_id)));
-      fragment.setArguments(args);
+      String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
+      fragment = NewOrderFragment.createInstance(orderId);
     }
 
     return fragment;
@@ -316,13 +291,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     finish();
   }
 
-  void finishWithResultData(int resultCode) {
-    Intent data = new Intent();
-    data.putExtra(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
-    setResult(resultCode, data);
-    finish();
-  }
-
   @Override
   public void showOrderRequirementsDialog() {
     AlertDialog.Builder builder = new Builder(this);
@@ -359,14 +327,12 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
-  public void showTerritoryDialog(boolean sendOrderAfter) {
+  public void showTerritoryDialog() {
     int title = R.string.dialog_title_territory;
     int message = R.string.dialog_message_territory;
     int hint = R.string.dialog_edit_text_hint_territory;
     int inputType = InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
     String inputText = mViewModel.getTerritory();
-
-    mSendOrderAfter = sendOrderAfter;
 
     UserPromptDialogFragment dialogFragment = UserPromptDialogFragment
         .createInstance(title, message, hint, inputType, inputText);
@@ -382,7 +348,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.cancelOrder();
+            finishWithResult(RESULT_SENT_CANCEL);
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_cancel_order,
@@ -426,7 +392,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.prepareToSendOrder();
+            mViewModel.beginSendPhase(NewOrderActivity.this);
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_send_order,
@@ -456,8 +422,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   /**
    * Callback method called from {@link UserPromptDialogFragment}.
    *
-   * Called when User presses Continue button. Set territory in View Model, then send if triggered
-   * to do so.
+   * Called when User presses Continue button. Set territory in View Model, then send if dialog was
+   * started during the send process.
    */
   @Override
   public void onContinue(@NonNull String territory) {
@@ -471,9 +437,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     }
 
     //  re-call send order command to start process again.
-    if (mSendOrderAfter) {
-      mViewModel.getSendOrderCommand().call();
-      mSendOrderAfter = false;
+    if (mViewModel.isSendingOrder()) {
+      showConfirmSendOrderDialog();
     }
   }
 
@@ -485,5 +450,9 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void onCancel() {
     mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_no_changes);
+
+    if (mViewModel.isSendingOrder()) {
+      mViewModel.endSendPhase();
+    }
   }
 }

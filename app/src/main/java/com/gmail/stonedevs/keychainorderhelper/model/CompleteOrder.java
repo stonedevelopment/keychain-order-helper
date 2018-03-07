@@ -19,6 +19,7 @@ package com.gmail.stonedevs.keychainorderhelper.model;
 import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +56,10 @@ public class CompleteOrder {
 
   public Date getOrderDate() {
     return mOrder.getOrderDate();
+  }
+
+  public void updateOrderDate() {
+    mOrder.setOrderDate(Calendar.getInstance().getTime());
   }
 
   public List<OrderItem> getOrderItems() {

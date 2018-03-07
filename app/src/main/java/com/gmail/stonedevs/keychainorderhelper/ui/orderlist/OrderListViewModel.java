@@ -59,6 +59,9 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
 
   private ActionMode mActionMode;
 
+  //  Are we getting data from database?
+  private boolean mLoadingData;
+
   public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
     mRepository = repository;
@@ -93,6 +96,12 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   }
 
   public void start() {
+    if (mLoadingData) {
+      //  Loading data, ignore.
+      return;
+    }
+
+    beginLoadingPhase();
     loadData();
   }
 
@@ -110,28 +119,51 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
             mSnackBarMessenger
                 .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
             break;
+          case NewOrderActivity.RESULT_DATA_LOAD_ERROR:
+            //  send failed message
+            mSnackBarMessenger.setValue(R.string.snackbar_message_data_loading_error);
+            break;
         }
         break;
 
       case OrderDetailActivity.REQUEST_CODE:
         switch (resultCode) {
+          case OrderDetailActivity.RESULT_SENT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
+            break;
+          case OrderDetailActivity.RESULT_SENT_CANCEL:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_save_order_cancel);
+            break;
+          case OrderDetailActivity.RESULT_SENT_ERROR_NO_APPS:
+            mSnackBarMessenger
+                .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
+            break;
           case OrderDetailActivity.RESULT_DATA_LOAD_ERROR:
             //  send failed message
             mSnackBarMessenger.setValue(R.string.snackbar_message_data_loading_error);
+            break;
         }
         break;
     }
   }
 
-  private void loadData() {
-    //  Let fragment know we're updating
+  private void beginLoadingPhase() {
+    mLoadingData = true;
     mDataLoadingEvent.setValue(true);
-    //  Start retrieval of order data.
+  }
+
+  private void endLoadingPhase() {
+    mLoadingData = false;
+    mDataLoadingEvent.setValue(false);
+  }
+
+  private void loadData() {
     mRepository.getAllOrders(this);
   }
 
   void startDeleteModeProcess(ActionMode mode, List<Order> orders) {
-    mDataLoadingEvent.setValue(true);
+    beginLoadingPhase();
+
     mActionMode = mode;
     mRepository.deleteOrders(orders, this);
   }
@@ -140,16 +172,14 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   public void onDataNotAvailable() {
     //  Update screen components first.
     mNoDataLoadedEvent.call();
-    //  Then enable it to view message.
-    mDataLoadingEvent.setValue(false);
+    endLoadingPhase();
   }
 
   @Override
   public void onDataLoaded(List<Order> orders) {
     //  Let adapter know its safe to fill items
     mDataLoadedEvent.setValue(orders);
-    //  Finally, enable layout to view items
-    mDataLoadingEvent.setValue(false);
+    endLoadingPhase();
   }
 
   @Override
@@ -166,11 +196,12 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
       int resourceId = rowsDeleted > 1 ? R.string.snackbar_message_data_deleted_success_multiple
           : R.string.snackbar_message_data_deleted_success_one;
       mSnackBarMessenger.setValue(resourceId);
-      mRepository.getAllOrders(this);
+
+      loadData();
     } else {
-      mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_zero
-      );
-      mDataLoadingEvent.setValue(false);
+      mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_zero);
+
+      endLoadingPhase();
     }
   }
 }

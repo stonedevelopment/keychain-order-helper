@@ -20,7 +20,7 @@ interface NewOrderNavigator {
 
   void showOrderRequirementsDialog();
 
-  void showTerritoryDialog(boolean sendOrderAfter);
+  void showTerritoryDialog();
 
   void showConfirmCancelOrderDialog();
 

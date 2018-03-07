@@ -24,12 +24,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 
@@ -41,7 +41,9 @@ import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
  */
 public class NewOrderFragment extends Fragment {
 
-  private final static String TAG = NewOrderFragment.class.getSimpleName();
+  private static final String TAG = NewOrderFragment.class.getSimpleName();
+
+  public static final String BUNDLE_KEY_ORDER_ID = "order_id";
 
   private NewOrderViewModel mViewModel;
 
@@ -51,48 +53,26 @@ public class NewOrderFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static NewOrderFragment createInstance() {
-    return new NewOrderFragment();
+  public static NewOrderFragment createInstance(String orderId) {
+    Bundle args = new Bundle();
+    args.putString(BUNDLE_KEY_ORDER_ID, orderId);
+
+    NewOrderFragment fragment = new NewOrderFragment();
+    fragment.setArguments(args);
+    return fragment;
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-
-    mViewModel = NewOrderActivity.obtainViewModel(getActivity());
-
-    boolean isNewOrder;
-    String orderId;
-    if (savedInstanceState != null) {
-      orderId = savedInstanceState.getString(getString(R.string.bundle_key_order_id));
-      isNewOrder = savedInstanceState.getBoolean(getString(R.string.bundle_key_is_new_order));
-
-      Log.w(TAG,
-          "onCreateView: savedInstanceState: orderId: " + orderId + ", isNewOrder: " + isNewOrder);
-    } else {
-      if (getArguments() == null ||
-          getArguments().getString(getString(R.string.bundle_key_order_id)) == null) {
-        orderId = null;
-        isNewOrder = true;
-
-        Log.w(TAG, "onCreateView: arguments null:  new order");
-      } else {
-        orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
-        isNewOrder = false;
-
-        Log.w(TAG, "onCreateView: arguments not null, orderId: " + orderId);
-      }
-    }
-
-    mViewModel.setOrderId(orderId);
-    mViewModel.setIsNewOrder(isNewOrder);
-
     return inflater.inflate(R.layout.fragment_new_order, container, false);
   }
 
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
+
+    setupViewModel();
 
     setupActionBar();
 
@@ -105,11 +85,11 @@ public class NewOrderFragment extends Fragment {
     startViewModel();
   }
 
-  @Override
-  public void onStop() {
-    super.onStop();
+  private void setupViewModel() {
+    mViewModel = NewOrderActivity.obtainViewModel(getActivity());
 
-    stopViewModel();
+    String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
+    mViewModel.setOrderId(orderId);
   }
 
   private void setupActionBar() {
@@ -118,8 +98,7 @@ public class NewOrderFragment extends Fragment {
       return;
     }
 
-    Bundle args = getArguments();
-    if (args == null) {
+    if (mViewModel.isNewOrder()) {
       actionBar.setTitle(R.string.layout_actionbar_title_new_order);
     } else {
       actionBar.setTitle(R.string.layout_actionbar_title_edit_order);
@@ -142,7 +121,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void subscribeToSnackBarMessenger() {
-    mViewModel.getSnackBarMessenger().observe(this, new SnackbarObserver() {
+    mViewModel.getSnackBarMessenger().observe(this, new SnackBarObserver() {
       @Override
       public void onNewMessage(int resourceId) {
         SnackbarUtils.showSnackbar(getView(), getString(resourceId));
@@ -154,17 +133,36 @@ public class NewOrderFragment extends Fragment {
     mViewModel.getOrderReadyEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
-        mViewModel.getUpdateUIEvent().setValue(order);
         mAdapter.replaceData(order.getOrderItems());
+      }
+    });
+
+    mViewModel.getDataLoadingEvent().observe(this, new Observer<Boolean>() {
+      @Override
+      public void onChanged(@Nullable Boolean isDataLoading) {
+        //  Determine whether data is loading, react accordingly.
+        if (isDataLoading) {
+          //  Show progress bar.
+          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+          progressBar.setVisibility(View.VISIBLE);
+
+          //  Hide recyclerView.
+          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+          recyclerView.setVisibility(View.GONE);
+        } else {
+          //  Hide progress bar.
+          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+          progressBar.setVisibility(View.GONE);
+
+          //  Show recyclerView.
+          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+          recyclerView.setVisibility(View.VISIBLE);
+        }
       }
     });
   }
 
   private void startViewModel() {
     mViewModel.start();
-  }
-
-  private void stopViewModel() {
-    mViewModel.stop();
   }
 }

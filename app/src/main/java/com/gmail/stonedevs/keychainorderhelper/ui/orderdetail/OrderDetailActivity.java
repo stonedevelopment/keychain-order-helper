@@ -16,6 +16,8 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
+import static com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderFragment.BUNDLE_KEY_ORDER_ID;
+
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -50,12 +52,10 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   public static final int REQUEST_CODE_ACTION_SEND = NewOrderActivity.REQUEST_CODE_ACTION_SEND;
 
   //  RESULT_OK
-  public static final int RESULT_SAVE_OK = NewOrderActivity.RESULT_SAVE_OK;
-  public static final int RESULT_SENT_OK = RESULT_SAVE_OK - 1;
+  public static final int RESULT_SENT_OK = RESULT_OK;
 
   //  RESULT_CANCELED
-  public static final int RESULT_SAVE_CANCEL = NewOrderActivity.RESULT_CANCELED;
-  public static final int RESULT_SENT_CANCEL = RESULT_SAVE_CANCEL + 1;
+  public static final int RESULT_SENT_CANCEL = RESULT_CANCELED;
   public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_SENT_CANCEL + 1;
   public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 
@@ -112,15 +112,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
     switch (requestCode) {
       case NewOrderActivity.REQUEST_CODE:
-        switch (resultCode) {
-          case NewOrderActivity.RESULT_SAVE_CANCEL:
-            //  do nothing, user didn't save changes
-            //  allow case to bleed into RESULT_SAVE_OK just in case persisted data was changed.
-          case NewOrderActivity.RESULT_SAVE_OK:
-            String orderId = data.getStringExtra(getString(R.string.bundle_key_order_id));
-            mViewModel.refresh(orderId);
-            break;
-        }
+        finishWithResult(resultCode);
         break;
       default:
         super.onActivityResult(requestCode, resultCode, data);
@@ -210,12 +202,9 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   }
 
   private void subscribeToNavigationChanges() {
-    //  This event fires when User clicks Resend Order button.
     mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        // TODO: 3/4/2018 check for readiness, just like new order
-        //  this is an issue that could result from persistent order save without full data
         showConfirmSendOrderDialog();
       }
     });
@@ -268,7 +257,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   @Override
   public void startEditOrderActivity() {
     Intent intent = new Intent(this, NewOrderActivity.class);
-    intent.putExtra(getString(R.string.bundle_key_order_id), mViewModel.getOrderId());
+    intent.putExtra(BUNDLE_KEY_ORDER_ID, mViewModel.getOrderId());
     startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }
 
@@ -281,7 +270,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.prepareToResendOrder(OrderDetailActivity.this);
+            mViewModel.beginSendPhase(OrderDetailActivity.this);
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_resend_order,

@@ -40,7 +40,7 @@ public class Order {
 
   @NonNull
   @ColumnInfo(name = "order_date")
-  private final Date mOrderDate;
+  private Date mOrderDate;
 
   @NonNull
   @ColumnInfo(name = "order_quantity")
@@ -81,6 +81,10 @@ public class Order {
   @NonNull
   public Date getOrderDate() {
     return mOrderDate;
+  }
+
+  public void setOrderDate(@NonNull Date orderDate) {
+    mOrderDate = orderDate;
   }
 
   @NonNull

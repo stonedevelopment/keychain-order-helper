@@ -119,7 +119,7 @@
   <string name="snackbar_message_save_order_ok">Order was saved.</string>
   <string name="snackbar_message_save_order_cancel">No changes were made.</string>
   <string name="snackbar_message_send_order_ok">Order was sent.</string>
-  <string name="snackbar_message_send_order_cancel">Order canceled.</string>
+  <string name="snackbar_message_send_order_cancel">Order was canceled.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
   <string name="snackbar_message_send_order_error_no_supported_apps">There are no email apps
     configured on this device, order not sent.</string>

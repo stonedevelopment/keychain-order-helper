@@ -16,17 +16,10 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-
 /**
  * TODO: Add a class header comment!
  */
 
-public interface NewOrderCallback {
+interface NewOrderCallback {
 
-  void onOrderReady(CompleteOrder order);
-
-  void onOrderSaved();
-
-  void onOrderCanceled();
 }

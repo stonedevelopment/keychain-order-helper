@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import java.util.List;
@@ -110,7 +110,7 @@ public class OrderListFragment extends Fragment {
   }
 
   private void subscribeToSnackBarMessenger() {
-    mViewModel.getSnackBarMessenger().observe(this, new SnackbarObserver() {
+    mViewModel.getSnackBarMessenger().observe(this, new SnackBarObserver() {
       @Override
       public void onNewMessage(int resourceId) {
         SnackbarUtils.showSnackbar(getView(), getString(resourceId));

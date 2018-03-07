@@ -21,18 +21,13 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -42,7 +37,6 @@ import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,50 +47,42 @@ import java.util.List;
  */
 
 public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallback,
-    InsertCallback, LoadCallback, PrepareIntentCallback, DeleteCallback {
+    InsertCallback, LoadCallback, PrepareIntentCallback {
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
-  public static final String BUNDLE_KEY_ORDER_ID = "order_id";
-  public static final String BUNDLE_KEY_STORE_NAME = "store_name";
-  public static final String BUNDLE_KEY_ORDER_DATE = "order_date";
-  public static final String BUNDLE_KEY_ORDER_ITEMS = "order_items";
-  public static final String BUNDLE_KEY_ORDER_QUANTITY = "order_quantity";
-  public static final String BUNDLE_KEY_ORDER_TERRITORY = "order_territory";
-
-  //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  //  Events: Data Loading Changes
+  //  Events
   private final SingleLiveEvent<CompleteOrder> mOrderReadyEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mOrderCanceledEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mSavedChangesEvent = new SingleLiveEvent<>();
-
-  //  Events: UI Changes
   private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
 
-  //  Commands: User Direction
+  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
+
+  //  Commands
   private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mPrepareIntentCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
 
-  //  Data repository
   private final Repository mRepository;
-
   private final AppExecutors mAppExecutors;
 
-  //  View model's data variables
+  //  RowID of Order, lazily used to determine if creating order or editing.
   private String mOrderId;
+
+  //  Object that contains the Order and its OrderItems.
   private CompleteOrder mWorkingOrder;
 
-  private boolean mIsNewOrder;
-  private boolean mIsDataLoading;
-  private boolean mSendOrderAfterSave;
-  private boolean mFinishActivityAfterSave;
+  //  Are we getting data from database?
+  private boolean mLoadingData;
 
-  public NewOrderViewModel(@NonNull Application application, Repository repository) {
+  //  Are we in the sending order process?
+  private boolean mSendingOrder;
+
+  public NewOrderViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
 
     mRepository = repository;
@@ -104,60 +90,53 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   void start() {
-    if (mIsDataLoading) {
+    if (mLoadingData) {
       //  Loading data, ignore.
       return;
     }
 
-    if (mOrderId == null) {
-      //  new order
-      Log.w(TAG, "start: creating new order");
+    if (mWorkingOrder == null) {
+      //  main order object is null, create a new one or load from database.
+      beginLoadingPhase();
 
-      //  create new order
-      createOrder();
-    } else {
-      //  created order
-      Log.w(TAG, "start: order id exists: " + mOrderId);
-
-      if (mWorkingOrder == null) {
-        //  load data from repository
-        //  display data once loaded
-        Log.w(TAG, "start: completeOrder is null, loading data");
-        restoreOrder();
-        loadOrder(mOrderId);
+      //  if order id wasn't set, then it's a new order, create it, otherwise load it.
+      if (mOrderId == null) {
+        createOrder();
       } else {
-        //  display loaded data
-        Log.w(TAG, "start: completeOrder is not null, returning cached data");
-        Log.w(TAG, "start: compare: " + mWorkingOrder.getOrderId() + " = " + mOrderId);
-        onOrderReady(mWorkingOrder);
+        loadOrder(mOrderId);
       }
+    } else {
+      //  main order object exists and is ready for ui to update with its contents.
+      readyOrder();
     }
-  }
-
-  void stop() {
-    persistOrder();
-  }
-
-  boolean isNewOrder() {
-    return mIsNewOrder;
-  }
-
-  String getOrderId() {
-    return mWorkingOrder.getOrderId();
   }
 
   void setOrderId(String orderId) {
     mOrderId = orderId;
   }
 
-  void setIsNewOrder(boolean isNewOrder) {
-    mIsNewOrder = isNewOrder;
+  /**
+   * Returns if Order is perceived to be a New Order, lazily checking if mOrderId is
+   * null.
+   */
+  boolean isNewOrder() {
+    return mOrderId == null;
+  }
+
+  boolean isStoreNameEmpty() {
+    return mWorkingOrder.getStoreName().isEmpty();
   }
 
   void updateStoreName(String storeName) {
     if (mWorkingOrder != null) {
       mWorkingOrder.setStoreName(storeName);
+    } else {
+      mOrderId = null;
     }
+  }
+
+  private void updateOrderDate() {
+    mWorkingOrder.updateOrderDate();
   }
 
   boolean hasTerritory() {
@@ -185,9 +164,25 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mWorkingOrder.getOrderQuantity();
   }
 
+  boolean isOrderQuantityZero() {
+    return mWorkingOrder.getOrderQuantity() == 0;
+  }
+
+  boolean doesOrderQuantityMeetMinimumRequirements() {
+    int orderQuantityMinimumRequirement = getApplication().getResources()
+        .getInteger(R.integer.order_quantity_minimum_requirement);
+
+    return mWorkingOrder.getOrderQuantity() >= orderQuantityMinimumRequirement;
+  }
+
   void updateOrderQuantityBy(int change) {
     mWorkingOrder.updateOrderQuantityBy(change);
-    mUpdateUIEvent.setValue(mWorkingOrder);
+
+    updateUI();
+  }
+
+  boolean isSendingOrder() {
+    return mSendingOrder;
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -198,20 +193,24 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mOrderReadyEvent;
   }
 
-  SingleLiveEvent<Void> getOrderCanceledEvent() {
-    return mOrderCanceledEvent;
-  }
-
-  SingleLiveEvent<Void> getSavedChangesEvent() {
-    return mSavedChangesEvent;
-  }
-
   SingleLiveEvent<Intent> getIntentReadyEvent() {
     return mIntentReadyEvent;
   }
 
   SingleLiveEvent<CompleteOrder> getUpdateUIEvent() {
     return mUpdateUIEvent;
+  }
+
+  SingleLiveEvent<Boolean> getDataLoadingEvent() {
+    return mDataLoadingEvent;
+  }
+
+  SingleLiveEvent<CompleteOrder> getDataLoadedEvent() {
+    return mDataLoadedEvent;
+  }
+
+  SingleLiveEvent<Void> getErrorLoadingDataEvent() {
+    return mErrorLoadingDataEvent;
   }
 
   SingleLiveEvent<Void> getCancelOrderCommand() {
@@ -222,17 +221,11 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mResetOrderCommand;
   }
 
-  SingleLiveEvent<Void> getPrepareIntentCommand() {
-    return mPrepareIntentCommand;
-  }
-
   SingleLiveEvent<Void> getSendOrderCommand() {
     return mSendOrderCommand;
   }
 
   private void createOrder() {
-    mIsDataLoading = true;
-
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
@@ -254,7 +247,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
           public void run() {
-            onOrderReady(new CompleteOrder(order, orderItems));
+            readyOrder(new CompleteOrder(order, orderItems));
           }
         });
       }
@@ -264,151 +257,98 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   private void loadOrder(String orderId) {
-    mIsDataLoading = true;
-
     mRepository.getOrder(orderId, this);
+  }
+
+  private void saveOrder() {
+    mRepository.saveOrder(mWorkingOrder, this);
   }
 
   void resetOrder() {
     createOrder();
   }
 
-  private void saveOrder(boolean sendOrderAfterSave, boolean finishActivity) {
-    mSendOrderAfterSave = sendOrderAfterSave;
-    mFinishActivityAfterSave = finishActivity;
-    mRepository.saveOrder(mWorkingOrder, this);
-  }
-
-  private void deleteOrder() {
-    mRepository.deleteOrder(mWorkingOrder.getOrder(), this);
-  }
-
   /**
-   * USE CASE:
-   * If User is in middle of ordering and gets interrupted, save Order to SharedPreferences to
-   * persist data over time.
+   * Readies order for observers to use.
    */
-  private void persistOrder() {
-    try {
-      Log.d(TAG, "persistOrder: " + mWorkingOrder.getOrder().toString());
+  private void readyOrder() {
+    updateUI();
 
-      Order order = mWorkingOrder.getOrder();
-      String orderId = order.getId();
-      String storeName = order.getStoreName();
-      Date orderDate = order.getOrderDate();
-      String orderTerritory = order.getOrderTerritory();
-      Integer orderQuantity = order.getOrderQuantity();
+    endLoadingPhase();
 
-      ObjectMapper mapper = new ObjectMapper();
-      List<OrderItem> orderItemList = mWorkingOrder.getOrderItems();
-      String orderItemJson = mapper.writeValueAsString(orderItemList);
-
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-      Editor editor = prefs.edit();
-      editor.putString(BUNDLE_KEY_ORDER_ID, orderId);
-      editor.putString(BUNDLE_KEY_STORE_NAME, storeName);
-      editor.putLong(BUNDLE_KEY_ORDER_DATE, orderDate.getTime());
-      editor.putString(BUNDLE_KEY_ORDER_TERRITORY, orderTerritory);
-      editor.putInt(BUNDLE_KEY_ORDER_QUANTITY, orderQuantity);
-      editor.putString(BUNDLE_KEY_ORDER_ITEMS, orderItemJson);
-      editor.apply();
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void restoreOrder() {
-    try {
-      Log.d(TAG, "restoreOrder: ");
-
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-      String orderId = prefs.getString(BUNDLE_KEY_ORDER_ID, null);
-
-      String storeName = prefs.getString(BUNDLE_KEY_STORE_NAME, null);
-      Date orderDate = new Date(prefs.getLong(BUNDLE_KEY_ORDER_DATE,
-          Calendar.getInstance().getTimeInMillis()));
-      String orderTerritory = prefs.getString(BUNDLE_KEY_ORDER_TERRITORY, null);
-      Integer orderQuantity = prefs.getInt(BUNDLE_KEY_ORDER_QUANTITY, 0);
-
-      ObjectMapper mapper = new ObjectMapper();
-      String orderItemJson = prefs.getString(BUNDLE_KEY_ORDER_ITEMS, null);
-      TypeReference<List<OrderItem>> mapType = new TypeReference<List<OrderItem>>() {
-      };
-      List<OrderItem> orderItemList = mapper.readValue(orderItemJson, mapType);
-
-      Order order = new Order(orderId, storeName, orderDate, orderTerritory, orderQuantity);
-      readyOrder(new CompleteOrder(order, orderItemList));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * User chose to cancel order. Delete saved Order if was persisted.
-   */
-  void cancelOrder() {
-    deleteOrder();
+    mOrderReadyEvent.setValue(mWorkingOrder);
   }
 
   /**
    * Order object is ready to be used by ViewModel.
    *
-   * Called by {@link #onDataLoaded(CompleteOrder)} and {@link #onOrderReady(CompleteOrder)}
+   * Called by {@link #onDataLoaded(CompleteOrder)}
    */
-  private void readyOrder(CompleteOrder order) {
+  private void readyOrder(@NonNull CompleteOrder order) {
     mWorkingOrder = order;
-    mOrderReadyEvent.setValue(order);
 
-    mIsDataLoading = false;
+    readyOrder();
+  }
+
+  private void beginLoadingPhase() {
+    mLoadingData = true;
+    mDataLoadingEvent.setValue(true);
+  }
+
+  private void endLoadingPhase() {
+    mLoadingData = false;
+    mDataLoadingEvent.setValue(false);
   }
 
   /**
-   * Save Order with intentions of sending email after.
-   *
-   * Called by {@link NewOrderActivity#showConfirmSendOrderDialog()}
+   * Is this order complete and ready to send?
    */
-  void prepareToSendOrder() {
-    saveOrder(true, false);
-  }
-
-  void executeFinalPreparations(Activity context) {
-    PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
-        mWorkingOrder,
-        this);
-    task.execute();
-  }
-
   boolean readyToSend() {
     return mWorkingOrder != null && !(isStoreNameEmpty()
         || isOrderQuantityZero() || !doesOrderQuantityMeetMinimumRequirements());
   }
 
-  boolean isStoreNameEmpty() {
-    return mWorkingOrder.getStoreName().isEmpty();
+  /**
+   * Helper method for dialogs that show before send order dialog.
+   */
+  void initializeSendPhase() {
+    mSendingOrder = true;
   }
 
-  boolean isOrderQuantityZero() {
-    return mWorkingOrder.getOrderQuantity() == 0;
+  /**
+   * Save Order to database, start preparations for email intent.
+   */
+  void beginSendPhase(Activity context) {
+    //  Update order date to now.
+    updateOrderDate();
+
+    //  Save order to database.
+    saveOrder();
+
+    //  Execute prepare send task.
+    executeFinalPreparations(context);
   }
 
-  boolean doesOrderQuantityMeetMinimumRequirements() {
-    int orderQuantityMinimumRequirement = getApplication().getResources()
-        .getInteger(R.integer.order_quantity_minimum_requirement);
-
-    return mWorkingOrder.getOrderQuantity() >= orderQuantityMinimumRequirement;
+  /**
+   * Ends order process, essentially a helper method for future dialogs that don't need to
+   * immediately show send order dialog.
+   */
+  void endSendPhase() {
+    mSendingOrder = false;
   }
 
-  @Override
-  public void onOrderSaved() {
-    if (mSendOrderAfterSave) {
-      mSendOrderAfterSave = false;
-      mPrepareIntentCommand.call();
-    }
+  private void updateUI() {
+    mUpdateUIEvent.setValue(mWorkingOrder);
   }
 
-  @Override
-  public void onOrderCanceled() {
-    mOrderCanceledEvent.call();
+  /**
+   * Begin task of generating excel, and releasing an intent to send email with.
+   */
+  private void executeFinalPreparations(Activity context) {
+    PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
+        mWorkingOrder,
+        this);
+    task.execute();
   }
 
   @Override
@@ -416,37 +356,22 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     mIntentReadyEvent.setValue(intent);
   }
 
-  /**
-   * Callback used after data was saved to database successfully. If mSendOrderAfterSave is true
-   * then command calling Activity to prepare Intent to send.
-   *
-   * @see InsertCallback#onDataInserted()
-   */
   @Override
   public void onDataInserted() {
-    onOrderSaved();
-  }
-
-  @Override
-  public void onDataNotAvailable() {
-    //  no order was found with orderId
-    //  create new order with saved contents?
-//    saveOrder(false, false);
+    //  do nothing, this is a callback of a background task
   }
 
   @Override
   public void onDataLoaded(CompleteOrder order) {
-    onOrderReady(order);
+    readyOrder(order);
   }
 
   @Override
-  public void onDataDeleted(int rowsDeleted) {
-    onOrderCanceled();
+  public void onDataNotAvailable() {
+    Log.e(TAG, "onDataNotAvailable: " + mWorkingOrder.getOrder().toString());
 
-    if (rowsDeleted > 0) {
-      Log.d(TAG, "onDataDeleted: persistent order was deleted");
-    } else {
-      Log.d(TAG, "onDataDeleted: no order was saved, so no deletion.");
-    }
+    endLoadingPhase();
+
+    mErrorLoadingDataEvent.call();
   }
 }

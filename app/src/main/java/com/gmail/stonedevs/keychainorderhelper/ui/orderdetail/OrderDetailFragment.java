@@ -28,7 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackbarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
@@ -73,14 +73,8 @@ public class OrderDetailFragment extends Fragment {
     subscribeToSnackBarMessenger();
 
     subscribeToViewModelEvents();
-  }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-
-    String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
-    mViewModel.start(orderId);
+    startViewModel();
   }
 
   private void setupAdapter() {
@@ -99,7 +93,7 @@ public class OrderDetailFragment extends Fragment {
   }
 
   private void subscribeToSnackBarMessenger() {
-    mViewModel.getSnackBarMessenger().observe(this, new SnackbarObserver() {
+    mViewModel.getSnackBarMessenger().observe(this, new SnackBarObserver() {
       @Override
       public void onNewMessage(int resourceId) {
         SnackbarUtils.showSnackbar(getView(), getString(resourceId));
@@ -144,9 +138,12 @@ public class OrderDetailFragment extends Fragment {
         }
 
         mAdapter.setData(orders);
-
-        mViewModel.getUpdateUIEvent().setValue(order);
       }
     });
+  }
+
+  private void startViewModel() {
+    String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
+    mViewModel.start(orderId);
   }
 }
