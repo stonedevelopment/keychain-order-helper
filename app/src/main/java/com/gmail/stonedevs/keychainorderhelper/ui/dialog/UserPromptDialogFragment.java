@@ -19,7 +19,6 @@ package com.gmail.stonedevs.keychainorderhelper.ui.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -37,7 +36,7 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 
 public class UserPromptDialogFragment extends DialogFragment {
 
-  private static final String TAG = UserPromptDialogFragment.class.getSimpleName();
+  public static final String TAG = UserPromptDialogFragment.class.getSimpleName();
 
   private static final String BUNDLE_KEY_TITLE = "title";
   private static final String BUNDLE_KEY_MESSAGE = "message";
@@ -54,8 +53,6 @@ public class UserPromptDialogFragment extends DialogFragment {
 
   private String mInputText;
 
-  private boolean mCanceled;
-
   public interface DialogListener {
 
     void onContinue(@NonNull String inputText);
@@ -68,8 +65,7 @@ public class UserPromptDialogFragment extends DialogFragment {
   }
 
   public static UserPromptDialogFragment createInstance(int title, int message, int hint,
-      int inputType,
-      String inputText) {
+      int inputType, String inputText) {
     Bundle args = new Bundle();
     args.putInt(BUNDLE_KEY_TITLE, title);
     args.putInt(BUNDLE_KEY_MESSAGE, message);
@@ -83,19 +79,11 @@ public class UserPromptDialogFragment extends DialogFragment {
     return dialogFragment;
   }
 
-  boolean didUserCancel() {
-    return mCanceled;
-  }
-
-  String getInputText() {
-    return mInputText;
-  }
-
   @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     if (getDialog() != null) {
-      dismiss();
+      return getDialog();
     }
 
     Bundle args = getArguments();
@@ -112,7 +100,7 @@ public class UserPromptDialogFragment extends DialogFragment {
     mSaveButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        mCanceled = false;
+        mListener.onContinue(mInputText);
         dismiss();
       }
     });
@@ -121,7 +109,7 @@ public class UserPromptDialogFragment extends DialogFragment {
     mCancelButton.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
-        mCanceled = true;
+        mListener.onCancel();
         dismiss();
       }
     });
@@ -187,15 +175,6 @@ public class UserPromptDialogFragment extends DialogFragment {
       // The activity doesn't implement the interface, throw exception
       throw new ClassCastException(context.toString()
           + " must implement DialogListener");
-    }
-  }
-
-  @Override
-  public void onDismiss(DialogInterface dialog) {
-    if (didUserCancel()) {
-      mListener.onCancel();
-    } else {
-      mListener.onContinue(mInputText);
     }
   }
 }

@@ -312,6 +312,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    * Helper method for dialogs that show before send order dialog.
    */
   void initializeSendPhase() {
+    Log.w(TAG, "initializeSendPhase: " + mSendingOrder);
     mSendingOrder = true;
   }
 
@@ -319,6 +320,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    * Save Order to database, start preparations for email intent.
    */
   void beginSendPhase(Activity context) {
+    Log.w(TAG, "beginSendPhase: ");
+
     //  Update order date to now.
     updateOrderDate();
 
@@ -334,6 +337,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    * immediately show send order dialog.
    */
   void endSendPhase() {
+    Log.w(TAG, "endSendPhase: ");
+
     mSendingOrder = false;
   }
 

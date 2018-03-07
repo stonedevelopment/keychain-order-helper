@@ -39,6 +39,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -204,6 +205,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
+        Log.w(TAG, "onChanged: sendOrderCommand");
         if (mViewModel.readyToSend()) {
           mViewModel.initializeSendPhase();
 
@@ -336,7 +338,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
     UserPromptDialogFragment dialogFragment = UserPromptDialogFragment
         .createInstance(title, message, hint, inputType, inputText);
-    dialogFragment.show(getSupportFragmentManager(), dialogFragment.getTag());
+    dialogFragment.show(getSupportFragmentManager(), UserPromptDialogFragment.TAG);
   }
 
   @Override
@@ -427,18 +429,20 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
    */
   @Override
   public void onContinue(@NonNull String territory) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-    String prefsTerritory = prefs
-        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+    if (!TextUtils.isEmpty(territory)) {
+      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+      String prefsTerritory = prefs
+          .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
 
-    if (!Objects.equals(prefsTerritory, territory)) {
-      //  save Territory to view model
-      mViewModel.setTerritory(territory);
-    }
+      if (!Objects.equals(prefsTerritory, territory)) {
+        //  save Territory to view model
+        mViewModel.setTerritory(territory);
+      }
 
-    //  re-call send order command to start process again.
-    if (mViewModel.isSendingOrder()) {
-      showConfirmSendOrderDialog();
+      //  re-call send order command to start process again.
+      if (mViewModel.isSendingOrder()) {
+        showConfirmSendOrderDialog();
+      }
     }
   }
 
