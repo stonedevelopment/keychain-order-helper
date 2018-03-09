@@ -11,12 +11,6 @@ import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 
-/**
- * Created by Shane Stone on 2/10/2018.
- *
- * Email: stonedevs@gmail.com
- */
-
 @Database(version = 1,
     entities = {
         Order.class,

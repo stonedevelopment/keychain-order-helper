@@ -19,7 +19,6 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -71,11 +70,7 @@ public class OrderListViewHolder extends RecyclerView.ViewHolder implements OnCl
     mSelectCheckBox.setVisibility(isMultiSelect ? View.VISIBLE : View.GONE);
 
     String storeName = order.getStoreName();
-    if (TextUtils.isEmpty(storeName)) {
-      mStoreNameTextView.setText(c.getString(R.string.layout_list_item_text_store_name_empty));
-    } else {
-      mStoreNameTextView.setText(storeName);
-    }
+    mStoreNameTextView.setText(storeName);
 
     long orderDate = order.getOrderDate().getTime();
     mOrderDateTextView.setText(StringUtils.formatSentOrderDate(c, orderDate));

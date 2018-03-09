@@ -18,20 +18,20 @@ package com.gmail.stonedevs.keychainorderhelper.ui;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.InitialSettingsDialogFragment;
+import com.gmail.stonedevs.keychainorderhelper.ui.dialog.InitialSettingsDialogFragment.OnSaveListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 public class MainActivity extends AppCompatActivity implements MainActivityNavigation,
-    OnDismissListener {
+    OnSaveListener {
 
   private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -46,21 +46,16 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
 
     setupViewModel();
 
-    subscribeToNavigationChanges();
-  }
+    subscribeToViewModelCommands();
 
-  @Override
-  public void onResume() {
-    super.onResume();
-
-    mViewModel.start();
+    startViewModel();
   }
 
   private void setupViewModel() {
     mViewModel = obtainViewModel(this);
   }
 
-  private void subscribeToNavigationChanges() {
+  private void subscribeToViewModelCommands() {
     mViewModel.getOpenInitialSettingsDialogCommand().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
@@ -76,25 +71,29 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     });
   }
 
-  public static MainActivityViewModel obtainViewModel(FragmentActivity activity) {
+  private void startViewModel() {
+    mViewModel.start();
+  }
+
+  private MainActivityViewModel obtainViewModel(FragmentActivity activity) {
     //  Use a Factory to inject dependencies into the ViewModel.
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
     return ViewModelProviders.of(activity, factory).get(MainActivityViewModel.class);
   }
 
+
   @Override
   public void startInitialSettingsDialogFragment() {
     Bundle args = new Bundle();
 
-    //  Fill argument bundle with either saved, if debugging fill with default values :)
     String repName = mViewModel.getRepName();
     args.putString(getString(R.string.pref_key_rep_name), repName);
 
     String repTerritory = mViewModel.getRepTerritory();
     args.putString(getString(R.string.pref_key_rep_territory), repTerritory);
 
-    //  Create instance of dialog fragment use to help User fill in the blanks.
+    //  Create instance of dialog fragment used to help User fill in the blanks.
     InitialSettingsDialogFragment dialogFragment = InitialSettingsDialogFragment
         .createInstance(args);
 
@@ -114,7 +113,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
   }
 
   @Override
-  public void onDismiss(DialogInterface dialog) {
+  public void onSave() {
+    Toast.makeText(this, R.string.toast_dialog_settings_success,
+        Toast.LENGTH_SHORT).show();
+
     startOrderListActivity();
   }
 }

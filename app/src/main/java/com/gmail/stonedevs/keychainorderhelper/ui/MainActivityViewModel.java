@@ -20,12 +20,12 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 /**
@@ -34,8 +34,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 
 public class MainActivityViewModel extends AndroidViewModel {
 
-  //  SnackBar
-  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
+  private static final String TAG = MainActivityViewModel.class.getSimpleName();
 
   //  Commands directed by System logic
   private final SingleLiveEvent<Void> mOpenInitialSettingsDialogCommand = new SingleLiveEvent<>();
@@ -49,8 +48,6 @@ public class MainActivityViewModel extends AndroidViewModel {
 
   public MainActivityViewModel(@NonNull Application application) {
     super(application);
-
-    setupDefaultValues();
   }
 
   String getRepName() {
@@ -61,8 +58,8 @@ public class MainActivityViewModel extends AndroidViewModel {
     return mRepTerritory;
   }
 
-  SnackBarMessage getSnackBarMessenger() {
-    return mSnackBarMessenger;
+  private boolean isReady() {
+    return !TextUtils.isEmpty(mRepName);
   }
 
   SingleLiveEvent<Void> getOpenInitialSettingsDialogCommand() {
@@ -74,31 +71,52 @@ public class MainActivityViewModel extends AndroidViewModel {
   }
 
   /**
-   * Called when the fragment is ready.
+   * Called when the activity is ready.
    */
   void start() {
+    setupDefaultValues();
+    performUpdateCleanUp();
     validateRequiredFields();
   }
 
   /**
-   * Fills rep variables with saved or default values.
+   * Grab saved values from preferences.
    */
   private void setupDefaultValues() {
     Context c = getApplication().getApplicationContext();
-
     SharedPreferences prefs = PreferenceManager
         .getDefaultSharedPreferences(c);
 
-    //  Get saved rep values from SharedPreferences
     mRepName = prefs.getString(c.getString(R.string.pref_key_rep_name), "");
     mRepTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory), "");
   }
 
   /**
-   * Are both required fields filled out?
+   * Perform the steps required to keep newest version up to date and clean.
    */
-  private boolean isReady() {
-    return !TextUtils.isEmpty(mRepName);
+  private void performUpdateCleanUp() {
+    updateFrom4to5();
+  }
+
+  /**
+   * Perform update responsibility check from version 4 (0.0.4) to version 5 (0.1.0)
+   *
+   * Removes an old preference key and fills its value into new key.
+   */
+  private void updateFrom4to5() {
+    Context context = getApplication();
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+    String oldKey = context.getString(R.string.pref_key_rep_territory_old);
+    if (prefs.contains(oldKey)) {
+      String newKey = context.getString(R.string.pref_key_rep_territory);
+      String oldValue = prefs.getString(oldKey, null);
+
+      Editor editor = prefs.edit();
+      editor.putString(newKey, oldValue);
+      editor.remove(oldKey);
+      editor.apply();
+    }
   }
 
   /**

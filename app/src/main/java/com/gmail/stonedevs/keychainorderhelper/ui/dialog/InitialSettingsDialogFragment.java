@@ -19,8 +19,6 @@ package com.gmail.stonedevs.keychainorderhelper.ui.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,10 +35,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 import com.gmail.stonedevs.keychainorderhelper.R;
 
-public class InitialSettingsDialogFragment extends DialogFragment implements OnClickListener {
+public class InitialSettingsDialogFragment extends DialogFragment implements OnClickListener,
+    TextWatcher {
 
   private static final String TAG = InitialSettingsDialogFragment.class.getSimpleName();
 
@@ -50,7 +48,12 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
 
   private EditText mRepTerritoryEditText;
 
-  private OnDismissListener mDismissListener;
+  private OnSaveListener mListener;
+
+  public interface OnSaveListener {
+
+    void onSave();
+  }
 
   public InitialSettingsDialogFragment() {
     //  Empty constructor required for DialogFragment
@@ -78,30 +81,7 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
 
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);
     mRepNameEditText = view.findViewById(R.id.repNameEditText);
-    mRepNameEditText.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-      }
-
-      @Override
-      public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-      }
-
-      @Override
-      public void afterTextChanged(Editable s) {
-        if (TextUtils.isEmpty(s)) {
-          mRepNameTextInputLayout.setErrorEnabled(true);
-          mRepNameTextInputLayout
-              .setError(getString(R.string.dialog_field_error_initial_settings_rep_name_text));
-          mSaveButton.setEnabled(false);
-        } else {
-          mRepNameTextInputLayout.setErrorEnabled(false);
-          mSaveButton.setEnabled(true);
-        }
-      }
-    });
+    mRepNameEditText.addTextChangedListener(this);
 
     String repName = bundle.getString(getString(R.string.pref_key_rep_name));
     mRepNameEditText.setText(repName);
@@ -118,24 +98,19 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
-    // Verify that the host activity implements the callback interface
+
     try {
-      // Instantiate the NoticeDialogListener so we can send events to the host
-      mDismissListener = (OnDismissListener) context;
+      mListener = (OnSaveListener) context;
     } catch (ClassCastException e) {
-      // The activity doesn't implement the interface, throw exception
-      throw new ClassCastException(context.toString()
-          + " must implement OnDismissListener");
+      throw new ClassCastException(context.toString() + " must implement OnSaveListener");
     }
   }
 
-  void saveInitialSettings(String repName, String repTerritory) {
+  private void saveInitialSettings(String repName, String repTerritory) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
     prefs.edit()
         .putString(getContext().getString(R.string.pref_key_rep_name), repName)
-        .apply();
-    prefs.edit()
         .putString(getContext().getString(R.string.pref_key_rep_territory), repTerritory)
         .apply();
   }
@@ -147,16 +122,31 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
 
     if (!TextUtils.isEmpty(nameText)) {
       saveInitialSettings(nameText, territoryText);
-
-      Toast.makeText(getActivity(), R.string.toast_dialog_settings_success,
-          Toast.LENGTH_SHORT).show();
-
+      mListener.onSave();
       dismiss();
     }
   }
 
   @Override
-  public void onDismiss(DialogInterface dialog) {
-    mDismissListener.onDismiss(dialog);
+  public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    //  do nothing
+  }
+
+  @Override
+  public void onTextChanged(CharSequence s, int start, int before, int count) {
+    //  do nothing
+  }
+
+  @Override
+  public void afterTextChanged(Editable s) {
+    if (TextUtils.isEmpty(s)) {
+      mRepNameTextInputLayout.setErrorEnabled(true);
+      mRepNameTextInputLayout
+          .setError(getString(R.string.dialog_field_error_initial_settings_rep_name_text));
+      mSaveButton.setEnabled(false);
+    } else {
+      mRepNameTextInputLayout.setErrorEnabled(false);
+      mSaveButton.setEnabled(true);
+    }
   }
 }
