@@ -130,6 +130,7 @@
   <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
   <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
   <string name="snackbar_message_data_deleted_success_zero">No orders were deleted.</string>
+  <string name="snackbar_message_changes_saved">Changes were saved.</string>
   <string name="snackbar_message_no_changes">No changes were made.</string>
 
   <!--  Settings -->

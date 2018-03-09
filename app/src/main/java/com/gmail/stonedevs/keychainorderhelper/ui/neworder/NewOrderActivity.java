@@ -112,7 +112,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
         mViewModel.getSendOrderCommand().call();
         return true;
       case R.id.action_edit_territory:
-        showTerritoryDialog();
+        showEditTerritoryDialog();
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -212,7 +212,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
           if (mViewModel.hasTerritory()) {
             showConfirmSendOrderDialog();
           } else {
-            showTerritoryDialog();
+            showEditTerritoryDialog();
           }
         } else {
           showOrderRequirementsDialog();
@@ -329,7 +329,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   @Override
-  public void showTerritoryDialog() {
+  public void showEditTerritoryDialog() {
     int title = R.string.dialog_title_territory;
     int message = R.string.dialog_message_territory;
     int hint = R.string.dialog_edit_text_hint_territory;
@@ -429,19 +429,33 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
    */
   @Override
   public void onContinue(@NonNull String territory) {
-    if (!TextUtils.isEmpty(territory)) {
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-      String prefsTerritory = prefs
-          .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+    String prefsTerritory = prefs
+        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
 
-      if (!Objects.equals(prefsTerritory, territory)) {
+    boolean dataChanged = false;
+    if (!Objects.equals(territory, prefsTerritory)) {
+      if (!Objects.equals(territory, mViewModel.getTerritory())) {
         //  save Territory to view model
         mViewModel.setTerritory(territory);
+        dataChanged = true;
       }
+    } else {
+      if (mViewModel.hasSetTerritory()) {
+        //  clear Territory in view model
+        mViewModel.setTerritory(null);
+        dataChanged = true;
+      }
+    }
 
-      //  re-call send order command to start process again.
-      if (mViewModel.isSendingOrder()) {
-        showConfirmSendOrderDialog();
+    //  re-call send order command to start process again.
+    if (mViewModel.isSendingOrder()) {
+      showConfirmSendOrderDialog();
+    } else {
+      if (dataChanged) {
+        mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_changes_saved);
+      } else {
+        mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_no_changes);
       }
     }
   }

@@ -140,11 +140,19 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   boolean hasTerritory() {
+    return hasSetTerritory() || hasPrefTerritory();
+  }
+
+  boolean hasSetTerritory() {
+    return mWorkingOrder.hasOrderTerritory();
+  }
+
+  boolean hasPrefTerritory() {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
     String prefsTerritory = prefs
         .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
 
-    return mWorkingOrder.hasOrderTerritory() || !TextUtils.isEmpty(prefsTerritory);
+    return !TextUtils.isEmpty(prefsTerritory);
   }
 
   /**
