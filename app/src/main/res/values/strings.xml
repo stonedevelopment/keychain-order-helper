@@ -28,11 +28,11 @@
   <string name="intent_title_send_order_acknowledgement_by_email">Send Order</string>
   <string name="intent_extra_subject_send_order_acknowledgement_by_email">Keychain Order - %1$s/%2$s - Acknowledgement</string>
   <string name="intent_extra_text_body_send_order_acknowledgement_by_email">This is an order
-    acknowledgement for %1$s.\n\nNo order was needed on this service trip; order would not meet minimum
-    requirements.</string>
+    acknowledgement for %1$s.\n\nNo order was needed on this service trip; order would not meet the
+    set minimum requirements.</string>
   <string name="intent_extra_text_body_send_order_acknowledgement_by_email_with_order_details">
     This is an order acknowledgement for %1$s.\n\nNo order was needed on this service trip; an order
-    was placed %2$s.</string>
+    was last placed %2$s.</string>
 
   <!--  Bundle Keys -->
   <string name="bundle_key_input_text">input_text</string>
@@ -88,7 +88,8 @@
   <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
   <string name="dialog_title_send_order">Send Order</string>
-  <string name="dialog_message_send_order">Are you sure you\'re ready to send this order?\n</string>
+  <string name="dialog_message_send_order">Are you ready to send this order?</string>
+  <string name="dialog_message_send_order_review_order">Order Review</string>
   <string name="dialog_message_send_order_contents_format">
     \n
     Rep Name: %1$s\n
@@ -213,4 +214,8 @@
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename">template.xls</string>
+  <string name="layout_text_view_rep_name">Rep Name:</string>
+  <string name="layout_text_view_rep_territory">Rep Territory:</string>
+  <string name="layout_text_view_store_name">Store Name:</string>
+  <string name="layout_text_view_order_quantity">Order Quantity:</string>
 </resources>

@@ -93,7 +93,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    * Called by {@link NewOrderFragment#onActivityCreated(Bundle)}
    */
   void start() {
-    if (mLoadingData || mSendingOrder || mSendingAcknowledgement) {
+    if (mLoadingData) {
       //  Loading data, ignore.
       return;
     }

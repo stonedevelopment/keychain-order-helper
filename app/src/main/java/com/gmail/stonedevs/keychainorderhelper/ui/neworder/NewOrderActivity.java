@@ -45,6 +45,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
@@ -398,9 +399,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void showConfirmSendOrderDialog() {
     AlertDialog.Builder builder = new Builder(this);
-    builder.setTitle(R.string.dialog_title_send_order);
-
-    StringBuilder message = new StringBuilder(getString(R.string.dialog_message_send_order));
 
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     String repName = prefs.getString(getString(R.string.pref_key_rep_name), null);
@@ -410,12 +408,17 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     String orderQuantityFormat = String
         .format(getString(R.string.string_format_list_item_order_total_text), orderQuantity);
 
-    String messageFormat = String
-        .format(getString(R.string.dialog_message_send_order_contents_format),
-            repName, repTerritory, storeName, orderQuantityFormat);
-    message.append(messageFormat);
+    View view = View.inflate(this, R.layout.dialog_send_order, null);
+    TextView repNameTextView = view.findViewById(R.id.repNameTextView);
+    repNameTextView.setText(repName);
+    TextView repTerritoryTextView = view.findViewById(R.id.repTerritoryTextView);
+    repTerritoryTextView.setText(repTerritory);
+    TextView storeNameTextView = view.findViewById(R.id.storeNameTextView);
+    storeNameTextView.setText(storeName);
+    TextView orderQuantityTextView = view.findViewById(R.id.orderQuantityTextView);
+    orderQuantityTextView.setText(orderQuantityFormat);
+    builder.setView(view);
 
-    builder.setMessage(message);
     builder.setPositiveButton(R.string.dialog_positive_button_send_order,
         new OnClickListener() {
           @Override
@@ -452,6 +455,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
             mViewModel.endSendAcknowledgementPhase();
           }
         });
+    builder.setCancelable(false);
     builder.show();
   }
 
