@@ -18,7 +18,11 @@ package com.gmail.stonedevs.keychainorderhelper.util;
 
 import android.content.Context;
 import android.text.format.DateUtils;
+import com.github.kevinsawicki.timeago.TimeAgo;
 import com.gmail.stonedevs.keychainorderhelper.R;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * TODO: Add a class header comment!
@@ -26,10 +30,19 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 
 public class StringUtils {
 
-  public static String formatSentOrderDate(Context c, long orderDate) {
-    return String.format(c.getString(R.string.string_format_list_item_order_sent_text),
-        DateUtils.getRelativeDateTimeString(c, orderDate, DateUtils.MINUTE_IN_MILLIS,
-            DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_NUMERIC_DATE));
+  public static String formatSentOrderDate(Context c, Date orderDate) {
+    String timeAgo = new TimeAgo().timeAgo(orderDate);
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd", Locale.getDefault());
+//    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mma", Locale.getDefault());
+
+    if (DateUtils.isToday(orderDate.getTime())) {
+      return String
+          .format(c.getString(R.string.string_format_list_item_order_sent_text_today), timeAgo);
+    }
+
+    String on = dateFormat.format(orderDate);
+    return String
+        .format(c.getString(R.string.string_format_list_item_order_sent_text), timeAgo, on);
   }
 
   public static String formatOrderQuantity(Context c, int quantity) {

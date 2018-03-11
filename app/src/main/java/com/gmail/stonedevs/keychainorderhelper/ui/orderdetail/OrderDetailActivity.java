@@ -42,6 +42,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
+import java.util.Date;
 
 public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator {
 
@@ -176,7 +177,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
       public void onChanged(@Nullable CompleteOrder order) {
         mStoreNameTextView.setText(order.getStoreName());
 
-        long orderDate = order.getOrderDate().getTime();
+        Date orderDate = order.getOrderDate();
         mOrderDateTextView
             .setText(StringUtils.formatSentOrderDate(getApplicationContext(), orderDate));
 

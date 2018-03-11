@@ -24,15 +24,29 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
+import com.gmail.stonedevs.keychainorderhelper.db.Repository;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
+import com.gmail.stonedevs.keychainorderhelper.util.JSONUtils;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Exposes SingleLiveEvents and Snackbar to {@link MainActivity}.
  */
 
-public class MainActivityViewModel extends AndroidViewModel {
+public class MainActivityViewModel extends AndroidViewModel implements InsertCallback {
 
   private static final String TAG = MainActivityViewModel.class.getSimpleName();
 
@@ -42,12 +56,15 @@ public class MainActivityViewModel extends AndroidViewModel {
   //  Commands directed by User via on-screen buttons.
   private final SingleLiveEvent<Void> mOrderListCommand = new SingleLiveEvent<>();
 
+  private Repository mRepository;
+
   //  ViewModel variables
   private String mRepName;
   private String mRepTerritory;
 
-  public MainActivityViewModel(@NonNull Application application) {
+  public MainActivityViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
+    mRepository = repository;
   }
 
   String getRepName() {
@@ -95,15 +112,18 @@ public class MainActivityViewModel extends AndroidViewModel {
    * Perform the steps required to keep newest version up to date and clean.
    */
   private void performUpdateCleanUp() {
-    updateFrom4to5();
+    updateFrom4to5_prefs();
+    updateFrom4to5_json();
   }
 
   /**
    * Perform update responsibility check from version 4 (0.0.4) to version 5 (0.1.0)
    *
    * Removes an old preference key and fills its value into new key.
+   *
+   * Imports old orders.json file into database.
    */
-  private void updateFrom4to5() {
+  private void updateFrom4to5_prefs() {
     Context context = getApplication();
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -119,6 +139,58 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
   }
 
+  private void updateFrom4to5_json() {
+    //  Import orders.json into database.
+    List<JSONOrder> jsonOrders = JSONUtils.getJSONOrders(getApplication());
+    if (jsonOrders == null) {
+      return;
+    }
+
+    List<CompleteOrder> completeOrders = new ArrayList<>(0);
+    for (JSONOrder jsonOrder : jsonOrders) {
+      try {
+        String storeName = jsonOrder.getStoreName();
+        SimpleDateFormat orderDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        Date orderDate = orderDateFormat.parse(jsonOrder.getOrderDate());
+        int orderTotal = jsonOrder.getOrderTotal();
+
+        Order order = new Order(storeName, orderDate);
+        order.setOrderQuantity(orderTotal);
+
+        //  import order quantities and convert into order items
+        List<Integer> orderQuantities = jsonOrder.getOrderQuantities();
+        String[] names = getApplication().getResources()
+            .getStringArray(R.array.excel_cell_values_names);
+
+        if (orderQuantities.size() != names.length) {
+          //  if the lists don't match, move on to next
+          continue;
+        }
+
+        List<OrderItem> orderItems = new ArrayList<>(0);
+        for (int i = 0; i < names.length; i++) {
+          String name = names[i];
+          int quantity = orderQuantities.get(i);
+          orderItems.add(new OrderItem(order.getId(), name, quantity));
+        }
+
+        completeOrders.add(new CompleteOrder(order, orderItems));
+      } catch (ParseException e) {
+        //  do nothing, continue to next one.
+      }
+    }
+
+    //  insert list into repository
+    mRepository.saveOrders(completeOrders, this);
+
+    //  Remove orders.json
+    boolean fileDeleted = JSONUtils.removeOrderJSONFile(getApplication());
+    if (!fileDeleted) {
+      // TODO: 3/11/2018 Update firebase that file was not removed
+      Log.e(TAG, "updateFrom4to5: file was not removed.");
+    }
+  }
+
   /**
    * If the Required Fields are not empty, open {@link OrderListActivity},
    * Otherwise, open dialog for user to enter their name and territory.
@@ -129,5 +201,10 @@ public class MainActivityViewModel extends AndroidViewModel {
     } else {
       getOpenInitialSettingsDialogCommand().call();
     }
+  }
+
+  @Override
+  public void onDataInserted() {
+    //  do nothing, result of background task
   }
 }

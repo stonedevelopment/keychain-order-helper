@@ -36,6 +36,7 @@ import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItem
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListAdapter.OrderListViewHolder;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -218,7 +219,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
       String storeName = order.getStoreName();
       mStoreNameTextView.setText(storeName);
 
-      long orderDate = order.getOrderDate().getTime();
+      Date orderDate = order.getOrderDate();
       mOrderDateTextView.setText(StringUtils.formatSentOrderDate(c, orderDate));
 
       int orderQuantity = order.getOrderQuantity();

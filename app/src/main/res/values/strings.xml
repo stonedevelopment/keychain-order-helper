@@ -209,8 +209,9 @@
   <!--  String formats: Order list item's total for layout -->
   <string name="string_format_list_item_order_total_text">%1$d keychains</string>
 
-  <!--  String formats: Order sent time (Ex: Sent 10 minutes ago) -->
-  <string name="string_format_list_item_order_sent_text">Sent %1$s</string>
+  <!--  String formats: Order sent time (Ex: Sent 10 minutes ago, on 10/18) -->
+  <string name="string_format_list_item_order_sent_text">Sent %1$s, %2$s</string>
+  <string name="string_format_list_item_order_sent_text_today">Sent %1$s</string>
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename">template.xls</string>
@@ -218,4 +219,6 @@
   <string name="layout_text_view_rep_territory">Rep Territory:</string>
   <string name="layout_text_view_store_name">Store Name:</string>
   <string name="layout_text_view_order_quantity">Order Quantity:</string>
+
+  <string name="json_filename_previous_orders">orders.json</string>
 </resources>

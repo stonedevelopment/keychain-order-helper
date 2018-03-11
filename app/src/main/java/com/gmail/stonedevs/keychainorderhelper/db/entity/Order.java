@@ -22,7 +22,6 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
 import java.util.UUID;
 
@@ -107,10 +106,14 @@ public class Order {
 
   @Override
   public String toString() {
-    return "id:" + getId()
-        + ", store_name:" + getStoreName()
-        + ", order_date:" + getOrderDate()
-        + ", order_territory:" + getOrderTerritory()
-        + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")";
+    return "store_name:" + getStoreName();
   }
+//  @Override
+//  public String toString() {
+//    return "id:" + getId()
+//        + ", store_name:" + getStoreName()
+//        + ", order_date:" + getOrderDate()
+//        + ", order_territory:" + getOrderTerritory()
+//        + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")";
+//  }
 }
