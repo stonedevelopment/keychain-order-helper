@@ -8,19 +8,31 @@
   <!--  Action Menu Labels -->
   <string name="action_settings">Settings</string>
   <string name="action_reset_order">Reset</string>
-  <string name="action_send_order">Send</string>
-  <string name="action_save_order">Save</string>
+  <string name="action_menu_send">Send</string>
+  <string name="action_send_order">Send Order</string>
+  <string name="action_send_acknowledgement">Send Acknowledgement</string>
   <string name="action_resend_order">Resend</string>
   <string name="action_edit_order">Edit</string>
   <string name="action_edit_store_name">Edit Store Name</string>
   <string name="action_edit_territory">Edit Territory</string>
+  <string name="action_mode_delete">Delete</string>
 
   <!--  Intents -->
   <!--  Intents: Email Intent: Send Order By Email -->
   <string name="intent_title_send_order_by_email">Send Order</string>
-  <string name="intent_extra_subject_send_order_by_email">%1$s - %2$s</string>
+  <string name="intent_extra_subject_send_order_by_email">Keychain Order - %1$s/%2$s</string>
   <string name="intent_extra_text_body_send_order_by_email">Attached is a keychain order for
     %1$s.</string>
+
+  <!--  Intents: Email Intent: Send Order Acknowledgement By Email -->
+  <string name="intent_title_send_order_acknowledgement_by_email">Send Order</string>
+  <string name="intent_extra_subject_send_order_acknowledgement_by_email">Keychain Order - %1$s/%2$s - Acknowledgement</string>
+  <string name="intent_extra_text_body_send_order_acknowledgement_by_email">This is an order
+    acknowledgement for %1$s.\n\nNo order was needed on this service trip; order would not meet minimum
+    requirements.</string>
+  <string name="intent_extra_text_body_send_order_acknowledgement_by_email_with_order_details">
+    This is an order acknowledgement for %1$s.\n\nNo order was needed on this service trip; an order
+    was placed %2$s.</string>
 
   <!--  Bundle Keys -->
   <string name="bundle_key_input_text">input_text</string>
@@ -37,6 +49,10 @@
   <string name="layout_edit_text_hint_store_name">Store Name</string>
   <string name="layout_edit_text_error_field_store_name">This field is required.</string>
   <string name="layout_edit_text_default_value_store_name">Store Name 1</string>
+
+  <!--  Layouts:  OrderDetailFragment -->
+  <string name="layout_text_view_order_quantity_acknowledgement">Acknowledgement</string>
+  <string name="layout_text_view_no_keychains">No keychains were ordered.</string>
 
   <!--  Layouts:  OrderListFragment -->
   <string name="layout_text_view_no_orders">There are currently no orders.</string>
@@ -72,22 +88,29 @@
   <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
   <string name="dialog_title_send_order">Send Order</string>
-  <string name="dialog_message_send_order">Are you sure you\'re ready to send this order?</string>
+  <string name="dialog_message_send_order">Are you sure you\'re ready to send this order?\n</string>
+  <string name="dialog_message_send_order_contents_format">
+    \n
+    Rep Name: %1$s\n
+    Rep Territory: %2$s\n
+    -\n
+    Store Name: %3$s\n
+    Order Quantity: %4$s\n
+  </string>
   <string name="dialog_positive_button_send_order">Send Order</string>
   <string name="dialog_negative_button_send_order">Go Back</string>
+
+  <!--  AlertDialog:  Send Order Acknowledgement -->
+  <string name="dialog_title_send_order_acknowledgement">Send Order Acknowledgement</string>
+  <string name="dialog_message_send_order_acknowledgement">Are you sure you want to send an order acknowledgement?\n</string>
+  <string name="dialog_positive_button_send_order_acknowledgement">Send Acknowledge</string>
+  <string name="dialog_negative_button_send_order_acknowledgement">Go Back</string>
 
   <!--  AlertDialog:  Resend Order -->
   <string name="dialog_title_resend_order">Resend Order</string>
   <string name="dialog_message_resend_order">Are you sure you want to resend this order?</string>
   <string name="dialog_positive_button_resend_order">Resend Order</string>
   <string name="dialog_negative_button_resend_order">Go Back</string>
-
-  <!--  AlertDialog:  Reset Order -->
-  <string name="dialog_title_reset_order">Reset Order</string>
-  <string name="dialog_message_reset_order">Are you sure you want to reset the current
-    order?</string>
-  <string name="dialog_positive_button_reset_order">Reset Order</string>
-  <string name="dialog_negative_button_reset_order">Go Back</string>
 
   <!--  AlertDialog:  Cancel Order -->
   <string name="dialog_title_cancel_order">Cancel Order</string>
@@ -107,6 +130,15 @@
     more keychains to meet the minimum requirement of %2$d.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
+  <!--  AlertDialog:  Incomplete Order Acknowledgement -->
+  <string name="dialog_title_incomplete_order_acknowledgement">
+    Incomplete Order Acknowledgement</string>
+  <string name="dialog_message_incomplete_order_acknowledgement">You\'re attempting to send an order
+    acknowledgement that isn\'t finished, please fix the following:\n\n</string>
+  <string name="dialog_message_incomplete_order_acknowledgement_store_name_empty">- Store name is
+    empty.\n</string>
+  <string name="dialog_negative_button_incomplete_order_acknowledgement">Go Back</string>
+
   <!--  AlertDialog:  ProgressDialog:  Prepare Email Intent -->
   <string name="dialog_message_send_order_progress_preparing">Preparing your order to be
     sent..</string>
@@ -118,6 +150,7 @@
   <string name="snackbar_message_save_order_ok">Order was saved.</string>
   <string name="snackbar_message_save_order_cancel">No changes were made.</string>
   <string name="snackbar_message_send_order_ok">Order was sent.</string>
+  <string name="snackbar_message_send_order_acknowledgement_ok">Order acknowledgement was sent.</string>
   <string name="snackbar_message_send_order_cancel">Order was canceled.</string>
   <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
   <string name="snackbar_message_send_order_error_no_supported_apps">There are no email apps

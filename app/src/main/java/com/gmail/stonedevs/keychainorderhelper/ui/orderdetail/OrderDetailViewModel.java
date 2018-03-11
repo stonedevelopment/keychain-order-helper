@@ -16,23 +16,23 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import static com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity.REQUEST_CODE_ACTION_SEND;
-
 import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
+import java.util.Date;
 
 /**
  * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
@@ -56,10 +56,6 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
 
-  //  Commands directed by User via on-screen interactions.
-  private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mEditOrderCommand = new SingleLiveEvent<>();
-
   private final Repository mRepository;
 
   private String mOrderId;
@@ -72,6 +68,9 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
 
   //  Are we in the sending order process?
   private boolean mSendingOrder;
+
+  //  Are we in the sending order acknowledgement process?
+  private boolean mSendingAcknowledgement;
 
   public OrderDetailViewModel(
       @NonNull Application application, @NonNull Repository repository) {
@@ -100,6 +99,10 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     mCompleteOrder.updateOrderDate();
   }
 
+  private void updateOrderType(OrderType orderType) {
+    mCompleteOrder.setOrderType(orderType);
+  }
+
   SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
@@ -124,14 +127,6 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     return mErrorLoadingDataEvent;
   }
 
-  SingleLiveEvent<Void> getSendOrderCommand() {
-    return mSendOrderCommand;
-  }
-
-  SingleLiveEvent<Void> getEditOrderCommand() {
-    return mEditOrderCommand;
-  }
-
   private void beginLoadingPhase() {
     mLoadingData = true;
     mDataLoadingEvent.setValue(true);
@@ -150,17 +145,37 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     mRepository.saveOrder(mCompleteOrder, this);
   }
 
+  private void saveAcknowledgement() {
+    String storeName = mCompleteOrder.getStoreName();
+    Date orderDate = mCompleteOrder.getOrderDate();
+    OrderType orderType = mCompleteOrder.getOrderType();
+
+    CompleteOrder order = new CompleteOrder(new Order(storeName, orderDate), null, orderType);
+
+    mRepository.saveOrder(order, this);
+  }
+
+  /**
+   * Are we currently in the process of sending an order?
+   */
+  boolean isSendingOrder() {
+    return mSendingOrder;
+  }
+
   /**
    * Helper method for dialogs that show before send order dialog.
    */
-  void initializeSendPhase() {
+  void initializeSendOrderPhase() {
     mSendingOrder = true;
   }
 
   /**
    * Save Order to database, start preparations for email intent.
    */
-  void beginSendPhase(Activity context) {
+  void beginSendOrderPhase(Activity context) {
+    //  Update order type
+    updateOrderType(OrderType.ORDER);
+
     //  Update order date to now.
     updateOrderDate();
 
@@ -175,8 +190,44 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
    * Ends order process, essentially a helper method for future dialogs that don't need to
    * immediately show send order dialog.
    */
-  void endSendPhase() {
+  void endSendOrderPhase() {
     mSendingOrder = false;
+  }
+
+  /**
+   * Are we currently in the process of sending an order?
+   */
+  boolean isSendingAcknowledgement() {
+    return mSendingAcknowledgement;
+  }
+
+  /**
+   * Helper method for dialogs that show before send order acknowledgement dialog.
+   */
+  void initializeSendAcknowledgementPhase() {
+    mSendingAcknowledgement = true;
+  }
+
+  /**
+   * Start preparations for email intent.
+   *
+   * Being that this is an acknowledgement, we will be sending an email with contents of this order
+   * to notify when last order was made.
+   */
+  void beginSendAcknowledgementPhase(Activity context) {
+    //  Update order type
+    updateOrderType(OrderType.ACKNOWLEDGEMENT_WITH_ORDER);
+
+    //  Execute prepare send task.
+    executeFinalPreparations(context);
+  }
+
+  /**
+   * Ends order process, essentially a helper method for future dialogs that don't need to
+   * immediately show send order acknowledgement dialog.
+   */
+  void endSendAcknowledgementPhase() {
+    mSendingAcknowledgement = false;
   }
 
   private void updateUI() {
@@ -185,17 +236,8 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
 
   private void executeFinalPreparations(Activity context) {
     PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
-        mCompleteOrder,
-        this);
+        mCompleteOrder, this);
     task.execute();
-  }
-
-  void handleActivityResult(int requestCode, int resultCode) {
-    switch (requestCode) {
-      case REQUEST_CODE_ACTION_SEND:
-        mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
-        break;
-    }
   }
 
   @Override
@@ -206,6 +248,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
   @Override
   public void onDataLoaded(CompleteOrder order) {
     mCompleteOrder = order;
+    mCompleteOrder.setOrderType(OrderType.ORDER);
 
     updateUI();
 
@@ -225,6 +268,8 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
 
   @Override
   public void onDataInserted() {
-    updateUI();
+    if (!mSendingOrder || !mSendingAcknowledgement) {
+      updateUI();
+    }
   }
 }

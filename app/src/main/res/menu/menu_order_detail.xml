@@ -24,9 +24,24 @@
     app:showAsAction="ifRoom"/>
 
   <item
-    android:id="@+id/action_send_save"
-    android:title="@string/action_resend_order"
-    app:showAsAction="ifRoom"/>
+    android:title="@string/action_menu_send"
+    app:showAsAction="ifRoom">
+
+    <menu>
+
+      <item
+        android:id="@+id/action_send_order"
+        android:title="@string/action_send_order"
+        app:showAsAction="ifRoom"/>
+
+      <item
+        android:id="@+id/action_send_acknowledgement"
+        android:title="@string/action_send_acknowledgement"
+        app:showAsAction="ifRoom"/>
+
+    </menu>
+
+  </item>
 
   <item
     android:id="@+id/action_settings"

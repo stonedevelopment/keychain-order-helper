@@ -16,6 +16,8 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
+import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
+
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -27,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
@@ -51,16 +54,18 @@ public class OrderDetailFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static OrderDetailFragment createInstance() {
-    return new OrderDetailFragment();
+  public static OrderDetailFragment createInstance(String orderId) {
+    Bundle args = new Bundle();
+    args.putString(BUNDLE_KEY_ORDER_ID, orderId);
+
+    OrderDetailFragment fragment = new OrderDetailFragment();
+    fragment.setArguments(args);
+    return fragment;
   }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-
-    mViewModel = OrderDetailActivity.obtainViewModel(getActivity());
-
     return inflater.inflate(R.layout.fragment_order_detail, container, false);
   }
 
@@ -69,6 +74,8 @@ public class OrderDetailFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
 
     setupAdapter();
+
+    setupViewModel();
 
     subscribeToSnackBarMessenger();
 
@@ -92,6 +99,10 @@ public class OrderDetailFragment extends Fragment {
     recyclerView.setAdapter(mAdapter);
   }
 
+  private void setupViewModel() {
+    mViewModel = OrderDetailActivity.obtainViewModel(getActivity());
+  }
+
   private void subscribeToSnackBarMessenger() {
     mViewModel.getSnackBarMessenger().observe(this, new SnackBarObserver() {
       @Override
@@ -106,23 +117,8 @@ public class OrderDetailFragment extends Fragment {
       @Override
       public void onChanged(@Nullable Boolean isDataLoading) {
         //  Determine whether data is loading, react accordingly.
-        if (isDataLoading) {
-          //  Show progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.VISIBLE);
-
-          //  Hide recyclerView.
-          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
-          recyclerView.setVisibility(View.GONE);
-        } else {
-          //  Hide progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.GONE);
-
-          //  Show recyclerView.
-          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
-          recyclerView.setVisibility(View.VISIBLE);
-        }
+        ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+        progressBar.setVisibility(isDataLoading ? View.VISIBLE : View.GONE);
       }
     });
 
@@ -138,6 +134,10 @@ public class OrderDetailFragment extends Fragment {
         }
 
         mAdapter.setData(orders);
+
+        //  Hide no data textView
+        TextView textView = getView().findViewById(R.id.noKeychainsFoundText);
+        textView.setVisibility((orders.size() > 0) ? View.GONE : View.VISIBLE);
       }
     });
   }

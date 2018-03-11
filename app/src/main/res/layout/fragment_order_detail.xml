@@ -12,6 +12,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:indeterminate="true"
+    android:visibility="gone"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -27,5 +28,19 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:listitem="@layout/list_item_keychain"/>
+
+  <TextView
+    android:id="@+id/noKeychainsFoundText"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:text="@string/layout_text_view_no_keychains"
+    android:textAlignment="center"
+    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

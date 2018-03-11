@@ -33,9 +33,26 @@ public class CompleteOrder {
 
   private final List<OrderItem> mOrderItems;
 
+  private OrderType mOrderType;
+
+  public enum OrderType {
+    ORDER, ACKNOWLEDGEMENT, ACKNOWLEDGEMENT_WITH_ORDER
+  }
+
+  /**
+   * Default constructor, used for orders.
+   */
   public CompleteOrder(Order order, List<OrderItem> orderItems) {
+    this(order, orderItems, OrderType.ORDER);
+  }
+
+  /**
+   * Full constructor, can be used for orders or acknowledgements.
+   */
+  public CompleteOrder(Order order, List<OrderItem> orderItems, OrderType orderType) {
     this.mOrder = order;
     mOrderItems = orderItems;
+    mOrderType = orderType;
   }
 
   public Order getOrder() {
@@ -94,7 +111,15 @@ public class CompleteOrder {
     setOrderQuantity(quantity);
   }
 
-  private void setOrderQuantity(int quantity) {
+  public void setOrderQuantity(int quantity) {
     mOrder.setOrderQuantity(quantity);
+  }
+
+  public OrderType getOrderType() {
+    return mOrderType;
+  }
+
+  public void setOrderType(OrderType orderType) {
+    mOrderType = orderType;
   }
 }

@@ -49,11 +49,11 @@ public class UserPromptDialogFragment extends DialogFragment {
   private Button mSaveButton;
   private Button mCancelButton;
 
-  private DialogListener mListener;
+  private UserPromptDialogListener mListener;
 
   private String mInputText;
 
-  public interface DialogListener {
+  public interface UserPromptDialogListener {
 
     void onContinue(@NonNull String inputText);
 
@@ -170,11 +170,11 @@ public class UserPromptDialogFragment extends DialogFragment {
     // Verify that the host activity implements the callback interface
     try {
       // Instantiate the NoticeDialogListener so we can send events to the host
-      mListener = (DialogListener) context;
+      mListener = (UserPromptDialogListener) context;
     } catch (ClassCastException e) {
       // The activity doesn't implement the interface, throw exception
       throw new ClassCastException(context.toString()
-          + " must implement DialogListener");
+          + " must implement UserPromptDialogListener");
     }
   }
 }

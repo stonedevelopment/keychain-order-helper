@@ -18,16 +18,18 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.view.ActionMode;
-import android.view.View;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DataNotAvailableCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
 import java.util.List;
@@ -48,16 +50,13 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<List<Order>> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<ActionMode> mDataDeletedEvent = new SingleLiveEvent<>();
 
   //  Commands directed by User via on-screen interactions.
-  private final SingleLiveEvent<View> mNewOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
 
   //  Data repository
   private final Repository mRepository;
-
-  private ActionMode mActionMode;
 
   //  Are we getting data from database?
   private boolean mLoadingData;
@@ -83,11 +82,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mNoDataLoadedEvent;
   }
 
-  SingleLiveEvent<ActionMode> getDataDeletedEvent() {
-    return mDataDeletedEvent;
-  }
-
-  SingleLiveEvent<View> getNewOrderCommand() {
+  SingleLiveEvent<Void> getNewOrderCommand() {
     return mNewOrderCommand;
   }
 
@@ -95,6 +90,11 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mOrderDetailCommand;
   }
 
+  /**
+   * Starts the view model's initializations.
+   *
+   * Called by {@link OrderListFragment#onActivityCreated(Bundle)}
+   */
   public void start() {
     if (mLoadingData) {
       //  Loading data, ignore.
@@ -105,12 +105,56 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     loadData();
   }
 
+  /**
+   * Tell fragment to enable progress bar, we're about to load some data.
+   */
+  private void beginLoadingPhase() {
+    mLoadingData = true;
+    mDataLoadingEvent.setValue(true);
+  }
+
+  /**
+   * Tell fragment to disable progress bar, it's ok to display the ui again.
+   */
+  private void endLoadingPhase() {
+    mLoadingData = false;
+    mDataLoadingEvent.setValue(false);
+  }
+
+  /**
+   * Query repository for all orders in database.
+   */
+  private void loadData() {
+    mRepository.getAllOrders(this);
+  }
+
+  /**
+   * Persist ActionMode, because we're relying on the response of the repository to let us know when
+   * data was deleted. Otherwise, ActionMode will complete and refresh data before the callback was
+   * called.
+   *
+   * Sidenote:  We could possibly use this to allow for configuration changes to continue in this
+   * manner instead of resetting the ui.
+   */
+  void deleteOrders(List<Order> orders) {
+    beginLoadingPhase();
+
+    mRepository.deleteOrders(orders, this);
+  }
+
+  /**
+   * Handle the logic of an Activity's resultCode. Any UI manipulation should be at the Activity
+   * level.
+   */
   void handleActivityResult(int requestCode, int resultCode) {
     switch (requestCode) {
       case NewOrderActivity.REQUEST_CODE:
         switch (resultCode) {
-          case NewOrderActivity.RESULT_SENT_OK:
+          case NewOrderActivity.RESULT_SENT_ORDER_OK:
             mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
+            break;
+          case NewOrderActivity.RESULT_SENT_ACKNOWLEDGEMENT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_acknowledgement_ok);
             break;
           case NewOrderActivity.RESULT_SENT_CANCEL:
             mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_cancel);
@@ -128,8 +172,11 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
 
       case OrderDetailActivity.REQUEST_CODE:
         switch (resultCode) {
-          case OrderDetailActivity.RESULT_SENT_OK:
+          case OrderDetailActivity.RESULT_SENT_ORDER_OK:
             mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_ok);
+            break;
+          case OrderDetailActivity.RESULT_SENT_ACKNOWLEDGEMENT_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_send_order_acknowledgement_ok);
             break;
           case OrderDetailActivity.RESULT_SENT_CANCEL:
             mSnackBarMessenger.setValue(R.string.snackbar_message_save_order_cancel);
@@ -147,27 +194,9 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     }
   }
 
-  private void beginLoadingPhase() {
-    mLoadingData = true;
-    mDataLoadingEvent.setValue(true);
-  }
-
-  private void endLoadingPhase() {
-    mLoadingData = false;
-    mDataLoadingEvent.setValue(false);
-  }
-
-  private void loadData() {
-    mRepository.getAllOrders(this);
-  }
-
-  void startDeleteModeProcess(ActionMode mode, List<Order> orders) {
-    beginLoadingPhase();
-
-    mActionMode = mode;
-    mRepository.deleteOrders(orders, this);
-  }
-
+  /**
+   * @see DataNotAvailableCallback#onDataNotAvailable()
+   */
   @Override
   public void onDataNotAvailable() {
     //  Update screen components first.
@@ -175,6 +204,9 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     endLoadingPhase();
   }
 
+  /**
+   * @see DataSource.LoadCallback#onDataLoaded(CompleteOrder)
+   */
   @Override
   public void onDataLoaded(List<Order> orders) {
     //  Let adapter know its safe to fill items
@@ -182,26 +214,19 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     endLoadingPhase();
   }
 
+  /**
+   * @see DataSource.DeleteCallback#onDataDeleted(int)
+   */
   @Override
   public void onDataDeleted(int rowsDeleted) {
-    //  resolve actionMode
-    mDataDeletedEvent.setValue(mActionMode);
-
-    //  reset variable
-    mActionMode = null;
-
-    //  if orders were deleted, show snackbar, retrieve orders to fill list with new data,
-    //  otherwise, stop loading animation
     if (rowsDeleted > 0) {
       int resourceId = rowsDeleted > 1 ? R.string.snackbar_message_data_deleted_success_multiple
           : R.string.snackbar_message_data_deleted_success_one;
       mSnackBarMessenger.setValue(resourceId);
-
-      loadData();
     } else {
       mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_zero);
-
-      endLoadingPhase();
     }
+
+    loadData();
   }
 }

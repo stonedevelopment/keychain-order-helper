@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
+package com.gmail.stonedevs.keychainorderhelper.util;
 
 /**
  * TODO: Add a class header comment!
  */
 
-public interface OrderDetailNavigator {
+public class BundleUtils {
 
-  void startEditOrderActivity();
-
-  void showConfirmSendOrderDialog();
-
-  void showConfirmSendAcknowledgementDialog();
+  public static final String BUNDLE_KEY_ORDER_ID = "order_id";
 }

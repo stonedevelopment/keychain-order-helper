@@ -21,6 +21,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivity;
@@ -51,11 +53,13 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
 
     setupActionBar();
 
+    setupFabMenu();
+
     setupViewFragment();
 
     setupViewModel();
 
-    subscribeToNavigationChanges();
+    subscribeToViewModelCommands();
   }
 
   @Override
@@ -95,23 +99,31 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
         .replaceFragmentInActivity(getSupportFragmentManager(), fragment, R.id.fragment_container);
   }
 
+  private void setupFabMenu() {
+    FloatingActionButton fabCreateOrder = findViewById(R.id.fab_create_order);
+    fabCreateOrder.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        startNewOrderActivity();
+      }
+    });
+  }
+
   private void setupViewModel() {
     mViewModel = obtainViewModel(this);
   }
 
-  private void subscribeToNavigationChanges() {
+  private void subscribeToViewModelCommands() {
     mViewModel.getOrderDetailCommand().observe(this, new Observer<String>() {
       @Override
       public void onChanged(@Nullable String orderId) {
-        if (orderId != null) {
-          startOrderDetailActivity(orderId);
-        }
+        startOrderDetailActivity(orderId);
       }
     });
 
-    mViewModel.getNewOrderCommand().observe(this, new Observer<View>() {
+    mViewModel.getNewOrderCommand().observe(this, new Observer<Void>() {
       @Override
-      public void onChanged(@Nullable View v) {
+      public void onChanged(@Nullable Void aVoid) {
         startNewOrderActivity();
       }
     });
@@ -123,17 +135,12 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
 
     if (fragment == null) {
       fragment = OrderListFragment.createInstance();
-      fragment.setArguments(obtainArguments());
     }
 
     return fragment;
   }
 
-  private Bundle obtainArguments() {
-    return new Bundle();
-  }
-
-  public static OrderListViewModel obtainViewModel(FragmentActivity activity) {
+  static OrderListViewModel obtainViewModel(FragmentActivity activity) {
     // Use a Factory to inject dependencies into the ViewModel
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 

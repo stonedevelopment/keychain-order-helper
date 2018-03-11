@@ -20,11 +20,13 @@ interface NewOrderNavigator {
 
   void showOrderRequirementsDialog();
 
+  void showAcknowledgementRequirementsDialog();
+
   void showEditTerritoryDialog();
 
   void showConfirmCancelOrderDialog();
 
-  void showConfirmResetOrderDialog();
-
   void showConfirmSendOrderDialog();
+
+  void showConfirmSendAcknowledgementDialog();
 }

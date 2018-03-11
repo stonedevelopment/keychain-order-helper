@@ -19,15 +19,11 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,6 +31,7 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,9 +45,9 @@ public class OrderListFragment extends Fragment {
 
   private static final String TAG = OrderListFragment.class.getSimpleName();
 
-  private OrderListAdapter mAdapter;
-
   private OrderListViewModel mViewModel;
+
+  private OrderListAdapter mAdapter;
 
   public OrderListFragment() {
     // Required empty public constructor
@@ -63,8 +60,6 @@ public class OrderListFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    mViewModel = OrderListActivity.obtainViewModel(getActivity());
-
     return inflater.inflate(R.layout.fragment_order_list, container, false);
   }
 
@@ -72,20 +67,19 @@ public class OrderListFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    setupAdapter();
+    setupViewModel();
 
-    setupFab();
+    setupAdapter();
 
     subscribeToSnackBarMessenger();
 
-    subscribeToUIObservableEvents();
+    subscribeToViewModelEvents();
+
+    startViewModel();
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
-
-    mViewModel.start();
+  private void setupViewModel() {
+    mViewModel = OrderListActivity.obtainViewModel(getActivity());
   }
 
   private void setupAdapter() {
@@ -99,16 +93,6 @@ public class OrderListFragment extends Fragment {
     recyclerView.setAdapter(mAdapter);
   }
 
-  private void setupFab() {
-    FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-    fab.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        mViewModel.getNewOrderCommand().setValue(v);
-      }
-    });
-  }
-
   private void subscribeToSnackBarMessenger() {
     mViewModel.getSnackBarMessenger().observe(this, new SnackBarObserver() {
       @Override
@@ -118,28 +102,13 @@ public class OrderListFragment extends Fragment {
     });
   }
 
-  private void subscribeToUIObservableEvents() {
+  private void subscribeToViewModelEvents() {
     mViewModel.getDataLoadingEvent().observe(this, new Observer<Boolean>() {
       @Override
       public void onChanged(@Nullable Boolean isDataLoading) {
         //  Determine whether data is loading, react accordingly.
-        if (isDataLoading) {
-          //  Show progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.VISIBLE);
-
-          //  Hide container layout.
-          ConstraintLayout layout = getView().findViewById(R.id.layout);
-          layout.setVisibility(View.GONE);
-        } else {
-          //  Hide progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.GONE);
-
-          //  Show container layout.
-          ConstraintLayout layout = getView().findViewById(R.id.layout);
-          layout.setVisibility(View.VISIBLE);
-        }
+        ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+        progressBar.setVisibility(isDataLoading ? View.VISIBLE : View.GONE);
       }
     });
 
@@ -151,31 +120,22 @@ public class OrderListFragment extends Fragment {
         //  Hide no data textView
         TextView textView = getView().findViewById(R.id.noOrdersFoundText);
         textView.setVisibility(View.GONE);
-
-        //  Show recyclerView
-        RecyclerView recyclerView = getView().findViewById(R.id.orderListRecyclerView);
-        recyclerView.setVisibility(View.VISIBLE);
       }
     });
 
     mViewModel.getNoDataLoadedEvent().observe(this, new Observer<Void>() {
       @Override
       public void onChanged(@Nullable Void aVoid) {
-        //  Hide recyclerView
-        RecyclerView recyclerView = getView().findViewById(R.id.orderListRecyclerView);
-        recyclerView.setVisibility(View.GONE);
+        mAdapter.replaceData(new ArrayList<Order>(0));
 
         //  Show no data textView
         TextView textView = getView().findViewById(R.id.noOrdersFoundText);
         textView.setVisibility(View.VISIBLE);
       }
     });
+  }
 
-    mViewModel.getDataDeletedEvent().observe(this, new Observer<ActionMode>() {
-      @Override
-      public void onChanged(@Nullable ActionMode mode) {
-        mAdapter.finishActionMode(mode);
-      }
-    });
+  private void startViewModel() {
+    mViewModel.start();
   }
 }

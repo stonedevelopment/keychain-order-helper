@@ -29,11 +29,12 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
+import com.gmail.stonedevs.keychainorderhelper.util.EmailUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -87,13 +88,16 @@ public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Inte
   @Override
   protected Intent doInBackground(Void... voids) {
     try {
-      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
-          getContext().getString(R.string.excel_template_filename)));
+      Uri uri = null;
+      if (mOrder.getOrderType() == OrderType.ORDER) {
+        Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
+            getContext().getString(R.string.excel_template_filename)));
 
-      File file = generateExcelFile(workbook);
-      Uri uri = Uri.fromFile(file);
+        File file = generateExcelFile(workbook);
+        uri = Uri.fromFile(file);
+      }
 
-      return createEmailIntent(uri);
+      return EmailUtils.createSendOrderEmailIntent(getContext(), mOrder, uri);
     } catch (InvalidFormatException | IOException e) {
       e.printStackTrace();
     }
@@ -198,43 +202,5 @@ public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Inte
         });
 
     return file;
-  }
-
-  private Intent createEmailIntent(Uri uri) {
-    String storeName = mOrder.getStoreName();
-
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-    String repTerritory = mOrder.hasOrderTerritory() ? mOrder.getOrderTerritory()
-        : prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
-            getContext().getString(R.string.pref_error_default_value_rep_territory));
-
-    Intent intent = new Intent(Intent.ACTION_SEND);
-
-    // set the type to 'email'
-    intent.setType("vnd.android.cursor.dir/email");
-
-    //  set email address from preferences
-    String sendtoEmail =
-        BuildConfig.DEBUG ? getContext().getString(R.string.intent_extra_email_default_value_debug)
-            : getContext().getString(R.string.intent_extra_email_default_value);
-    String to[] = {sendtoEmail};
-    intent.putExtra(Intent.EXTRA_EMAIL, to);
-
-    // the attachment
-    intent.putExtra(Intent.EXTRA_STREAM, uri);
-
-    // the mail subject
-    String subject = String
-        .format(getContext().getString(R.string.intent_extra_subject_send_order_by_email),
-            repTerritory, storeName);
-    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-
-    //  the mail body
-    String body = String
-        .format(getContext().getString(R.string.intent_extra_text_body_send_order_by_email),
-            storeName);
-    intent.putExtra(Intent.EXTRA_TEXT, body);
-
-    return intent;
   }
 }

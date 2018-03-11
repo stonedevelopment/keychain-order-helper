@@ -21,10 +21,10 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
@@ -34,6 +34,7 @@ import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ViewModel for the New Order screen.
@@ -54,18 +56,11 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
-  private final SingleLiveEvent<CompleteOrder> mOrderReadyEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
-
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
-
-  //  Commands
-  private final SingleLiveEvent<Void> mCancelOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mResetOrderCommand = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mSendOrderCommand = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mOrderReadyEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
 
   private final Repository mRepository;
   private final AppExecutors mAppExecutors;
@@ -82,6 +77,9 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   //  Are we in the sending order process?
   private boolean mSendingOrder;
 
+  //  Are we in the sending acknowledgement process?
+  private boolean mSendingAcknowledgement;
+
   public NewOrderViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
 
@@ -89,8 +87,13 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     mAppExecutors = new AppExecutors();
   }
 
+  /**
+   * Starts the view model's initializations.
+   *
+   * Called by {@link NewOrderFragment#onActivityCreated(Bundle)}
+   */
   void start() {
-    if (mLoadingData) {
+    if (mLoadingData || mSendingOrder || mSendingAcknowledgement) {
       //  Loading data, ignore.
       return;
     }
@@ -111,22 +114,37 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     }
   }
 
+  /**
+   * Sets the order id in view model, lazily used to let view model know that we want to load an
+   * order and not create one.
+   */
   void setOrderId(String orderId) {
     mOrderId = orderId;
   }
 
   /**
-   * Returns if Order is perceived to be a New Order, lazily checking if mOrderId is
-   * null.
+   * Returns if Order is perceived to be a New Order, lazily checking if order id is null.
    */
   boolean isNewOrder() {
     return mOrderId == null;
   }
 
+  /**
+   * Is the store name saved in current order object empty?
+   */
   boolean isStoreNameEmpty() {
-    return mWorkingOrder.getStoreName().isEmpty();
+    return TextUtils.isEmpty(mWorkingOrder.getStoreName());
   }
 
+  String getStoreName() {
+    return mWorkingOrder.getStoreName();
+  }
+
+  /**
+   * Updates the current order's store name. If order object is null, nullify view model's order id
+   * variable as this is most likely being called by the layout after garbage collection. Meaning,
+   * let's just reset and start a new order when {@link #start()} is called.
+   */
   void updateStoreName(String storeName) {
     if (mWorkingOrder != null) {
       mWorkingOrder.setStoreName(storeName);
@@ -135,37 +153,86 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     }
   }
 
+  /**
+   * Updates the current order's order date. Used directly before we make the attempt to send an
+   * order. Keeps the date fresh for each attempt.
+   */
   private void updateOrderDate() {
     mWorkingOrder.updateOrderDate();
   }
 
+  private void updateOrderType(OrderType orderType) {
+    mWorkingOrder.setOrderType(orderType);
+  }
+
+  /**
+   * Whether or not we have a valid territory, either by ViewModel persistence or SharedPreferences.
+   */
   boolean hasTerritory() {
     return hasSetTerritory() || hasPrefTerritory();
   }
 
-  boolean hasSetTerritory() {
-    return mWorkingOrder.hasOrderTerritory();
-  }
-
-  boolean hasPrefTerritory() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-    String prefsTerritory = prefs
-        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
-
-    return !TextUtils.isEmpty(prefsTerritory);
+  /**
+   * Retrieve the territory set by User from the current order's object.
+   */
+  private String getSetTerritory() {
+    return mWorkingOrder.getOrderTerritory();
   }
 
   /**
-   * Return Territory if saved to ViewModel or saved in sharedPreferences.
+   * Does our current order object have a territory set?
    */
-  String getTerritory() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
-    return mWorkingOrder.hasOrderTerritory() ? mWorkingOrder.getOrderTerritory() : prefs
-        .getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+  private boolean hasSetTerritory() {
+    return !TextUtils.isEmpty(getSetTerritory());
   }
 
-  void setTerritory(String territory) {
+  /**
+   * Retrieve the territory set by User's initial settings.
+   */
+  private String getPrefTerritory() {
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
+    return prefs.getString(getApplication().getString(R.string.pref_key_rep_territory), null);
+  }
+
+  /**
+   * Do we have a territory saved in preferences?
+   */
+  private boolean hasPrefTerritory() {
+    return !TextUtils.isEmpty(getPrefTerritory());
+  }
+
+  /**
+   * Get the assigned territory, either set by current order object or in preferences. The set
+   * territory takes precedence since that is what User set directly.
+   */
+  String getTerritory() {
+    return mWorkingOrder.hasOrderTerritory() ? getSetTerritory() : getPrefTerritory();
+  }
+
+  /**
+   * Update current order's territory with User input.
+   */
+  private void setTerritory(String territory) {
     mWorkingOrder.setOrderTerritory(territory);
+  }
+
+  /**
+   * Updates the current order's territory, if it doesn't match the territory saved in preferences.
+   */
+  boolean updateTerritory(String territory) {
+    if (!Objects.equals(territory, getPrefTerritory())) {
+      if (!Objects.equals(territory, getSetTerritory())) {
+        setTerritory(territory);
+        return true;
+      }
+    } else {
+      if (hasSetTerritory()) {
+        setTerritory(null);
+        return true;
+      }
+    }
+
+    return false;
   }
 
   int getOrderQuantity() {
@@ -183,14 +250,12 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mWorkingOrder.getOrderQuantity() >= orderQuantityMinimumRequirement;
   }
 
-  void updateOrderQuantityBy(int change) {
-    mWorkingOrder.updateOrderQuantityBy(change);
-
-    updateUI();
+  private void resetOrderQuantity() {
+    mWorkingOrder.setOrderQuantity(0);
   }
 
-  boolean isSendingOrder() {
-    return mSendingOrder;
+  void updateOrderQuantityBy(int change) {
+    mWorkingOrder.updateOrderQuantityBy(change);
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -213,24 +278,8 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     return mDataLoadingEvent;
   }
 
-  SingleLiveEvent<CompleteOrder> getDataLoadedEvent() {
-    return mDataLoadedEvent;
-  }
-
   SingleLiveEvent<Void> getErrorLoadingDataEvent() {
     return mErrorLoadingDataEvent;
-  }
-
-  SingleLiveEvent<Void> getCancelOrderCommand() {
-    return mCancelOrderCommand;
-  }
-
-  SingleLiveEvent<Void> getResetOrderCommand() {
-    return mResetOrderCommand;
-  }
-
-  SingleLiveEvent<Void> getSendOrderCommand() {
-    return mSendOrderCommand;
   }
 
   private void createOrder() {
@@ -272,10 +321,6 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     mRepository.saveOrder(mWorkingOrder, this);
   }
 
-  void resetOrder() {
-    createOrder();
-  }
-
   /**
    * Readies order for observers to use.
    */
@@ -309,9 +354,16 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   }
 
   /**
+   * Are we currently in the process of sending an order?
+   */
+  boolean isSendingOrder() {
+    return mSendingOrder;
+  }
+
+  /**
    * Is this order complete and ready to send?
    */
-  boolean readyToSend() {
+  boolean readyToSendOrder() {
     return mWorkingOrder != null && !(isStoreNameEmpty()
         || isOrderQuantityZero() || !doesOrderQuantityMeetMinimumRequirements());
   }
@@ -319,16 +371,16 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
   /**
    * Helper method for dialogs that show before send order dialog.
    */
-  void initializeSendPhase() {
-    Log.w(TAG, "initializeSendPhase: " + mSendingOrder);
+  void initializeSendOrderPhase() {
     mSendingOrder = true;
   }
 
   /**
    * Save Order to database, start preparations for email intent.
    */
-  void beginSendPhase(Activity context) {
-    Log.w(TAG, "beginSendPhase: ");
+  void beginSendOrderPhase(Activity context) {
+    //  Update order type
+    updateOrderType(OrderType.ORDER);
 
     //  Update order date to now.
     updateOrderDate();
@@ -344,13 +396,54 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    * Ends order process, essentially a helper method for future dialogs that don't need to
    * immediately show send order dialog.
    */
-  void endSendPhase() {
-    Log.w(TAG, "endSendPhase: ");
-
+  void endSendOrderPhase() {
     mSendingOrder = false;
   }
 
-  private void updateUI() {
+  /**
+   * Are we currently in the process of sending an order?
+   */
+  boolean isSendingAcknowledgement() {
+    return mSendingAcknowledgement;
+  }
+
+  /**
+   * Are we ready to send an order acknowledgement?
+   */
+  boolean readyToSendAcknowledgment() {
+    return !isStoreNameEmpty();
+  }
+
+  /**
+   * Helper method for dialogs that show before send order acknowledgement dialog.
+   */
+  void initializeSendAcknowledgementPhase() {
+    mSendingAcknowledgement = true;
+  }
+
+  /**
+   * Start preparations for email intent.
+   */
+  void beginSendAcknowledgementPhase(Activity context) {
+    //  Update order type
+    updateOrderType(OrderType.ACKNOWLEDGEMENT);
+
+    //  Execute prepare send task.
+    executeFinalPreparations(context);
+  }
+
+  /**
+   * Ends order process, essentially a helper method for future dialogs that don't need to
+   * immediately show send order acknowledgement dialog.
+   */
+  void endSendAcknowledgementPhase() {
+    mSendingAcknowledgement = false;
+  }
+
+  /**
+   * Alert observer to update its ui components with current order object's contents.
+   */
+  void updateUI() {
     mUpdateUIEvent.setValue(mWorkingOrder);
   }
 
@@ -359,8 +452,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
    */
   private void executeFinalPreparations(Activity context) {
     PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
-        mWorkingOrder,
-        this);
+        mWorkingOrder, this);
     task.execute();
   }
 
@@ -381,10 +473,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
   @Override
   public void onDataNotAvailable() {
-    Log.e(TAG, "onDataNotAvailable: " + mWorkingOrder.getOrder().toString());
-
-    endLoadingPhase();
-
+    // TODO: 3/10/2018 Tell firebase that order was not found in database but was attempted.
     mErrorLoadingDataEvent.call();
   }
 }

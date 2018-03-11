@@ -18,7 +18,6 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,9 +109,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
     int change = newQuantity - quantity;
 
-    Log.d(TAG, "onItemClick: " + newQuantity + " - " + quantity + " = " + change);
-
     mViewModel.updateOrderQuantityBy(change);
+    mViewModel.updateUI();
 
     notifyItemChanged(position);
   }
@@ -129,9 +127,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
     int change = newQuantity - quantity;
 
-    Log.d(TAG, "onItemLongClick: " + newQuantity + " - " + quantity + " = " + change);
-
     mViewModel.updateOrderQuantityBy(change);
+    mViewModel.updateUI();
 
     notifyItemChanged(position);
     return true;

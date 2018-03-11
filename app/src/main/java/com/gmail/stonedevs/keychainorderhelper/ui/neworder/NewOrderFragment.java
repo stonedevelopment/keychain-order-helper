@@ -141,23 +141,8 @@ public class NewOrderFragment extends Fragment {
       @Override
       public void onChanged(@Nullable Boolean isDataLoading) {
         //  Determine whether data is loading, react accordingly.
-        if (isDataLoading) {
-          //  Show progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.VISIBLE);
-
-          //  Hide recyclerView.
-          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
-          recyclerView.setVisibility(View.GONE);
-        } else {
-          //  Hide progress bar.
-          ProgressBar progressBar = getView().findViewById(R.id.progressBar);
-          progressBar.setVisibility(View.GONE);
-
-          //  Show recyclerView.
-          RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
-          recyclerView.setVisibility(View.VISIBLE);
-        }
+        ProgressBar progressBar = getView().findViewById(R.id.progressBar);
+        progressBar.setVisibility(isDataLoading ? View.VISIBLE : View.GONE);
       }
     });
   }

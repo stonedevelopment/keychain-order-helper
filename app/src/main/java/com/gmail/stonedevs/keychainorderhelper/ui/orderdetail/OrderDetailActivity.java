@@ -16,7 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-import static com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderFragment.BUNDLE_KEY_ORDER_ID;
+import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -52,7 +52,8 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   public static final int REQUEST_CODE_ACTION_SEND = NewOrderActivity.REQUEST_CODE_ACTION_SEND;
 
   //  RESULT_OK
-  public static final int RESULT_SENT_OK = RESULT_OK;
+  public static final int RESULT_SENT_ORDER_OK = RESULT_OK;
+  public static final int RESULT_SENT_ACKNOWLEDGEMENT_OK = RESULT_SENT_ORDER_OK - 1;
 
   //  RESULT_CANCELED
   public static final int RESULT_SENT_CANCEL = RESULT_CANCELED;
@@ -79,7 +80,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
     subscribeToViewModelEvents();
 
-    subscribeToNavigationChanges();
+    subscribeToViewModelCommands();
   }
 
   @Override
@@ -93,10 +94,15 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
       case R.id.action_edit:
-        mViewModel.getEditOrderCommand().call();
+        startEditOrderActivity();
         return true;
-      case R.id.action_send_save:
-        mViewModel.getSendOrderCommand().call();
+      case R.id.action_send_order:
+        mViewModel.initializeSendOrderPhase();
+        showConfirmSendOrderDialog();
+        return true;
+      case R.id.action_send_acknowledgement:
+        mViewModel.initializeSendAcknowledgementPhase();
+        showConfirmSendAcknowledgementDialog();
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -108,9 +114,16 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    mViewModel.handleActivityResult(requestCode, resultCode);
-
     switch (requestCode) {
+      case REQUEST_CODE_ACTION_SEND:
+        if (mViewModel.isSendingOrder()) {
+          finishWithResult(RESULT_SENT_ORDER_OK);
+        } else if (mViewModel.isSendingAcknowledgement()) {
+          finishWithResult(RESULT_SENT_ACKNOWLEDGEMENT_OK);
+        } else {
+          throw new RuntimeException("Invalid view model state.");
+        }
+        break;
       case NewOrderActivity.REQUEST_CODE:
         finishWithResult(resultCode);
         break;
@@ -187,34 +200,18 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     mViewModel.getIntentReadyEvent().observe(this, new Observer<Intent>() {
       @Override
       public void onChanged(@Nullable Intent intent) {
-        Intent chooser = Intent
-            .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-          startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+        if (mViewModel.isSendingOrder()) {
+          sendOrderByEmail(intent);
+        } else if (mViewModel.isSendingAcknowledgement()) {
+          sendOrderAcknowledgementByEmail(intent);
         } else {
-          //  there are no apps on phone to handle this intent, cancel order
-          mViewModel.getSnackBarMessenger()
-              .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
+          throw new RuntimeException("Invalid view model state.");
         }
       }
     });
   }
 
-  private void subscribeToNavigationChanges() {
-    mViewModel.getSendOrderCommand().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        showConfirmSendOrderDialog();
-      }
-    });
-
-    mViewModel.getEditOrderCommand().observe(this, new Observer<Void>() {
-      @Override
-      public void onChanged(@Nullable Void aVoid) {
-        startEditOrderActivity();
-      }
-    });
+  private void subscribeToViewModelCommands() {
   }
 
   private OrderDetailFragment obtainViewFragment() {
@@ -222,24 +219,13 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         .findFragmentById(R.id.fragment_container);
 
     if (fragment == null) {
-      fragment = OrderDetailFragment.createInstance();
-      fragment.setArguments(obtainArguments());
+      //  Get the requested order id.
+      String orderId = getIntent().getStringExtra(BUNDLE_KEY_ORDER_ID);
+
+      fragment = OrderDetailFragment.createInstance(orderId);
     }
 
     return fragment;
-  }
-
-  private Bundle obtainArguments() {
-    //  Get the requested order id.
-    String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
-
-    Bundle args = new Bundle();
-    args.putString(getString(R.string.bundle_key_order_id), orderId);
-
-    OrderDetailFragment fragment = new OrderDetailFragment();
-    fragment.setArguments(args);
-
-    return args;
   }
 
   public static OrderDetailViewModel obtainViewModel(FragmentActivity activity) {
@@ -247,6 +233,32 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
     return ViewModelProviders.of(activity, factory).get(OrderDetailViewModel.class);
+  }
+
+  void sendOrderByEmail(Intent intent) {
+    Intent chooser = Intent
+        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
+
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      //  there are no apps on phone to handle this intent, cancel order
+      mViewModel.getSnackBarMessenger()
+          .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
+    }
+  }
+
+  void sendOrderAcknowledgementByEmail(Intent intent) {
+    Intent chooser = Intent
+        .createChooser(intent,
+            getString(R.string.intent_title_send_order_acknowledgement_by_email));
+
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      //  there are no apps on phone to handle this intent, cancel order
+      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
+    }
   }
 
   void finishWithResult(int resultCode) {
@@ -270,16 +282,39 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.beginSendPhase(OrderDetailActivity.this);
+            mViewModel.beginSendOrderPhase(OrderDetailActivity.this);
           }
         });
-    builder.setNegativeButton(R.string.dialog_negative_button_resend_order,
+    builder.setNegativeButton(R.string.dialog_negative_button_resend_order, new OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        mViewModel.endSendOrderPhase();
+      }
+    });
+    builder.setCancelable(false);
+    builder.show();
+  }
+
+  @Override
+  public void showConfirmSendAcknowledgementDialog() {
+    AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_send_order_acknowledgement);
+    builder.setMessage(getString(R.string.dialog_message_send_order_acknowledgement));
+    builder.setPositiveButton(R.string.dialog_positive_button_send_order_acknowledgement,
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            //  do nothing, allow the user to continue their order.
+            mViewModel.beginSendAcknowledgementPhase(OrderDetailActivity.this);
           }
         });
+    builder.setNegativeButton(R.string.dialog_negative_button_send_order_acknowledgement,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            mViewModel.endSendAcknowledgementPhase();
+          }
+        });
+    builder.setCancelable(false);
     builder.show();
   }
 }

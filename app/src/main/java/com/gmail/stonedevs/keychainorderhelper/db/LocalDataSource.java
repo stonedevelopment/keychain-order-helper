@@ -17,7 +17,6 @@
 package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
@@ -182,7 +181,6 @@ public class LocalDataSource implements DataSource {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        Log.d(TAG, "run: " + orders.toString());
         final int rowsDeleted = mOrderDao.delete(orders);
 
         mAppExecutors.mainThread().execute(new Runnable() {
