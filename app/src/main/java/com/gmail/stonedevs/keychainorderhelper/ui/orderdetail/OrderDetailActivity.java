@@ -56,7 +56,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   public static final int RESULT_SENT_ACKNOWLEDGEMENT_OK = RESULT_SENT_ORDER_OK - 1;
 
   //  RESULT_CANCELED
-  public static final int RESULT_SENT_CANCEL = RESULT_CANCELED;
+  public static final int RESULT_SENT_CANCEL = RESULT_CANCELED + 1;
   public static final int RESULT_SENT_ERROR_NO_APPS = RESULT_SENT_CANCEL + 1;
   public static final int RESULT_DATA_LOAD_ERROR = RESULT_SENT_ERROR_NO_APPS + 1;
 

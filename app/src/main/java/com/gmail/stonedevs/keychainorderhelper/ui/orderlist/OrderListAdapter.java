@@ -171,12 +171,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
 
   @Override
   public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-    //  Create list of orders to delete
-    //  Send list to view model for deletion
-    //  Delete orders
-    //  Finish mode
-    //  Update list upon deletion
-
     switch (item.getItemId()) {
       case R.id.action_mode_delete:
         removeSelectedItems();
@@ -191,6 +185,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   public void onDestroyActionMode(ActionMode mode) {
     mActionMode = null;
     mSelectedOrders = null;
+
+    notifyDataSetChanged();
   }
 
   class OrderListViewHolder extends RecyclerView.ViewHolder implements OnClickListener,

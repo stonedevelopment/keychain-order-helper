@@ -102,8 +102,8 @@
 
   <!--  AlertDialog:  Send Order Acknowledgement -->
   <string name="dialog_title_send_order_acknowledgement">Send Order Acknowledgement</string>
-  <string name="dialog_message_send_order_acknowledgement">Are you sure you want to send an order acknowledgement?\n</string>
-  <string name="dialog_positive_button_send_order_acknowledgement">Send Acknowledge</string>
+  <string name="dialog_message_send_order_acknowledgement">Are you sure you want to send an order acknowledgement?</string>
+  <string name="dialog_positive_button_send_order_acknowledgement">Send Acknowledgement</string>
   <string name="dialog_negative_button_send_order_acknowledgement">Go Back</string>
 
   <!--  AlertDialog:  Resend Order -->
