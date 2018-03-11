@@ -87,7 +87,7 @@
 
   <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
-  <string name="dialog_title_send_order">Send Order</string>
+  <string name="dialog_title_send_order">Order Review</string>
   <string name="dialog_message_send_order">Are you ready to send this order?</string>
   <string name="dialog_message_send_order_review_order">Order Review</string>
   <string name="dialog_message_send_order_contents_format">

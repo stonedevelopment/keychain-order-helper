@@ -399,6 +399,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   @Override
   public void showConfirmSendOrderDialog() {
     AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_send_order);
 
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
     String repName = prefs.getString(getString(R.string.pref_key_rep_name), null);
