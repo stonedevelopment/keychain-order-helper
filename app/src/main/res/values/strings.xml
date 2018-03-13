@@ -1,67 +1,111 @@
 <resources>
-  <string name="app_name">Lanyard Keychain Order Helper</string>
-  <string name="action_settings">Settings</string>
+  <string name="app_name">Keychain Order Helper</string>
+  <string name="title_activity_orderlist">@string/app_name</string>
+  <string name="title_activity_neworder">New Order</string>
+  <string name="title_activity_orderdetail">Order Details</string>
   <string name="title_activity_settings">Settings</string>
 
-  <!--  Strings related to Intents -->
+  <!--  Action Menu Labels -->
+  <string name="action_settings">Settings</string>
+  <string name="action_reset_order">Reset</string>
+  <string name="action_menu_send">Send</string>
+  <string name="action_send_order">Send Order</string>
+  <string name="action_send_acknowledgement">Send Acknowledgement</string>
+  <string name="action_resend_order">Resend</string>
+  <string name="action_edit_order">Edit</string>
+  <string name="action_edit_store_name">Edit Store Name</string>
+  <string name="action_edit_territory">Edit Territory</string>
+  <string name="action_mode_delete">Delete</string>
 
-  <!--  Email Intent: Send Order By Email -->
+  <!--  Intents -->
+  <!--  Intents: Email Intent: Send Order By Email -->
   <string name="intent_title_send_order_by_email">Send Order</string>
-  <string name="intent_extra_text_body_send_order_by_email">Attached is a lanyard keychain order for %1$s.</string>
+  <string name="intent_extra_subject_send_order_by_email">Keychain Order - %1$s/%2$s</string>
+  <string name="intent_extra_text_body_send_order_by_email">Attached is a keychain order for
+    %1$s.</string>
+
+  <!--  Intents: Email Intent: Send Order Acknowledgement By Email -->
+  <string name="intent_title_send_order_acknowledgement_by_email">Send Order</string>
+  <string name="intent_extra_subject_send_order_acknowledgement_by_email">Keychain Order - %1$s/%2$s - Acknowledgement</string>
+  <string name="intent_extra_text_body_send_order_acknowledgement_by_email">This is an order
+    acknowledgement for %1$s.\n\nNo order was needed on this service trip; order would not meet the
+    set minimum requirements.</string>
+  <string name="intent_extra_text_body_send_order_acknowledgement_by_email_with_order_details">
+    This is an order acknowledgement for %1$s.\n\nNo order was needed on this service trip; an order
+    was last placed %2$s.</string>
 
   <!--  Bundle Keys -->
-
-  <!--  Bundle Keys:  NewOrderFragment -->
-  <string name="bundle_key_NewOrderFragment_store_name">bundle_key_NewOrderFragment_store_name</string>
-  <string name="bundle_key_NewOrderFragment_order_date">bundle_key_NewOrderFragment_order_date</string>
-  <string name="bundle_key_NewOrderFragment_quantity_cell_values">bundle_key_NewOrderFragment_quantity_cell_values</string>
-
-  <!--  Bundle Keys:  ViewOrderFragment -->
-  <string name="bundle_key_ViewOrderFragment_store_name">bundle_key_ViewOrderFragment_store_name</string>
-  <string name="bundle_key_ViewOrderFragment_order_date">bundle_key_ViewOrderFragment_order_date</string>
-  <string name="bundle_key_ViewOrderFragment_order_quantities">bundle_key_ViewOrderFragment_order_quantities</string>
-  <string name="bundle_key_ViewOrderFragment_order_total">bundle_key_ViewOrderFragment_order_total</string>
+  <string name="bundle_key_input_text">input_text</string>
+  <string name="bundle_key_store_name">store_name</string>
+  <string name="bundle_key_order_id">order_id</string>
+  <string name="bundle_key_is_new_order">is_new_order</string>
+  <string name="bundle_key_order_territory">order_territory</string>
+  <string name="bundle_key_order_send_after">order_send_after</string>
 
   <!--  Layouts -->
-  <!--  Layouts:  MainActivityFragment -->
-  <string name="action_bar_title_mainActivityFragment">@string/app_name</string>
-  <string name="logoImage_SRP_contentDescription">Logo for SRP Companies</string>
-  <string name="logoImage_TheNamePeople">Logo of The Name People</string>
-  <string name="orderButton_text">Order Keychains</string>
-  <string name="viewButton_text">View Previous Orders</string>
-  <string name="generateButton_text">DEBUG: Generate</string>
-  <string name="crashButton_text">DEBUG: Crash</string>
-  <string name="settingsButton_text">Settings</string>
+  <!--  Layouts:  NewOrderFragment -->
+  <string name="layout_actionbar_title_new_order">New Order</string>
+  <string name="layout_actionbar_title_edit_order">Edit Order</string>
+  <string name="layout_edit_text_hint_store_name">Store Name</string>
+  <string name="layout_edit_text_error_field_store_name">This field is required.</string>
+  <string name="layout_edit_text_default_value_store_name">Store Name 1</string>
 
-  <!--  Layout NewOrderFragment -->
-  <string name="action_bar_title_newOrderFragment">New Keychain Order</string>
-  <string name="storeNameText_hint">Store Name</string>
-  <string name="storeNameText_debug_default_value">Store Name 1</string>
-  <string name="dateText_hint">Date</string>
-  <string name="resetButton_text">Reset</string>
-  <string name="sendButton_text">Send Order</string>
+  <!--  Layouts:  OrderDetailFragment -->
+  <string name="layout_text_view_order_quantity_acknowledgement">Acknowledgement</string>
+  <string name="layout_text_view_no_keychains">No keychains were ordered.</string>
 
-  <!--  Layouts:  PreviousOrderFragment -->
-  <string name="action_bar_title_previousOrderFragment">Previous Orders</string>
-  <string name="textView_previousOrderFragment_noOrders_text">There are no orders.</string>
+  <!--  Layouts:  OrderListFragment -->
+  <string name="layout_text_view_no_orders">There are currently no orders.</string>
 
-  <!--  Layouts:  ViewOrderFragment -->
-  <string name="action_bar_title_viewOrderFragment">Order Details</string>
-  <string name="resendButton_text">Resend Order</string>
+  <!--  Layouts:  InitialSettingsDialogFragment -->
+  <string name="dialog_title_initial_settings">Initial Settings</string>
+  <string name="dialog_message_initial_settings">In order to fill out order forms entirely, please
+    enter your name, as you would usually on order forms, and your territory (Ex: LIT3).\n\nLeave
+    Territory blank if you do not have a set territory.</string>
+  <string name="dialog_hint_initial_settings_rep_name">Your Name</string>
+  <string name="dialog_field_error_initial_settings_rep_name_text">This field is required.</string>
+  <string name="dialog_hint_initial_settings_rep_territory">Your Territory</string>
+  <string name="dialog_positive_button_initial_settings">Save</string>
 
-  <!--  Layouts:  RequiredFieldsDialogFragment -->
-  <string name="dialog_title_required_fields">Required Fields</string>
-  <string name="dialog_hint_required_fields_name">Name</string>
-  <string name="dialog_hint_required_fields_territory">Territory</string>
-  <string name="dialog_message_required_fields">In order to fill out order forms entirely, please enter your name, as you would usually on order forms, and your territory (ex: LIT3). If you ever need to change any of these, you can do so by clicking on Settings on the main screen.</string>
-  <string name="dialog_positive_button_required_fields">Save</string>
+  <!--  Layouts:  TerritoryDialogFragment -->
+  <string name="dialog_title_territory">Order Territory</string>
+  <string name="dialog_message_territory">Please enter the territory you are ordering for:</string>
+  <string name="dialog_edit_text_hint_territory">Territory</string>
+  <string name="dialog_edit_text_error_territory">This field is required.</string>
+  <string name="dialog_positive_button_territory">Continue</string>
+  <string name="dialog_negative_button_territory">Go Back</string>
 
-  <!--  AlertDialog -->
+  <!--  Layouts:  UserPromptDialogFragment -->
+  <string name="dialog_edit_text_error_user_prompt">This field is required.</string>
+  <string name="dialog_positive_button_user_prompt">Continue</string>
+  <string name="dialog_negative_button_user_prompt">Go Back</string>
+
+  <!--  Layouts:  UserPromptDialogFragment: Edit Store Name -->
+  <string name="dialog_title_edit_store_name">Edit Store Name</string>
+  <string name="dialog_message_edit_store_name">Please enter the new store name:</string>
+  <string name="dialog_edit_text_hint_edit_store_name">Store Name</string>
+
+  <!--  AlertDialogs -->
   <!--  AlertDialog:  Send Order -->
-  <string name="dialog_title_send_order">Send Order</string>
-  <string name="dialog_message_send_order">Are you sure you\'re ready to send this order?</string>
+  <string name="dialog_title_send_order">Order Review</string>
+  <string name="dialog_message_send_order">Are you ready to send this order?</string>
+  <string name="dialog_message_send_order_review_order">Order Review</string>
+  <string name="dialog_message_send_order_contents_format">
+    \n
+    Rep Name: %1$s\n
+    Rep Territory: %2$s\n
+    -\n
+    Store Name: %3$s\n
+    Order Quantity: %4$s\n
+  </string>
   <string name="dialog_positive_button_send_order">Send Order</string>
   <string name="dialog_negative_button_send_order">Go Back</string>
+
+  <!--  AlertDialog:  Send Order Acknowledgement -->
+  <string name="dialog_title_send_order_acknowledgement">Send Order Acknowledgement</string>
+  <string name="dialog_message_send_order_acknowledgement">Are you sure you want to send an order acknowledgement?</string>
+  <string name="dialog_positive_button_send_order_acknowledgement">Send Acknowledgement</string>
+  <string name="dialog_negative_button_send_order_acknowledgement">Go Back</string>
 
   <!--  AlertDialog:  Resend Order -->
   <string name="dialog_title_resend_order">Resend Order</string>
@@ -71,55 +115,82 @@
 
   <!--  AlertDialog:  Cancel Order -->
   <string name="dialog_title_cancel_order">Cancel Order</string>
-  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order?</string>
+  <string name="dialog_message_cancel_order">Are you sure you want to cancel your order? Any changes
+    made will not be saved.</string>
   <string name="dialog_positive_button_cancel_order">Cancel Order</string>
   <string name="dialog_negative_button_cancel_order">Go Back</string>
 
-  <!--  AlertDialog:  Reset Order -->
-  <string name="dialog_title_reset_order">Reset Order</string>
-  <string name="dialog_message_reset_order">Are you sure you want to reset the current order?</string>
-  <string name="dialog_positive_button_reset_order">Reset Order</string>
-  <string name="dialog_negative_button_reset_order">Go Back</string>
-
   <!--  AlertDialog:  Incomplete Order -->
   <string name="dialog_title_incomplete_order">Incomplete Order</string>
-  <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t finished, please fix the following:\n\n</string>
+  <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t
+    finished, please fix the following:\n\n</string>
   <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
-  <string name="dialog_message_incomplete_order_date_empty">- Order date is empty.\n</string>
-  <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were ordered.</string>
+  <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were
+    ordered.</string>
+  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order %1$d
+    more keychains to meet the minimum requirement of %2$d.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
+  <!--  AlertDialog:  Incomplete Order Acknowledgement -->
+  <string name="dialog_title_incomplete_order_acknowledgement">
+    Incomplete Order Acknowledgement</string>
+  <string name="dialog_message_incomplete_order_acknowledgement">You\'re attempting to send an order
+    acknowledgement that isn\'t finished, please fix the following:\n\n</string>
+  <string name="dialog_message_incomplete_order_acknowledgement_store_name_empty">- Store name is
+    empty.\n</string>
+  <string name="dialog_negative_button_incomplete_order_acknowledgement">Go Back</string>
+
+  <!--  AlertDialog:  ProgressDialog:  Prepare Email Intent -->
+  <string name="dialog_message_send_order_progress_preparing">Preparing your order to be
+    sent..</string>
+
   <!--  Toasts -->
-  <string name="toast_dialog_cancel_order_success">Order canceled.</string>
-  <string name="toast_dialog_incomplete_order_keychains_empty">You haven\'t chosen any keychains to order.</string>
-  <string name="toast_dialog_required_fields_success">Settings saved successfully.</string>
-  <string name="toast_dialog_required_fields_fail">Settings not saved, you must enter both your name and territory before starting an order.</string>
-  <string name="toast_dialog_required_fields_rep_name_empty">Settings not saved, you must enter your name before starting an order.</string>
-  <string name="toast_dialog_required_fields_rep_territory_empty">Settings not saved, you must enter your territory before starting an order.</string>
-  <string name="toast_intent_send_order_by_email_success">Order was sent.</string>
+  <string name="toast_dialog_settings_success">Settings saved successfully.</string>
+
+  <!--  Snackbar Messages -->
+  <string name="snackbar_message_save_order_ok">Order was saved.</string>
+  <string name="snackbar_message_save_order_cancel">No changes were made.</string>
+  <string name="snackbar_message_send_order_ok">Order was sent.</string>
+  <string name="snackbar_message_send_order_acknowledgement_ok">Order acknowledgement was sent.</string>
+  <string name="snackbar_message_send_order_cancel">Order was canceled.</string>
+  <string name="snackbar_message_send_order_fail">Order preparation failed, order not sent.</string>
+  <string name="snackbar_message_send_order_error_no_supported_apps">There are no email apps
+    configured on this device, order not sent.</string>
+  <string name="snackbar_message_send_order_fail_quantity_zero">Order quantity is 0, order not
+    sent.</string>
+  <string name="snackbar_message_send_order_fail_quantity_minimum_not_met">Minimum order quantity
+    of %1$d not met, order not sent.</string>
+  <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
+  <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
+  <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
+  <string name="snackbar_message_data_deleted_success_zero">No orders were deleted.</string>
+  <string name="snackbar_message_changes_saved">Changes were saved.</string>
+  <string name="snackbar_message_no_changes">No changes were made.</string>
 
   <!--  Settings -->
 
-  <!--  Settings: Required Fields -->
-  <string name="pref_header_title_required_fields">Required Fields</string>
-
-  <!--  Settings: Required Fields: Rep Name -->
+  <!--  Settings: Rep Name -->
   <string name="pref_key_rep_name">pref_key_rep_name</string>
   <string name="pref_title_rep_name">Rep Name</string>
-  <string name="pref_description_rep_name">Your name (ex: Chuck Norris), used in order forms.</string>
+  <string name="pref_description_rep_name">Your name (ex: Chuck Norris), used in order
+    forms.</string>
   <string name="pref_debug_default_value_rep_name">Chuck Norris</string>
   <string name="pref_error_default_value_rep_name">Name Not Set</string>
 
-  <!--  Settings: Required Fields: Rep Territory -->
-  <string name="pref_key_rep_territory">pref_key_territory</string>
+  <!--  Settings: Rep Territory -->
+  <string name="pref_key_rep_territory">pref_key_rep_territory</string>
+  <string name="pref_key_rep_territory_old">pref_key_territory</string>
   <string name="pref_title_rep_territory">Rep Territory</string>
-  <string name="pref_description_rep_territory">Your territory (ex: LIT3), used in order forms.</string>
+  <string name="pref_description_rep_territory">Your territory (ex: USA1), keep blank if you don\'t
+    have a set territory.</string>
   <string name="pref_debug_default_value_rep_territory">USA1</string>
   <string name="pref_error_default_value_rep_territory">NOT_SET</string>
 
   <!--  String formats -->
-  <!--  String formats: Filename (Ex: lanyard_keychain_order-lit3-big_red_148-20180205.xls) -->
-  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
+  <!--  String formats: Filename (Ex: app_keychain_order-lit3-big_red_148-20180205.xls) -->
+  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s</string>
+  <string name="string_format_filename_with_suffix">%1$s.xls</string>
+  <string name="string_format_filename_with_suffix_with_copy">%1$s (%2$d).xls</string>
 
   <!--  String formats: Compressed Date (Ex: 20180205) -->
   <string name="string_format_date_layout">%1$d/%2$d/%3$d</string>
@@ -129,11 +200,8 @@
   <string name="string_format_date_filename">%1$d%2$d%3$d</string>
   <string name="string_date_filename">yyyyMMdd</string>
 
-  <!--  String formats: Rep Name/Rep Territory (Ex: Jared Stone/LIT3) -->
+  <!--  String formats: Excel:  Rep Name/Rep Territory (Ex: Jared Stone/LIT3) -->
   <string name="string_format_repName_repTerritory">%1$s/%2$s</string>
-
-  <!--  String formats: Email Subject (Ex: LIT3 - Big Red 139) -->
-  <string name="string_format_email_subject">%1$s - %2$s</string>
 
   <!--  String formats: String-Array Item (Ex: <item>string</item>) -->
   <string name="string_format_stringarray_item">&lt;item>%1$s&lt;/item></string>
@@ -141,567 +209,16 @@
   <!--  String formats: Order list item's total for layout -->
   <string name="string_format_list_item_order_total_text">%1$d keychains</string>
 
+  <!--  String formats: Order sent time (Ex: Sent 10 minutes ago, on 10/18) -->
+  <string name="string_format_list_item_order_sent_text">Sent %1$s, %2$s</string>
+  <string name="string_format_list_item_order_sent_text_today">Sent %1$s</string>
+
   <!--  Strings related to Excel -->
-
   <string name="excel_template_filename">template.xls</string>
+  <string name="layout_text_view_rep_name">Rep Name:</string>
+  <string name="layout_text_view_rep_territory">Rep Territory:</string>
+  <string name="layout_text_view_store_name">Store Name:</string>
+  <string name="layout_text_view_order_quantity">Order Quantity:</string>
 
-  <string-array name="excel_cell_values_names">
-    <item>Army</item>
-    <item>Air Force</item>
-    <item>Marines</item>
-    <item>Navy</item>
-    <item>USA</item>
-    <item>#1 Dad</item>
-    <item>#1 Nurse</item>
-    <item>#1 Teacher</item>
-    <item>#1 Mom</item>
-    <item>☺☺☺☺☺☺</item>
-    <item>Amazing</item>
-    <item>Awesome</item>
-    <item>Bad Boy</item>
-    <item>Bad Girl</item>
-    <item>Retired/other</item>
-    <item>Best Friend</item>
-    <item>Born 2B Wild</item>
-    <item>Boss</item>
-    <item>"Daddy’s Girl"</item>
-    <item>Diva</item>
-    <item>Girls Rule</item>
-    <item>God Is Love</item>
-    <item>Hottie</item>
-    <item>"I’m Not Sorry"</item>
-    <item>I ♥ My Aunt</item>
-    <item>I ♥ Basketball</item>
-    <item>I ♥ Bingo</item>
-    <item>I ♥ Dancing</item>
-    <item>I ♥ Fishing</item>
-    <item>I ♥ Golf</item>
-    <item>I ♥ Grandma</item>
-    <item>I ♥ Grandpa</item>
-    <item>I ♥ My Horse</item>
-    <item>I ♥ Jesus</item>
-    <item>I ♥ My Cat</item>
-    <item>I ♥ My Dog</item>
-    <item>I ♥ Soccer</item>
-    <item>I ♥ Baseball</item>
-    <item>I ♥ Football</item>
-    <item>I ♥ Hip Hop</item>
-    <item>Juicy</item>
-    <item>"Mom’s Taxi"</item>
-    <item>Mr. Fix It</item>
-    <item>My Keys</item>
-    <item>Old Fart</item>
-    <item>OMG</item>
-    <item>Precious</item>
-    <item>Princess</item>
-    <item>Sassy</item>
-    <item>Sexy</item>
-    <item>Sexy Mama</item>
-    <item>Spoiled</item>
-    <item>Stressed Out</item>
-    <item>Taken</item>
-    <item>U Go Girl</item>
-    <item>Whatever</item>
-    <item>Wild Thing</item>
-    <item>Wild &amp; Free</item>
-    <item>WWJD</item>
-    <item>Aaron</item>
-    <item>Abby</item>
-    <item>Alex</item>
-    <item>Alexis</item>
-    <item>Allison</item>
-    <item>Alyssa</item>
-    <item>Amanda</item>
-    <item>Amber</item>
-    <item>Amy</item>
-    <item>Andrea</item>
-    <item>Andrew</item>
-    <item>Angela</item>
-    <item>Angie</item>
-    <item>Ann</item>
-    <item>Anna</item>
-    <item>Anthony</item>
-    <item>April</item>
-    <item>Ashley</item>
-    <item>Austin</item>
-    <item>Barbara</item>
-    <item>Becky</item>
-    <item>Beth</item>
-    <item>Betty</item>
-    <item>Bill</item>
-    <item>Brandon</item>
-    <item>Breanna</item>
-    <item>Brenda</item>
-    <item>Brian</item>
-    <item>Brittany</item>
-    <item>Brooke</item>
-    <item>Caitlin</item>
-    <item>Cameron</item>
-    <item>Carol</item>
-    <item>Carolyn</item>
-    <item>Catherine</item>
-    <item>Cathy</item>
-    <item>Charlene</item>
-    <item>Charles</item>
-    <item>Charlotte</item>
-    <item>Chelsea</item>
-    <item>Cheryl</item>
-    <item>Chris</item>
-    <item>Christian</item>
-    <item>Christina</item>
-    <item>Christine</item>
-    <item>Christopher</item>
-    <item>Cindy</item>
-    <item>Cody</item>
-    <item>Courtney</item>
-    <item>Cynthia</item>
-    <item>Daniel</item>
-    <item>Danielle</item>
-    <item>David</item>
-    <item>Deanna</item>
-    <item>Debbie</item>
-    <item>Denise</item>
-    <item>Diana</item>
-    <item>Diane</item>
-    <item>Donna</item>
-    <item>Dylan</item>
-    <item>Elizabeth</item>
-    <item>Emily</item>
-    <item>Emma</item>
-    <item>Eric</item>
-    <item>Erica</item>
-    <item>Erin</item>
-    <item>Ethan</item>
-    <item>Frank</item>
-    <item>Gabriella</item>
-    <item>Gary</item>
-    <item>Gina</item>
-    <item>Grace</item>
-    <item>Greg</item>
-    <item>Haley</item>
-    <item>Hannah</item>
-    <item>Heather</item>
-    <item>Holly</item>
-    <item>Jack</item>
-    <item>Jackie</item>
-    <item>Jacqueline</item>
-    <item>James</item>
-    <item>Jamie</item>
-    <item>Janet</item>
-    <item>Jasmine</item>
-    <item>Jason</item>
-    <item>Jeff</item>
-    <item>Jennifer</item>
-    <item>Jenny</item>
-    <item>Jessica</item>
-    <item>Joan</item>
-    <item>Joe</item>
-    <item>John</item>
-    <item>Jonathan</item>
-    <item>Jordan</item>
-    <item>Joseph</item>
-    <item>Joshua</item>
-    <item>Joyce</item>
-    <item>Judy</item>
-    <item>Julia</item>
-    <item>Julie</item>
-    <item>Justin</item>
-    <item>Kaitlyn</item>
-    <item>Karen</item>
-    <item>Katelyn</item>
-    <item>Kathy</item>
-    <item>Katie</item>
-    <item>Kayla</item>
-    <item>Kelly</item>
-    <item>Kelsey</item>
-    <item>Ken</item>
-    <item>Kevin</item>
-    <item>Kim</item>
-    <item>Kimberly</item>
-    <item>Kyle</item>
-    <item>Laura</item>
-    <item>Lauren</item>
-    <item>Leah</item>
-    <item>Leslie</item>
-    <item>Linda</item>
-    <item>Lisa</item>
-    <item>Logan</item>
-    <item>Lori</item>
-    <item>Lynn</item>
-    <item>Mackenzie</item>
-    <item>Madison</item>
-    <item>Mandy</item>
-    <item>Maria</item>
-    <item>Marie</item>
-    <item>Mary</item>
-    <item>Matthew</item>
-    <item>Megan</item>
-    <item>Melissa</item>
-    <item>Michael</item>
-    <item>Michelle</item>
-    <item>Miranda</item>
-    <item>Molly</item>
-    <item>Morgan</item>
-    <item>Nancy</item>
-    <item>Natalie</item>
-    <item>Nathan</item>
-    <item>Nicholas</item>
-    <item>Nicole</item>
-    <item>Olivia</item>
-    <item>Paige</item>
-    <item>Pam</item>
-    <item>Pat</item>
-    <item>Patricia</item>
-    <item>Patrick</item>
-    <item>Paul</item>
-    <item>Rachel</item>
-    <item>Rebecca</item>
-    <item>Renee</item>
-    <item>Richard</item>
-    <item>Rita</item>
-    <item>Robert</item>
-    <item>Ryan</item>
-    <item>Sabrina</item>
-    <item>Sam</item>
-    <item>Samantha</item>
-    <item>Sandra</item>
-    <item>Sandy</item>
-    <item>Sara</item>
-    <item>Sarah</item>
-    <item>Savannah</item>
-    <item>Scott</item>
-    <item>Shane</item>
-    <item>Shannon</item>
-    <item>Sharon</item>
-    <item>Shawn</item>
-    <item>Shelby</item>
-    <item>Shirley</item>
-    <item>Stephanie</item>
-    <item>Steve</item>
-    <item>Sue</item>
-    <item>Susan</item>
-    <item>Sydney</item>
-    <item>Sylvia</item>
-    <item>Tammy</item>
-    <item>Tara</item>
-    <item>Taylor</item>
-    <item>Terri</item>
-    <item>Theresa</item>
-    <item>Tiffany</item>
-    <item>Tim</item>
-    <item>Tina</item>
-    <item>Tony</item>
-    <item>Tracey</item>
-    <item>Tyler</item>
-    <item>Valerie</item>
-    <item>Veronica</item>
-    <item>Vicki</item>
-    <item>Victoria</item>
-    <item>Zachary</item>
-  </string-array>
-
-  <!--  Cell Locations -->
-  <string-array name="excel_cell_locations_store_number">
-    <item>H8</item>
-    <item>H67</item>
-  </string-array>
-
-  <string-array name="excel_cell_locations_rep_name">
-    <item>H9</item>
-    <item>H68</item>
-  </string-array>
-
-  <string-array name="excel_cell_locations_order_date">
-    <item>H10</item>
-    <item>H69</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_1_page_1">
-    <item>C14</item>
-    <item>C55</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_2_page_1">
-    <item>F14</item>
-    <item>F55</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_3_page_1">
-    <item>I14</item>
-    <item>I55</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_1_page_2">
-    <item>C73</item>
-    <item>C114</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_2_page_2">
-    <item>F73</item>
-    <item>F114</item>
-  </string-array>
-
-  <string-array name="excel_cell_location_range_section_3_page_2">
-    <item>I73</item>
-    <item>I114</item>
-  </string-array>
-
-  <string-array name="excel_cell_locations_quantities">
-    <item>C14</item>
-    <item>C15</item>
-    <item>C16</item>
-    <item>C17</item>
-    <item>C18</item>
-    <item>C19</item>
-    <item>C20</item>
-    <item>C21</item>
-    <item>C22</item>
-    <item>C23</item>
-    <item>C24</item>
-    <item>C25</item>
-    <item>C26</item>
-    <item>C27</item>
-    <item>C28</item>
-    <item>C29</item>
-    <item>C30</item>
-    <item>C31</item>
-    <item>C32</item>
-    <item>C33</item>
-    <item>C34</item>
-    <item>C35</item>
-    <item>C36</item>
-    <item>C37</item>
-    <item>C38</item>
-    <item>C39</item>
-    <item>C40</item>
-    <item>C41</item>
-    <item>C42</item>
-    <item>C43</item>
-    <item>C44</item>
-    <item>C45</item>
-    <item>C46</item>
-    <item>C47</item>
-    <item>C48</item>
-    <item>C49</item>
-    <item>C50</item>
-    <item>C51</item>
-    <item>C52</item>
-    <item>C53</item>
-    <item>C54</item>
-    <item>C55</item>
-    <item>F14</item>
-    <item>F15</item>
-    <item>F16</item>
-    <item>F17</item>
-    <item>F18</item>
-    <item>F19</item>
-    <item>F20</item>
-    <item>F21</item>
-    <item>F22</item>
-    <item>F23</item>
-    <item>F24</item>
-    <item>F25</item>
-    <item>F26</item>
-    <item>F27</item>
-    <item>F28</item>
-    <item>F29</item>
-    <item>F30</item>
-    <item>F31</item>
-    <item>F32</item>
-    <item>F33</item>
-    <item>F34</item>
-    <item>F35</item>
-    <item>F36</item>
-    <item>F37</item>
-    <item>F38</item>
-    <item>F39</item>
-    <item>F40</item>
-    <item>F41</item>
-    <item>F42</item>
-    <item>F43</item>
-    <item>F44</item>
-    <item>F45</item>
-    <item>F46</item>
-    <item>F47</item>
-    <item>F48</item>
-    <item>F49</item>
-    <item>F50</item>
-    <item>F51</item>
-    <item>F52</item>
-    <item>F53</item>
-    <item>F54</item>
-    <item>F55</item>
-    <item>I14</item>
-    <item>I15</item>
-    <item>I16</item>
-    <item>I17</item>
-    <item>I18</item>
-    <item>I19</item>
-    <item>I20</item>
-    <item>I21</item>
-    <item>I22</item>
-    <item>I23</item>
-    <item>I24</item>
-    <item>I25</item>
-    <item>I26</item>
-    <item>I27</item>
-    <item>I28</item>
-    <item>I29</item>
-    <item>I30</item>
-    <item>I31</item>
-    <item>I32</item>
-    <item>I33</item>
-    <item>I34</item>
-    <item>I35</item>
-    <item>I36</item>
-    <item>I37</item>
-    <item>I38</item>
-    <item>I39</item>
-    <item>I40</item>
-    <item>I41</item>
-    <item>I42</item>
-    <item>I43</item>
-    <item>I44</item>
-    <item>I45</item>
-    <item>I46</item>
-    <item>I47</item>
-    <item>I48</item>
-    <item>I49</item>
-    <item>I50</item>
-    <item>I51</item>
-    <item>I52</item>
-    <item>I53</item>
-    <item>I54</item>
-    <item>I55</item>
-    <item>C73</item>
-    <item>C74</item>
-    <item>C75</item>
-    <item>C76</item>
-    <item>C77</item>
-    <item>C78</item>
-    <item>C79</item>
-    <item>C80</item>
-    <item>C81</item>
-    <item>C82</item>
-    <item>C83</item>
-    <item>C84</item>
-    <item>C85</item>
-    <item>C86</item>
-    <item>C87</item>
-    <item>C88</item>
-    <item>C89</item>
-    <item>C90</item>
-    <item>C91</item>
-    <item>C92</item>
-    <item>C93</item>
-    <item>C94</item>
-    <item>C95</item>
-    <item>C96</item>
-    <item>C97</item>
-    <item>C98</item>
-    <item>C99</item>
-    <item>C100</item>
-    <item>C101</item>
-    <item>C102</item>
-    <item>C103</item>
-    <item>C104</item>
-    <item>C105</item>
-    <item>C106</item>
-    <item>C107</item>
-    <item>C108</item>
-    <item>C109</item>
-    <item>C110</item>
-    <item>C111</item>
-    <item>C112</item>
-    <item>C113</item>
-    <item>C114</item>
-    <item>F73</item>
-    <item>F74</item>
-    <item>F75</item>
-    <item>F76</item>
-    <item>F77</item>
-    <item>F78</item>
-    <item>F79</item>
-    <item>F80</item>
-    <item>F81</item>
-    <item>F82</item>
-    <item>F83</item>
-    <item>F84</item>
-    <item>F85</item>
-    <item>F86</item>
-    <item>F87</item>
-    <item>F88</item>
-    <item>F89</item>
-    <item>F90</item>
-    <item>F91</item>
-    <item>F92</item>
-    <item>F93</item>
-    <item>F94</item>
-    <item>F95</item>
-    <item>F96</item>
-    <item>F97</item>
-    <item>F98</item>
-    <item>F99</item>
-    <item>F100</item>
-    <item>F101</item>
-    <item>F102</item>
-    <item>F103</item>
-    <item>F104</item>
-    <item>F105</item>
-    <item>F106</item>
-    <item>F107</item>
-    <item>F108</item>
-    <item>F109</item>
-    <item>F110</item>
-    <item>F111</item>
-    <item>F112</item>
-    <item>F113</item>
-    <item>F114</item>
-    <item>I73</item>
-    <item>I74</item>
-    <item>I75</item>
-    <item>I76</item>
-    <item>I77</item>
-    <item>I78</item>
-    <item>I79</item>
-    <item>I80</item>
-    <item>I81</item>
-    <item>I82</item>
-    <item>I83</item>
-    <item>I84</item>
-    <item>I85</item>
-    <item>I86</item>
-    <item>I87</item>
-    <item>I88</item>
-    <item>I89</item>
-    <item>I90</item>
-    <item>I91</item>
-    <item>I92</item>
-    <item>I93</item>
-    <item>I94</item>
-    <item>I95</item>
-    <item>I96</item>
-    <item>I97</item>
-    <item>I98</item>
-    <item>I99</item>
-    <item>I100</item>
-    <item>I101</item>
-    <item>I102</item>
-    <item>I103</item>
-    <item>I104</item>
-    <item>I105</item>
-    <item>I106</item>
-    <item>I107</item>
-    <item>I108</item>
-    <item>I109</item>
-    <item>I110</item>
-    <item>I111</item>
-    <item>I112</item>
-    <item>I113</item>
-    <item>I114</item>
-  </string-array>
-
-  <!--  Strings related to JSON -->
   <string name="json_filename_previous_orders">orders.json</string>
-  <string name="toast_intent_send_order_by_email_no_supported_apps">There are no email apps configured on this device. Your order was saved; resend once this is completed.</string>
 </resources>

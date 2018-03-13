@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <integer name="excel_min_order_quantity_value">4</integer>
-  <integer name="excel_max_order_quantity_value">6</integer>
+
+  <!--  Order item quantity values per click  -->
+  <integer name="order_item_quantity_lower_value">4</integer>
+  <integer name="order_item_quantity_higher_value">6</integer>
+
+  <!--  Minimum order requirement set by management.  -->
+  <integer name="order_quantity_minimum_requirement">40</integer>
 
   <integer name="intent_request_code_send_order_by_email">100</integer>
 </resources>

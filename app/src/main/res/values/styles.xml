@@ -1,15 +1,30 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight"/>
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight">
+    <!--<item name="colorPrimary">@color/primaryColor</item>-->
+    <!--<item name="colorPrimaryDark">@color/primaryDarkColor</item>-->
+    <!--<item name="colorAccent">@color/primaryLightColor</item>-->
+  </style>
 
   <style name="AppTheme.NoActionBar">
     <item name="windowActionBar">false</item>
     <item name="windowNoTitle">true</item>
+    <item name="windowActionModeOverlay">true</item>
+  </style>
+
+  <style name="AppTheme.NoActionBar.SplashTheme">
+    <item name="android:statusBarColor">@android:color/transparent</item>
+    <item name="android:windowBackground">@drawable/splash_with_background</item>
   </style>
 
   <style name="AppTheme.AppBarOverlay"/>
+  <!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark"/>-->
 
   <style name="AppTheme.PopupOverlay"/>
+
+  <style name="Error">
+    <item name="android:textColor">?attr/colorError</item>
+  </style>
 
 </resources>
