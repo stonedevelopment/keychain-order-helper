@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,8 @@
  */
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
+
+import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
 
 import android.arch.lifecycle.Observer;
 import android.os.Bundle;
@@ -29,31 +31,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage.SnackBarObserver;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 
 /**
  * Main UI for the New Order screen.
  *
- * Users must enter a store name, and can click on the list to adjust quantities of
- * keychains.
+ * Users can click on the list to adjust quantities of items, and edit the territory this order
+ * belongs to.
  */
 public class NewOrderFragment extends Fragment {
 
+  //  Debug tag used for logging.
   private static final String TAG = NewOrderFragment.class.getSimpleName();
-
-  public static final String BUNDLE_KEY_ORDER_ID = "order_id";
 
   private NewOrderViewModel mViewModel;
 
   private NewOrderAdapter mAdapter;
 
+  /**
+   * Required default constructor.
+   */
   public NewOrderFragment() {
     // Required empty public constructor
   }
 
-  public static NewOrderFragment createInstance(String orderId) {
+  /**
+   * Creates an instance of this fragment. If a non-null argument is passed, this means that the
+   * activity will be reactive for editing an order, instead of its default behavior of creating a
+   * new order.
+   *
+   * @param orderId The argument passed for if we're editing an order. This is the row id for the
+   * {@link Order} entity class.
+   * @return The created instance of this fragment.
+   */
+  public static NewOrderFragment createInstance(@Nullable String orderId) {
     Bundle args = new Bundle();
     args.putString(BUNDLE_KEY_ORDER_ID, orderId);
 

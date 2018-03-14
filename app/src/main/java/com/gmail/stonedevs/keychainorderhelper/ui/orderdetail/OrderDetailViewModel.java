@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,28 +23,25 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
-import java.util.Date;
 
 /**
- * Listens to user actions from item list in {@link OrderDetailFragment} and redirects them to the
- * fragment's action listener.
+ * ViewModel for the Order Detail screen.
  */
-public class OrderDetailViewModel extends AndroidViewModel implements OrderDetailCallback,
-    LoadCallback, PrepareIntentCallback, InsertCallback {
+public class OrderDetailViewModel extends AndroidViewModel implements LoadCallback,
+    PrepareIntentCallback, InsertCallback {
 
   private static final String TAG = OrderDetailViewModel.class.getSimpleName();
 
   //  SnackBar
-  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
+  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
 
   //  Events
   private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
@@ -103,7 +100,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
     mCompleteOrder.setOrderType(orderType);
   }
 
-  SnackBarMessage getSnackBarMessenger() {
+  SnackbarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 
@@ -143,16 +140,6 @@ public class OrderDetailViewModel extends AndroidViewModel implements OrderDetai
 
   private void saveOrder() {
     mRepository.saveOrder(mCompleteOrder, this);
-  }
-
-  private void saveAcknowledgement() {
-    String storeName = mCompleteOrder.getStoreName();
-    Date orderDate = mCompleteOrder.getOrderDate();
-    OrderType orderType = mCompleteOrder.getOrderType();
-
-    CompleteOrder order = new CompleteOrder(new Order(storeName, orderDate), null, orderType);
-
-    mRepository.saveOrder(order, this);
   }
 
   /**

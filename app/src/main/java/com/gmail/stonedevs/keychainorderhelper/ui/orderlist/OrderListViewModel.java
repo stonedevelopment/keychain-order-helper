@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DataNotAvailableCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
@@ -35,16 +35,15 @@ import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivit
 import java.util.List;
 
 /**
- * TODO: Add a class header comment!
+ * ViewModel for the Order List screen.
  */
-
 public class OrderListViewModel extends AndroidViewModel implements LoadAllCallback,
     DeleteCallback {
 
   private static final String TAG = OrderListViewModel.class.getSimpleName();
 
   //  SnackBar
-  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
+  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
 
   //  Events
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
@@ -66,7 +65,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     mRepository = repository;
   }
 
-  SnackBarMessage getSnackBarMessenger() {
+  SnackbarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 

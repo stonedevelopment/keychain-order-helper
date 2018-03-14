@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,9 +55,19 @@ import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragmen
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 
-public class NewOrderActivity extends AppCompatActivity implements NewOrderNavigator,
-    OnFocusChangeListener, UserPromptDialogListener {
+/**
+ * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.
+ *
+ * Should contain all of the constant variables needed for sending results back to its calling
+ * activity, store data for toolbar layout components, and create the {@link NewOrderViewModel}
+ * instance used by its {@link NewOrderFragment}.
+ *
+ * @see NewOrderCommander
+ */
+public class NewOrderActivity extends AppCompatActivity implements NewOrderCommander,
+    NewOrderNavigator, OnFocusChangeListener, UserPromptDialogListener {
 
+  //  Debug tag used for logging.
   private static final String TAG = NewOrderActivity.class.getSimpleName();
 
   public static final int REQUEST_CODE = OrderListActivity.REQUEST_CODE + 1;
@@ -144,16 +154,17 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
 
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    //  Are we getting a result from the email intent (SEND_ACTION)?
     if (requestCode == REQUEST_CODE_ACTION_SEND) {
-      if (mViewModel.isSendingOrder()) {
-        finishWithResult(RESULT_SENT_ORDER_OK);
-      } else if (mViewModel.isSendingAcknowledgement()) {
+
+      //  If we just sent an acknowledgement, return with its respective result code.
+      //  Otherwise, then it must have been an actual order, do the same, respectively.
+      if (mViewModel.isSendingAcknowledgement()) {
         finishWithResult(RESULT_SENT_ACKNOWLEDGEMENT_OK);
       } else {
-        throw new RuntimeException("Invalid view model state.");
+        finishWithResult(RESULT_SENT_ORDER_OK);
       }
-    } else {
-      super.onActivityResult(requestCode, resultCode, data);
     }
   }
 
@@ -258,6 +269,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
     return fragment;
   }
 
+  @NonNull
   static NewOrderViewModel obtainViewModel(FragmentActivity activity) {
     // Use a Factory to inject dependencies into the ViewModel
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
@@ -278,28 +290,11 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
   }
 
   void sendOrderByEmail(Intent intent) {
-    Intent chooser = Intent
-        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-    if (intent.resolveActivity(getPackageManager()) != null) {
-      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-    } else {
-      //  there are no apps on phone to handle this intent, cancel order
-      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
-    }
+    startSendActionIntent(intent, R.string.intent_title_send_order_by_email);
   }
 
   void sendOrderAcknowledgementByEmail(Intent intent) {
-    Intent chooser = Intent
-        .createChooser(intent,
-            getString(R.string.intent_title_send_order_acknowledgement_by_email));
-
-    if (intent.resolveActivity(getPackageManager()) != null) {
-      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-    } else {
-      //  there are no apps on phone to handle this intent, cancel order
-      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
-    }
+    startSendActionIntent(intent, R.string.intent_title_send_order_acknowledgement_by_email);
   }
 
   void finishWithResult(int resultCode) {
@@ -481,7 +476,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
    * started during the send process.
    */
   @Override
-  public void onContinue(@NonNull String territory) {
+  public void onPositiveButtonClicked(@NonNull String territory) {
     boolean dataChanged = mViewModel.updateTerritory(territory);
 
     //  If sending order state is true, show dialog to send order,
@@ -505,13 +500,25 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderNavig
    * Called when User presses the Cancel button.
    */
   @Override
-  public void onCancel() {
+  public void onNegativeButtonClicked() {
     mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_no_changes);
 
     if (mViewModel.isSendingOrder()) {
       mViewModel.endSendOrderPhase();
     } else if (mViewModel.isSendingAcknowledgement()) {
       mViewModel.endSendAcknowledgementPhase();
+    }
+  }
+
+  @Override
+  public void startSendActionIntent(Intent intent, int intentTitle) {
+    Intent chooser = Intent.createChooser(intent, getString(intentTitle));
+
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      //  there are no apps on phone to handle this intent, cancel order
+      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
     }
   }
 }

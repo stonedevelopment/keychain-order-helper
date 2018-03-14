@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
+import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import java.util.ArrayList;
@@ -38,7 +38,6 @@ import java.util.List;
  * Main UI for the view orders screen.
  *
  * User can select an order to view by clicking on a list item.
- * FUTURE:  User can request pop up menu by long-clicking on a list item.
  * todo Generate report per Daran.
  */
 public class OrderListFragment extends Fragment {

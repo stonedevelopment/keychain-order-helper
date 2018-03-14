@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,7 +76,7 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_initial_settings, null);
 
-    mSaveButton = view.findViewById(R.id.saveButton);
+    mSaveButton = view.findViewById(R.id.positiveButton);
     mSaveButton.setOnClickListener(this);
 
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);

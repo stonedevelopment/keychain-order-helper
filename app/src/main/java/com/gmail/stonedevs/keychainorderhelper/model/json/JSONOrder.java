@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,14 @@
 package com.gmail.stonedevs.keychainorderhelper.model.json;
 
 import android.support.annotation.NonNull;
+import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import java.util.ArrayList;
 
 /**
- * TODO: Add a class header comment!
+ * @see Order
+ * @deprecated Used by initial version to store orders in a json file.
  */
-
+@Deprecated
 public class JSONOrder {
 
   @NonNull
