@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,15 +16,12 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderdetail;
 
-/**
- * TODO: Add a class header comment!
- */
+import com.gmail.stonedevs.keychainorderhelper.model.ActivityNavigator;
 
-public interface OrderDetailNavigator {
+/**
+ * Helper interface used by {@link OrderDetailActivity} to navigate to another activity or intent.
+ */
+interface OrderDetailNavigator extends ActivityNavigator {
 
   void startEditOrderActivity();
-
-  void showConfirmSendOrderDialog();
-
-  void showConfirmSendAcknowledgementDialog();
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -47,13 +47,12 @@ import java.util.Objects;
 /**
  * ViewModel for the New Order screen.
  */
-
-public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallback,
-    InsertCallback, LoadCallback, PrepareIntentCallback {
+public class NewOrderViewModel extends AndroidViewModel implements InsertCallback, LoadCallback,
+    PrepareIntentCallback {
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
-  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
+  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
 
   //  Events
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
@@ -258,7 +257,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
     mWorkingOrder.updateOrderQuantityBy(change);
   }
 
-  SnackBarMessage getSnackBarMessenger() {
+  SnackbarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 
@@ -298,7 +297,7 @@ public class NewOrderViewModel extends AndroidViewModel implements NewOrderCallb
 
         final List<OrderItem> orderItems = new ArrayList<>(0);
         for (String name : names) {
-          orderItems.add(new OrderItem(orderId, name, 0));
+          orderItems.add(new OrderItem(name, 0, orderId));
         }
 
         mAppExecutors.mainThread().execute(new Runnable() {

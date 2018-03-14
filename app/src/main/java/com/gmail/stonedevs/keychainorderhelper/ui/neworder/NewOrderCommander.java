@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
+package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 /**
- * Helper interface used by {@link OrderListActivity} to navigate to another activity or intent.
+ * Helper interface used to command {@link NewOrderActivity} to do a certain action.
  */
-public interface OrderListNavigator {
+interface NewOrderCommander {
 
-  void startNewOrderActivity();
+  void showOrderRequirementsDialog();
 
-  void startOrderDetailActivity(String orderId);
+  void showAcknowledgementRequirementsDialog();
+
+  void showEditTerritoryDialog();
+
+  void showConfirmCancelOrderDialog();
+
+  void showConfirmSendOrderDialog();
+
+  void showConfirmSendAcknowledgementDialog();
 }

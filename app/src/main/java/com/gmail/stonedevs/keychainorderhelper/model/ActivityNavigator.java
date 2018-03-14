@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
+package com.gmail.stonedevs.keychainorderhelper.model;
+
+import android.content.Intent;
+import android.support.annotation.StringRes;
 
 /**
- * Helper interface used by {@link OrderListActivity} to navigate to another activity or intent.
+ * Helper interface used by activities to navigate to another activity or intent.
  */
-public interface OrderListNavigator {
 
-  void startNewOrderActivity();
+public interface ActivityNavigator {
 
-  void startOrderDetailActivity(String orderId);
+  void startSendActionIntent(Intent intent, @StringRes int intentTitle);
+
 }

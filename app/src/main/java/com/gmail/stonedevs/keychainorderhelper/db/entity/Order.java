@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.gmail.stonedevs.keychainorderhelper.db.AppDatabase;
+import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import java.util.Date;
 import java.util.UUID;
 
@@ -49,11 +51,21 @@ public class Order {
   @ColumnInfo(name = "order_territory")
   private String mOrderTerritory;
 
+  /**
+   * Default constructor used with creating new Orders. Creates a random UUID for id, nullifies
+   * orderTerritory, and sets the orderQuantity to 0.
+   *
+   * @param storeName Name of the store the order is being made for
+   * @param orderDate Date the order is being made on
+   */
   @Ignore
   public Order(String storeName, Date orderDate) {
     this(UUID.randomUUID().toString(), storeName, orderDate, null, 0);
   }
 
+  /**
+   * Full constructor used by {@link AppDatabase} to make a POJO of Order.
+   */
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
       @Nullable String orderTerritory, @NonNull Integer orderQuantity) {
     mId = id;
@@ -106,14 +118,10 @@ public class Order {
 
   @Override
   public String toString() {
-    return "store_name:" + getStoreName();
+    return "id:" + getId()
+        + ", store_name:" + getStoreName()
+        + ", order_date:" + getOrderDate()
+        + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")"
+        + ", order_territory:" + getOrderTerritory();
   }
-//  @Override
-//  public String toString() {
-//    return "id:" + getId()
-//        + ", store_name:" + getStoreName()
-//        + ", order_date:" + getOrderDate()
-//        + ", order_territory:" + getOrderTerritory()
-//        + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")";
-//  }
 }

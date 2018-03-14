@@ -26,7 +26,7 @@ import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.List;
 
 /**
- * Concrete implementation of a data source as a db.
+ * {@link DataSource} implementation used for local communications with {@link AppDatabase}.
  */
 
 public class LocalDataSource implements DataSource {

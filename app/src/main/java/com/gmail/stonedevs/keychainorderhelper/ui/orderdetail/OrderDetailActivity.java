@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,11 +40,23 @@ import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 import java.util.Date;
 
-public class OrderDetailActivity extends AppCompatActivity implements OrderDetailNavigator {
+/**
+ * Activity for viewing an order's details, called by {@link OrderListActivity#startNewOrderActivity()}.
+ *
+ * Should contain all of the constant variables needed for sending results back to its calling
+ * activity, store data for toolbar layout components and display them, and create the {@link
+ * OrderDetailViewModel} instance used by its {@link OrderDetailFragment}.
+ *
+ * @see OrderDetailCommander
+ * @see OrderDetailNavigator
+ */
+public class OrderDetailActivity extends AppCompatActivity implements OrderDetailCommander,
+    OrderDetailNavigator {
 
   private static final String TAG = OrderDetailActivity.class.getSimpleName();
 
@@ -237,29 +249,11 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   }
 
   void sendOrderByEmail(Intent intent) {
-    Intent chooser = Intent
-        .createChooser(intent, getString(R.string.intent_title_send_order_by_email));
-
-    if (intent.resolveActivity(getPackageManager()) != null) {
-      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-    } else {
-      //  there are no apps on phone to handle this intent, cancel order
-      mViewModel.getSnackBarMessenger()
-          .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
-    }
+    startSendActionIntent(intent, R.string.intent_title_send_order_by_email);
   }
 
   void sendOrderAcknowledgementByEmail(Intent intent) {
-    Intent chooser = Intent
-        .createChooser(intent,
-            getString(R.string.intent_title_send_order_acknowledgement_by_email));
-
-    if (intent.resolveActivity(getPackageManager()) != null) {
-      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
-    } else {
-      //  there are no apps on phone to handle this intent, cancel order
-      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
-    }
+    startSendActionIntent(intent, R.string.intent_title_send_order_acknowledgement_by_email);
   }
 
   void finishWithResult(int resultCode) {
@@ -272,6 +266,18 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
     Intent intent = new Intent(this, NewOrderActivity.class);
     intent.putExtra(BUNDLE_KEY_ORDER_ID, mViewModel.getOrderId());
     startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
+  }
+
+  @Override
+  public void startSendActionIntent(Intent intent, int intentTitle) {
+    Intent chooser = Intent.createChooser(intent, getString(intentTitle));
+
+    if (intent.resolveActivity(getPackageManager()) != null) {
+      startActivityForResult(chooser, REQUEST_CODE_ACTION_SEND);
+    } else {
+      //  there are no apps on phone to handle this intent, cancel order
+      finishWithResult(RESULT_SENT_ERROR_NO_APPS);
+    }
   }
 
   @Override

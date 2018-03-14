@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2018, The Android Open Source Project
+ * Copyright 2018, Jared Shane Stone
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,9 +51,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
- * TODO: Add a class header comment!
+ * Generates an Excel spreadsheet of order from a template spreadsheet, prepares an intent to be
+ * used for sending generated file.
  */
-
 public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Intent> {
 
   private WeakReference<Activity> mContext;
