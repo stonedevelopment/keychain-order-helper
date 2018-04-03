@@ -21,20 +21,16 @@ import static com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils.getCellByA
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
-import com.gmail.stonedevs.keychainorderhelper.util.EmailUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,7 +50,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  * Generates an Excel spreadsheet of order from a template spreadsheet, prepares an intent to be
  * used for sending generated file.
  */
-public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Intent> {
+public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
 
   private WeakReference<Activity> mContext;
 
@@ -64,7 +60,7 @@ public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Inte
 
   private PrepareIntentCallback mCallback;
 
-  public PrepareSendActionIntentAsyncTask(Activity context, CompleteOrder order,
+  public GenerateExcelFileTask(Activity context, CompleteOrder order,
       PrepareIntentCallback callback) {
     mContext = new WeakReference<>(context);
     mProgressDialog = new ProgressDialog(context);
@@ -86,33 +82,32 @@ public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Inte
   }
 
   @Override
-  protected Intent doInBackground(Void... voids) {
+  protected Uri doInBackground(Void... voids) {
     try {
-      Uri uri = null;
-      if (mOrder.getOrderType() == OrderType.ORDER) {
-        Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
-            getContext().getString(R.string.excel_template_filename)));
-
-        File file = generateExcelFile(workbook);
-        uri = Uri.fromFile(file);
-      }
-
-      return EmailUtils.createSendOrderEmailIntent(getContext(), mOrder, uri);
+      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
+          getContext().getString(R.string.excel_template_filename)));
+      return generateExcelFile(workbook);
     } catch (InvalidFormatException | IOException e) {
       e.printStackTrace();
     }
+
     return null;
   }
 
   @Override
-  protected void onPostExecute(Intent intent) {
+  protected void onPostExecute(Uri uri) {
     mProgressDialog.dismiss();
 
-    mCallback.onIntentReadyForAction(intent);
-    super.onPostExecute(intent);
+    if (uri == null) {
+      mCallback.onFileGenerationFail();
+    } else {
+      mCallback.onFileGenerationSuccess(uri);
+    }
+
+    super.onPostExecute(uri);
   }
 
-  private File generateExcelFile(Workbook workbook) throws IOException {
+  private Uri generateExcelFile(Workbook workbook) throws IOException {
     String storeName = mOrder.getStoreName();
     Date orderDate = mOrder.getOrderDate();
 
@@ -182,25 +177,15 @@ public class PrepareSendActionIntentAsyncTask extends AsyncTask<Void, Void, Inte
         storeName.toLowerCase().replaceAll("[^a-zA-Z0-9.\\-]", "_"),
         filenameDateFormat);
 
-    File file = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-        String.format(getContext().getString(R.string.string_format_filename_with_suffix),
-            filename));
+    File file = new File(
+        getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename);
 
     FileOutputStream out = new FileOutputStream(file);
     workbook.write(out);
     out.close();
 
-    // Tell the media scanner about the new file so that it is
-    // immediately available to the user.
-    MediaScannerConnection.scanFile(getContext(),
-        new String[]{file.toString()}, null,
-        new MediaScannerConnection.OnScanCompletedListener() {
-          public void onScanCompleted(String path, Uri uri) {
-            Log.i("ExternalStorage", "Scanned " + path + ":");
-            Log.i("ExternalStorage", "-> uri=" + uri);
-          }
-        });
-
-    return file;
+    return OrderFileProvider
+        .getUriForFile(getContext(),
+            BuildConfig.APPLICATION_ID + ".provider", file);
   }
 }

@@ -76,7 +76,7 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_initial_settings, null);
 
-    mSaveButton = view.findViewById(R.id.positiveButton);
+    mSaveButton = view.findViewById(R.id.saveButton);
     mSaveButton.setOnClickListener(this);
 
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);

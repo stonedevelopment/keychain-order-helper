@@ -21,13 +21,15 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import com.crashlytics.android.Crashlytics;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -35,8 +37,9 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.GenerateExcelFileTask;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
-import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
+import com.gmail.stonedevs.keychainorderhelper.util.EmailUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,7 +55,7 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
-  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
@@ -257,7 +260,7 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
     mWorkingOrder.updateOrderQuantityBy(change);
   }
 
-  SnackbarMessage getSnackBarMessenger() {
+  SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 
@@ -388,7 +391,7 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
     saveOrder();
 
     //  Execute prepare send task.
-    executeFinalPreparations(context);
+    generateExcelFile(context);
   }
 
   /**
@@ -423,12 +426,12 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
   /**
    * Start preparations for email intent.
    */
-  void beginSendAcknowledgementPhase(Activity context) {
+  void beginSendAcknowledgementPhase() {
     //  Update order type
     updateOrderType(OrderType.ACKNOWLEDGEMENT);
 
     //  Execute prepare send task.
-    executeFinalPreparations(context);
+    sendAcknowledgementByEmail();
   }
 
   /**
@@ -447,17 +450,38 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
   }
 
   /**
-   * Begin task of generating excel, and releasing an intent to send email with.
+   * Begin task of generating excel
    */
-  private void executeFinalPreparations(Activity context) {
-    PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
-        mWorkingOrder, this);
+  private void generateExcelFile(Activity context) {
+    GenerateExcelFileTask task = new GenerateExcelFileTask(context, mWorkingOrder, this);
     task.execute();
   }
 
-  @Override
-  public void onIntentReadyForAction(Intent intent) {
+  private void sendOrderByEmail(Uri uri) {
+    Intent intent = EmailUtils
+        .createSendOrderEmailIntent(getApplication().getApplicationContext(), mWorkingOrder, uri);
+
     mIntentReadyEvent.setValue(intent);
+  }
+
+  private void sendAcknowledgementByEmail() {
+    Intent intent = EmailUtils
+        .createSendAcknowledgementEmailIntent(getApplication().getApplicationContext(),
+            mWorkingOrder);
+
+    mIntentReadyEvent.setValue(intent);
+  }
+
+  @Override
+  public void onFileGenerationSuccess(Uri uri) {
+    sendOrderByEmail(uri);
+  }
+
+  @Override
+  public void onFileGenerationFail() {
+    // TODO: 4/2/2018 Tell Firebase about fail.
+    mSnackBarMessenger.setValue(R.string.snackbar_message_generate_file_failed);
+    Crashlytics.getInstance().crash();
   }
 
   @Override

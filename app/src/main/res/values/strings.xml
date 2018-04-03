@@ -166,6 +166,7 @@
   <string name="snackbar_message_data_deleted_success_zero">No orders were deleted.</string>
   <string name="snackbar_message_changes_saved">Changes were saved.</string>
   <string name="snackbar_message_no_changes">No changes were made.</string>
+  <string name="snackbar_message_generate_file_failed">File generation failed.</string>
 
   <!--  Settings -->
 
@@ -188,9 +189,7 @@
 
   <!--  String formats -->
   <!--  String formats: Filename (Ex: app_keychain_order-lit3-big_red_148-20180205.xls) -->
-  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s</string>
-  <string name="string_format_filename_with_suffix">%1$s.xls</string>
-  <string name="string_format_filename_with_suffix_with_copy">%1$s (%2$d).xls</string>
+  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
 
   <!--  String formats: Compressed Date (Ex: 20180205) -->
   <string name="string_format_date_layout">%1$d/%2$d/%3$d</string>

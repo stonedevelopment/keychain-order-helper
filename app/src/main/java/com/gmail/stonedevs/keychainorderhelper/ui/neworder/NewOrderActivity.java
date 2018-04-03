@@ -441,7 +441,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.beginSendAcknowledgementPhase(NewOrderActivity.this);
+            mViewModel.beginSendAcknowledgementPhase();
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_send_order_acknowledgement,
