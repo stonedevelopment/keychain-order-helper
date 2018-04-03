@@ -55,15 +55,45 @@ public class EmailUtils {
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
     //  the mail subject/body
+    String subject = String.format(context.getString(
+        R.string.intent_extra_subject_send_order_by_email), repTerritory, storeName);
+    intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+
+    String body = String
+        .format(context.getString(R.string.intent_extra_text_body_send_order_by_email),
+            storeName);
+    intent.putExtra(Intent.EXTRA_TEXT, body);
+
+    // the attachment
+    intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+    return intent;
+  }
+
+  public static Intent createSendAcknowledgementEmailIntent(@NonNull Context context,
+      @NonNull CompleteOrder order) {
+    String storeName = order.getStoreName();
+
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    String repTerritory = order.hasOrderTerritory() ? order.getOrderTerritory()
+        : prefs.getString(context.getString(R.string.pref_key_rep_territory),
+            context.getString(R.string.pref_error_default_value_rep_territory));
+
+    Intent intent = new Intent(Intent.ACTION_SEND);
+
+    // set the type to 'email'
+    intent.setType("vnd.android.cursor.dir/email");
+
+    //  set email address from preferences
+    String sendtoEmail =
+        BuildConfig.DEBUG ? context.getString(R.string.intent_extra_email_default_value_debug)
+            : context.getString(R.string.intent_extra_email_default_value);
+    String to[] = {sendtoEmail};
+    intent.putExtra(Intent.EXTRA_EMAIL, to);
+
+    //  the mail subject/body
     String subject, body;
     switch (order.getOrderType()) {
-      case ORDER:
-        subject = String.format(context.getString(
-            R.string.intent_extra_subject_send_order_by_email), repTerritory, storeName);
-        body = String
-            .format(context.getString(R.string.intent_extra_text_body_send_order_by_email),
-                storeName);
-        break;
       case ACKNOWLEDGEMENT_WITH_ORDER:
         subject = String.format(context.getString(
             R.string.intent_extra_subject_send_order_acknowledgement_by_email),
@@ -86,9 +116,6 @@ public class EmailUtils {
     }
     intent.putExtra(Intent.EXTRA_SUBJECT, subject);
     intent.putExtra(Intent.EXTRA_TEXT, body);
-
-    // the attachment
-    intent.putExtra(Intent.EXTRA_STREAM, uri);
 
     return intent;
   }

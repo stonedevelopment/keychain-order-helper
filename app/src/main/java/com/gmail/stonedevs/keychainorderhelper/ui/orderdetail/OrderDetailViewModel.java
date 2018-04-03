@@ -20,17 +20,20 @@ import android.app.Activity;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
+import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.GenerateExcelFileTask;
 import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
-import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareSendActionIntentAsyncTask;
+import com.gmail.stonedevs.keychainorderhelper.util.EmailUtils;
 
 /**
  * ViewModel for the Order Detail screen.
@@ -41,7 +44,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
   private static final String TAG = OrderDetailViewModel.class.getSimpleName();
 
   //  SnackBar
-  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
   private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
@@ -100,7 +103,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
     mCompleteOrder.setOrderType(orderType);
   }
 
-  SnackbarMessage getSnackBarMessenger() {
+  SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 
@@ -170,7 +173,7 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
     saveOrder();
 
     //  Execute prepare send task.
-    executeFinalPreparations(context);
+    generateExcelFile(context);
   }
 
   /**
@@ -201,12 +204,12 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
    * Being that this is an acknowledgement, we will be sending an email with contents of this order
    * to notify when last order was made.
    */
-  void beginSendAcknowledgementPhase(Activity context) {
+  void beginSendAcknowledgementPhase() {
     //  Update order type
     updateOrderType(OrderType.ACKNOWLEDGEMENT_WITH_ORDER);
 
     //  Execute prepare send task.
-    executeFinalPreparations(context);
+    sendAcknowledgementByEmail();
   }
 
   /**
@@ -221,15 +224,38 @@ public class OrderDetailViewModel extends AndroidViewModel implements LoadCallba
     mUpdateUIEvent.setValue(mCompleteOrder);
   }
 
-  private void executeFinalPreparations(Activity context) {
-    PrepareSendActionIntentAsyncTask task = new PrepareSendActionIntentAsyncTask(context,
-        mCompleteOrder, this);
+  /**
+   * Begin task of generating excel
+   */
+  private void generateExcelFile(Activity context) {
+    GenerateExcelFileTask task = new GenerateExcelFileTask(context, mCompleteOrder, this);
     task.execute();
   }
 
-  @Override
-  public void onIntentReadyForAction(Intent intent) {
+  private void sendOrderByEmail(Uri uri) {
+    Intent intent = EmailUtils
+        .createSendOrderEmailIntent(getApplication().getApplicationContext(), mCompleteOrder, uri);
+
     mIntentReadyEvent.setValue(intent);
+  }
+
+  private void sendAcknowledgementByEmail() {
+    Intent intent = EmailUtils
+        .createSendAcknowledgementEmailIntent(getApplication().getApplicationContext(),
+            mCompleteOrder);
+
+    mIntentReadyEvent.setValue(intent);
+  }
+
+  @Override
+  public void onFileGenerationSuccess(Uri uri) {
+    sendOrderByEmail(uri);
+  }
+
+  @Override
+  public void onFileGenerationFail() {
+    // TODO: 4/2/2018 Tell Firebase about fail.
+    mSnackBarMessenger.setValue(R.string.snackbar_message_generate_file_failed);
   }
 
   @Override

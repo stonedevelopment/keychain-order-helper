@@ -27,7 +27,7 @@ import android.support.annotation.StringRes;
  * <p>
  * Note that only one observer is going to be notified of changes.
  */
-public class SnackbarMessage extends SingleLiveEvent<Integer> {
+public class SnackBarMessage extends SingleLiveEvent<Integer> {
 
   public void observe(LifecycleOwner owner, final SnackBarObserver observer) {
     super.observe(owner, new Observer<Integer>() {

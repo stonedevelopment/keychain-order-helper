@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackbarMessage;
+import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DataNotAvailableCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
@@ -43,7 +43,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   private static final String TAG = OrderListViewModel.class.getSimpleName();
 
   //  SnackBar
-  private final SnackbarMessage mSnackBarMessenger = new SnackbarMessage();
+  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
   //  Events
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
@@ -65,7 +65,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     mRepository = repository;
   }
 
-  SnackbarMessage getSnackBarMessenger() {
+  SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
   }
 

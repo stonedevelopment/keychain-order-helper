@@ -311,7 +311,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.beginSendAcknowledgementPhase(OrderDetailActivity.this);
+            mViewModel.beginSendAcknowledgementPhase();
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_send_order_acknowledgement,
