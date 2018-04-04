@@ -88,8 +88,6 @@ public class NewOrderFragment extends Fragment {
 
     setupViewModel();
 
-    setupActionBar();
-
     setupAdapter();
 
     subscribeToSnackBarMessenger();
@@ -97,13 +95,12 @@ public class NewOrderFragment extends Fragment {
     subscribeToViewModelEvents();
 
     startViewModel();
+
+    setupActionBar();
   }
 
   private void setupViewModel() {
     mViewModel = NewOrderActivity.obtainViewModel(getActivity());
-
-    String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
-    mViewModel.setOrderId(orderId);
   }
 
   private void setupActionBar() {
@@ -144,7 +141,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void subscribeToViewModelEvents() {
-    mViewModel.getOrderReadyEvent().observe(this, new Observer<CompleteOrder>() {
+    mViewModel.getDataLoadedEvent().observe(this, new Observer<CompleteOrder>() {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
         mAdapter.replaceData(order.getOrderItems());
@@ -162,6 +159,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void startViewModel() {
-    mViewModel.start();
+    String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
+    mViewModel.start(orderId);
   }
 }

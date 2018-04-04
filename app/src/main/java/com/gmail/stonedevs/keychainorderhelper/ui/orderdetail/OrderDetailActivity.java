@@ -38,6 +38,7 @@ import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.ViewModelFactory;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 import com.gmail.stonedevs.keychainorderhelper.ui.SettingsActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
@@ -311,7 +312,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
         new OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
-            mViewModel.beginSendAcknowledgementPhase();
+            mViewModel.beginSendAcknowledgementPhase(OrderType.ACKNOWLEDGEMENT_WITH_ORDER);
           }
         });
     builder.setNegativeButton(R.string.dialog_negative_button_send_order_acknowledgement,

@@ -26,5 +26,4 @@ import android.support.annotation.StringRes;
 public interface ActivityNavigator {
 
   void startSendActionIntent(Intent intent, @StringRes int intentTitle);
-
 }
