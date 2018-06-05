@@ -16,30 +16,21 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
-import android.app.Activity;
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import com.crashlytics.android.Crashlytics;
 import com.gmail.stonedevs.keychainorderhelper.R;
-import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
-import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
-import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
-import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.GenerateExcelFileTask;
-import com.gmail.stonedevs.keychainorderhelper.ui.prepareorder.PrepareIntentCallback;
-import com.gmail.stonedevs.keychainorderhelper.util.EmailUtils;
+import com.gmail.stonedevs.keychainorderhelper.ui.ViewModel;
+import com.gmail.stonedevs.keychainorderhelper.util.excel.GenerateExcelFileCallback;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,42 +41,15 @@ import java.util.Objects;
 /**
  * ViewModel for the New Order screen.
  */
-public class NewOrderViewModel extends AndroidViewModel implements InsertCallback, LoadCallback,
-    PrepareIntentCallback {
+public class NewOrderViewModel extends ViewModel implements InsertCallback, LoadCallback,
+    GenerateExcelFileCallback {
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
-  private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
-
-  //  Events
-  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<CompleteOrder> mOrderReadyEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<CompleteOrder> mUpdateUIEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Intent> mIntentReadyEvent = new SingleLiveEvent<>();
-
-  private final Repository mRepository;
   private final AppExecutors mAppExecutors;
 
-  //  RowID of Order, lazily used to determine if creating order or editing.
-  private String mOrderId;
-
-  //  Object that contains the Order and its OrderItems.
-  private CompleteOrder mWorkingOrder;
-
-  //  Are we getting data from database?
-  private boolean mLoadingData;
-
-  //  Are we in the sending order process?
-  private boolean mSendingOrder;
-
-  //  Are we in the sending acknowledgement process?
-  private boolean mSendingAcknowledgement;
-
   public NewOrderViewModel(@NonNull Application application, @NonNull Repository repository) {
-    super(application);
-
-    mRepository = repository;
+    super(application, repository);
     mAppExecutors = new AppExecutors();
   }
 
@@ -94,77 +58,42 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
    *
    * Called by {@link NewOrderFragment#onActivityCreated(Bundle)}
    */
-  void start() {
-    if (mLoadingData) {
+  @Override
+  public void start(String orderId) {
+    if (isLoadingData()) {
       //  Loading data, ignore.
       return;
     }
 
-    if (mWorkingOrder == null) {
+    if (orderNotNull()) {
+      //  main order object exists and is ready for ui to update with its contents.
+      readyOrder();
+    } else {
       //  main order object is null, create a new one or load from database.
       beginLoadingPhase();
 
       //  if order id wasn't set, then it's a new order, create it, otherwise load it.
-      if (mOrderId == null) {
+      if (orderId == null) {
         createOrder();
       } else {
-        loadOrder(mOrderId);
+        setOrderId(orderId);
+        loadOrder();
       }
-    } else {
-      //  main order object exists and is ready for ui to update with its contents.
-      readyOrder();
     }
-  }
-
-  /**
-   * Sets the order id in view model, lazily used to let view model know that we want to load an
-   * order and not create one.
-   */
-  void setOrderId(String orderId) {
-    mOrderId = orderId;
   }
 
   /**
    * Returns if Order is perceived to be a New Order, lazily checking if order id is null.
    */
   boolean isNewOrder() {
-    return mOrderId == null;
+    return getOrderId() == null;
   }
 
   /**
    * Is the store name saved in current order object empty?
    */
   boolean isStoreNameEmpty() {
-    return TextUtils.isEmpty(mWorkingOrder.getStoreName());
-  }
-
-  String getStoreName() {
-    return mWorkingOrder.getStoreName();
-  }
-
-  /**
-   * Updates the current order's store name. If order object is null, nullify view model's order id
-   * variable as this is most likely being called by the layout after garbage collection. Meaning,
-   * let's just reset and start a new order when {@link #start()} is called.
-   */
-  void updateStoreName(String storeName) {
-    if (mWorkingOrder != null) {
-      mWorkingOrder.setStoreName(storeName);
-    } else {
-      mOrderId = null;
-    }
-  }
-
-  /**
-   * Updates the current order's order date. Used directly before we make the attempt to send an
-   * order. Keeps the date fresh for each attempt.
-   */
-  private void updateOrderDate() {
-    mWorkingOrder.updateOrderDate();
-  }
-
-  private void updateOrderType(OrderType orderType) {
-    mWorkingOrder.setOrderType(orderType);
+    return TextUtils.isEmpty(getOrder().getStoreName());
   }
 
   /**
@@ -178,7 +107,7 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
    * Retrieve the territory set by User from the current order's object.
    */
   private String getSetTerritory() {
-    return mWorkingOrder.getOrderTerritory();
+    return getOrder().getOrderTerritory();
   }
 
   /**
@@ -208,14 +137,14 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
    * territory takes precedence since that is what User set directly.
    */
   String getTerritory() {
-    return mWorkingOrder.hasOrderTerritory() ? getSetTerritory() : getPrefTerritory();
+    return getOrder().hasOrderTerritory() ? getSetTerritory() : getPrefTerritory();
   }
 
   /**
    * Update current order's territory with User input.
    */
   private void setTerritory(String territory) {
-    mWorkingOrder.setOrderTerritory(territory);
+    getOrder().setOrderTerritory(territory);
   }
 
   /**
@@ -238,50 +167,26 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
   }
 
   int getOrderQuantity() {
-    return mWorkingOrder.getOrderQuantity();
+    return getOrder().getOrderQuantity();
   }
 
   boolean isOrderQuantityZero() {
-    return mWorkingOrder.getOrderQuantity() == 0;
+    return getOrder().getOrderQuantity() == 0;
   }
 
   boolean doesOrderQuantityMeetMinimumRequirements() {
     int orderQuantityMinimumRequirement = getApplication().getResources()
         .getInteger(R.integer.order_quantity_minimum_requirement);
 
-    return mWorkingOrder.getOrderQuantity() >= orderQuantityMinimumRequirement;
+    return getOrder().getOrderQuantity() >= orderQuantityMinimumRequirement;
   }
 
   private void resetOrderQuantity() {
-    mWorkingOrder.setOrderQuantity(0);
+    getOrder().setOrderQuantity(0);
   }
 
   void updateOrderQuantityBy(int change) {
-    mWorkingOrder.updateOrderQuantityBy(change);
-  }
-
-  SnackBarMessage getSnackBarMessenger() {
-    return mSnackBarMessenger;
-  }
-
-  SingleLiveEvent<CompleteOrder> getOrderReadyEvent() {
-    return mOrderReadyEvent;
-  }
-
-  SingleLiveEvent<Intent> getIntentReadyEvent() {
-    return mIntentReadyEvent;
-  }
-
-  SingleLiveEvent<CompleteOrder> getUpdateUIEvent() {
-    return mUpdateUIEvent;
-  }
-
-  SingleLiveEvent<Boolean> getDataLoadingEvent() {
-    return mDataLoadingEvent;
-  }
-
-  SingleLiveEvent<Void> getErrorLoadingDataEvent() {
-    return mErrorLoadingDataEvent;
+    getOrder().updateOrderQuantityBy(change);
   }
 
   private void createOrder() {
@@ -315,188 +220,15 @@ public class NewOrderViewModel extends AndroidViewModel implements InsertCallbac
     mAppExecutors.diskIO().execute(runnable);
   }
 
-  private void loadOrder(String orderId) {
-    mRepository.getOrder(orderId, this);
-  }
-
-  private void saveOrder() {
-    mRepository.saveOrder(mWorkingOrder, this);
-  }
-
-  /**
-   * Readies order for observers to use.
-   */
-  private void readyOrder() {
-    updateUI();
-
-    endLoadingPhase();
-
-    mOrderReadyEvent.setValue(mWorkingOrder);
-  }
-
-  /**
-   * Order object is ready to be used by ViewModel.
-   *
-   * Called by {@link #onDataLoaded(CompleteOrder)}
-   */
-  private void readyOrder(@NonNull CompleteOrder order) {
-    mWorkingOrder = order;
-
-    readyOrder();
-  }
-
-  private void beginLoadingPhase() {
-    mLoadingData = true;
-    mDataLoadingEvent.setValue(true);
-  }
-
-  private void endLoadingPhase() {
-    mLoadingData = false;
-    mDataLoadingEvent.setValue(false);
-  }
-
-  /**
-   * Are we currently in the process of sending an order?
-   */
-  boolean isSendingOrder() {
-    return mSendingOrder;
-  }
-
   /**
    * Is this order complete and ready to send?
    */
   boolean readyToSendOrder() {
-    return mWorkingOrder != null && !(isStoreNameEmpty()
+    return orderNotNull() && !(isStoreNameEmpty()
         || isOrderQuantityZero() || !doesOrderQuantityMeetMinimumRequirements());
   }
 
-  /**
-   * Helper method for dialogs that show before send order dialog.
-   */
-  void initializeSendOrderPhase() {
-    mSendingOrder = true;
-  }
-
-  /**
-   * Save Order to database, start preparations for email intent.
-   */
-  void beginSendOrderPhase(Activity context) {
-    //  Update order type
-    updateOrderType(OrderType.ORDER);
-
-    //  Update order date to now.
-    updateOrderDate();
-
-    //  Save order to database.
-    saveOrder();
-
-    //  Execute prepare send task.
-    generateExcelFile(context);
-  }
-
-  /**
-   * Ends order process, essentially a helper method for future dialogs that don't need to
-   * immediately show send order dialog.
-   */
-  void endSendOrderPhase() {
-    mSendingOrder = false;
-  }
-
-  /**
-   * Are we currently in the process of sending an order?
-   */
-  boolean isSendingAcknowledgement() {
-    return mSendingAcknowledgement;
-  }
-
-  /**
-   * Are we ready to send an order acknowledgement?
-   */
-  boolean readyToSendAcknowledgment() {
+  boolean readyToSendAcknowledgement() {
     return !isStoreNameEmpty();
-  }
-
-  /**
-   * Helper method for dialogs that show before send order acknowledgement dialog.
-   */
-  void initializeSendAcknowledgementPhase() {
-    mSendingAcknowledgement = true;
-  }
-
-  /**
-   * Start preparations for email intent.
-   */
-  void beginSendAcknowledgementPhase() {
-    //  Update order type
-    updateOrderType(OrderType.ACKNOWLEDGEMENT);
-
-    //  Execute prepare send task.
-    sendAcknowledgementByEmail();
-  }
-
-  /**
-   * Ends order process, essentially a helper method for future dialogs that don't need to
-   * immediately show send order acknowledgement dialog.
-   */
-  void endSendAcknowledgementPhase() {
-    mSendingAcknowledgement = false;
-  }
-
-  /**
-   * Alert observer to update its ui components with current order object's contents.
-   */
-  void updateUI() {
-    mUpdateUIEvent.setValue(mWorkingOrder);
-  }
-
-  /**
-   * Begin task of generating excel
-   */
-  private void generateExcelFile(Activity context) {
-    GenerateExcelFileTask task = new GenerateExcelFileTask(context, mWorkingOrder, this);
-    task.execute();
-  }
-
-  private void sendOrderByEmail(Uri uri) {
-    Intent intent = EmailUtils
-        .createSendOrderEmailIntent(getApplication().getApplicationContext(), mWorkingOrder, uri);
-
-    mIntentReadyEvent.setValue(intent);
-  }
-
-  private void sendAcknowledgementByEmail() {
-    Intent intent = EmailUtils
-        .createSendAcknowledgementEmailIntent(getApplication().getApplicationContext(),
-            mWorkingOrder);
-
-    mIntentReadyEvent.setValue(intent);
-  }
-
-  @Override
-  public void onFileGenerationSuccess(Uri uri) {
-    sendOrderByEmail(uri);
-  }
-
-  @Override
-  public void onFileGenerationFail() {
-    // TODO: 4/2/2018 Tell Firebase about fail.
-    mSnackBarMessenger.setValue(R.string.snackbar_message_generate_file_failed);
-    Crashlytics.getInstance().crash();
-  }
-
-  @Override
-  public void onDataInserted() {
-    //  do nothing, this is a callback of a background task
-  }
-
-  @Override
-  public void onDataLoaded(CompleteOrder order) {
-    readyOrder(order);
-  }
-
-  @Override
-  public void onDataNotAvailable() {
-    // TODO: 3/10/2018 Tell firebase that order was not found in database but was attempted.
-    mErrorLoadingDataEvent.call();
   }
 }

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.prepareorder;
+package com.gmail.stonedevs.keychainorderhelper.util.excel;
 
-import android.support.v4.content.FileProvider;
+import android.net.Uri;
 
 /**
- * https://stackoverflow.com/questions/38200282/android-os-fileuriexposedexception-file-storage-emulated-0-test-txt-exposed/38858040#38858040
- *
- * If your targetSdkVersion >= 24, then we have to use FileProvider class to give access to the
- * particular file or folder to make them accessible for other apps.
+ * Helper interface used when an intent is prepared and ready for action. Currently, just a send
+ * action intent used with emailing the generated Excel file.
  */
+public interface GenerateExcelFileCallback {
 
-public class OrderFileProvider extends FileProvider {
+  void onFileGenerationSuccess(Uri uri);
 
+  void onFileGenerationFail();
 }

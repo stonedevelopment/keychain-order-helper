@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.gmail.stonedevs.keychainorderhelper.ui.prepareorder;
+package com.gmail.stonedevs.keychainorderhelper.util.excel;
 
 import static com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils.getCellByAddress;
 
@@ -47,8 +47,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
- * Generates an Excel spreadsheet of order from a template spreadsheet, prepares an intent to be
- * used for sending generated file.
+ * Generates an Excel spreadsheet from a template.
  */
 public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
 
@@ -58,10 +57,10 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
 
   private CompleteOrder mOrder;
 
-  private PrepareIntentCallback mCallback;
+  private GenerateExcelFileCallback mCallback;
 
   public GenerateExcelFileTask(Activity context, CompleteOrder order,
-      PrepareIntentCallback callback) {
+      GenerateExcelFileCallback callback) {
     mContext = new WeakReference<>(context);
     mProgressDialog = new ProgressDialog(context);
 
@@ -184,7 +183,7 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
     workbook.write(out);
     out.close();
 
-    return OrderFileProvider
+    return GenerateExcelFileProvider
         .getUriForFile(getContext(),
             BuildConfig.APPLICATION_ID + ".provider", file);
   }

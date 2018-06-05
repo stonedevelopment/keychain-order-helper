@@ -50,7 +50,7 @@
       android:authorities="${applicationId}.provider"
       android:exported="false"
       android:grantUriPermissions="true"
-      android:name=".ui.prepareorder.OrderFileProvider">
+      android:name=".util.excel.GenerateExcelFileProvider">
       <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
         android:resource="@xml/provider_paths"/>
