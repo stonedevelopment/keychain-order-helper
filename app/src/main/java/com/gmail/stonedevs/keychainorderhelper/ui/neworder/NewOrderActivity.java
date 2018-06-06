@@ -57,6 +57,10 @@ import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 
+// TODO: 6/5/2018 Implement taffy excel spreadsheet
+// TODO: 6/5/2018 Change order quantity amounts
+// TODO: 6/5/2018 Fix order category standards (order quantity text shows x amount of keychains)
+
 /**
  * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.
  *

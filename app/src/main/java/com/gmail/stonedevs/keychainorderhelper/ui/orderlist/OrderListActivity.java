@@ -104,9 +104,18 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
 
   private void setupViewPager() {
     TabLayout tabLayout = findViewById(R.id.tab_layout);
+
+    OrderListViewPageAdapter pageAdapter = new OrderListViewPageAdapter(getSupportFragmentManager(),
+        tabLayout.getTabCount());
+
+    final ViewPager viewPager = findViewById(R.id.view_pager);
+    viewPager.setAdapter(pageAdapter);
+    viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
+
     tabLayout.addOnTabSelectedListener(new OnTabSelectedListener() {
       @Override
       public void onTabSelected(Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
         mViewModel.start(tab.getPosition());
       }
 
@@ -120,13 +129,6 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
         //  intentionally left blank
       }
     });
-
-    OrderListViewPageAdapter pageAdapter = new OrderListViewPageAdapter(getSupportFragmentManager(),
-        tabLayout.getTabCount());
-
-    ViewPager viewPager = findViewById(R.id.view_pager);
-    viewPager.setAdapter(pageAdapter);
-    viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
   }
 
   private void setupFabMenu() {
