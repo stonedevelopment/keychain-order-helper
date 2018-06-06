@@ -17,7 +17,21 @@
 
 <resources>
 
-  <string-array name="excel_cell_values_names">
+  <string-array name="excel_cell_values_taffy">
+    <item>Banana</item>
+    <item>Blue Raspberry</item>
+    <item>Bubble Gum</item>
+    <item>Cinnamon</item>
+    <item>Cotton Candy</item>
+    <item>Huckleberry</item>
+    <item>Orange Vanilla</item>
+    <item>Peach</item>
+    <item>Peppermint</item>
+    <item>Strawberry Banana</item>
+    <item>Watermelon</item>
+  </string-array>
+
+  <string-array name="excel_cell_values_keychains">
     <item>Army</item>
     <item>Air Force</item>
     <item>Marines</item>

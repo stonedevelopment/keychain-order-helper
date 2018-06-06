@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityNavig
     return ViewModelProviders.of(activity, factory).get(MainActivityViewModel.class);
   }
 
-
   @Override
   public void startInitialSettingsDialogFragment() {
     Bundle args = new Bundle();

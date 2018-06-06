@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
+import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +53,14 @@ public class OrderListFragment extends Fragment {
     // Required empty public constructor
   }
 
-  public static OrderListFragment createInstance() {
-    return new OrderListFragment();
+  public static OrderListFragment createInstance(int orderCategory) {
+    Bundle args = new Bundle();
+    args.putInt(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY, orderCategory);
+
+    OrderListFragment fragment = new OrderListFragment();
+    fragment.setArguments(args);
+
+    return fragment;
   }
 
   @Override

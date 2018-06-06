@@ -22,4 +22,5 @@ package com.gmail.stonedevs.keychainorderhelper.util;
 public class BundleUtils {
 
   public static final String BUNDLE_KEY_ORDER_ID = "order_id";
+  public static final String BUNDLE_KEY_ORDER_CATEGORY = "order_category";
 }

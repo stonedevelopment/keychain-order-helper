@@ -16,6 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
+import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_CATEGORY;
 import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
 
 import android.arch.lifecycle.Observer;
@@ -61,13 +62,31 @@ public class NewOrderFragment extends Fragment {
   /**
    * Creates an instance of this fragment. If a non-null argument is passed, this means that the
    * activity will be reactive for editing an order, instead of its default behavior of creating a
-   * new order.
+   * new order. todo update this documentation
+   *
+   * @param orderCategory The argument passed for if we're creating an order. This is the category
+   * for the {@link Order} entity class.
+   * @return The created instance of this fragment.
+   */
+  public static NewOrderFragment createInstance(int orderCategory) {
+    Bundle args = new Bundle();
+    args.putInt(BUNDLE_KEY_ORDER_CATEGORY, orderCategory);
+
+    NewOrderFragment fragment = new NewOrderFragment();
+    fragment.setArguments(args);
+    return fragment;
+  }
+
+  /**
+   * Creates an instance of this fragment. If a non-null argument is passed, this means that the
+   * activity will be reactive for editing an order, instead of its default behavior of creating a
+   * new order. todo update this documentation
    *
    * @param orderId The argument passed for if we're editing an order. This is the row id for the
    * {@link Order} entity class.
    * @return The created instance of this fragment.
    */
-  public static NewOrderFragment createInstance(@Nullable String orderId) {
+  public static NewOrderFragment createInstance(String orderId) {
     Bundle args = new Bundle();
     args.putString(BUNDLE_KEY_ORDER_ID, orderId);
 
@@ -159,6 +178,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void startViewModel() {
+    int orderCategory = getArguments().getInt(BUNDLE_KEY_ORDER_CATEGORY);
     String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
     mViewModel.start(orderId);
   }

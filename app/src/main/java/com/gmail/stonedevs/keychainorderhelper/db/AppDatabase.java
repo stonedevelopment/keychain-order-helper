@@ -16,22 +16,25 @@
 
 package com.gmail.stonedevs.keychainorderhelper.db;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import com.gmail.stonedevs.keychainorderhelper.db.converter.DateConverter;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 
-@Database(version = 1,
+@Database(version = 2,
     entities = {
         Order.class,
-        OrderItem.class},
-    exportSchema = false)
+        OrderItem.class}
+)
 @TypeConverters(value = {DateConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -43,9 +46,24 @@ public abstract class AppDatabase extends RoomDatabase {
 
   public abstract OrderItemDao orderItemDao();
 
+  private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+
+      //  Add Order Type table to db
+      database.execSQL("ALTER TABLE orders "
+          + " ADD COLUMN order_category INTEGER");
+
+      //  Update all previous orders to default order category / keychains
+      database.execSQL("UPDATE orders "
+          + "SET order_category = 0");
+    }
+  };
+
   private static AppDatabase createInstance(final Context context) {
     return Room.databaseBuilder(context.getApplicationContext(),
         AppDatabase.class, DB_NAME)
+        .addMigrations(MIGRATION_1_2)
         .build();
   }
 

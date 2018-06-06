@@ -56,6 +56,8 @@
 
   <!--  Layouts:  OrderListFragment -->
   <string name="layout_text_view_no_orders">There are currently no orders.</string>
+  <string name="layout_tab_layout_tab_item_text_keychains">Keychains</string>
+  <string name="layout_tab_layout_tab_item_text_taffy">Taffy</string>
 
   <!--  Layouts:  InitialSettingsDialogFragment -->
   <string name="dialog_title_initial_settings">Initial Settings</string>
@@ -214,6 +216,7 @@
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename">template.xls</string>
+
   <string name="layout_text_view_rep_name">Rep Name:</string>
   <string name="layout_text_view_rep_territory">Rep Territory:</string>
   <string name="layout_text_view_store_name">Store Name:</string>

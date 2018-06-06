@@ -43,13 +43,15 @@ public class Order {
   @ColumnInfo(name = "order_date")
   private Date mOrderDate;
 
-  @NonNull
   @ColumnInfo(name = "order_quantity")
-  private Integer mOrderQuantity;
+  private int mOrderQuantity;
 
   @Nullable
   @ColumnInfo(name = "order_territory")
   private String mOrderTerritory;
+
+  @ColumnInfo(name = "order_category")
+  private int mOrderCategory;
 
   /**
    * Default constructor used with creating new Orders. Creates a random UUID for id, nullifies
@@ -59,20 +61,21 @@ public class Order {
    * @param orderDate Date the order is being made on
    */
   @Ignore
-  public Order(String storeName, Date orderDate) {
-    this(UUID.randomUUID().toString(), storeName, orderDate, null, 0);
+  public Order(String storeName, Date orderDate, int orderCategory) {
+    this(UUID.randomUUID().toString(), storeName, orderDate, null, 0, orderCategory);
   }
 
   /**
    * Full constructor used by {@link AppDatabase} to make a POJO of Order.
    */
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @Nullable String orderTerritory, @NonNull Integer orderQuantity) {
+      @Nullable String orderTerritory, int orderQuantity, int orderCategory) {
     mId = id;
     mStoreName = storeName;
     mOrderDate = orderDate;
     mOrderTerritory = orderTerritory;
     mOrderQuantity = orderQuantity;
+    mOrderCategory = orderCategory;
   }
 
   @NonNull
@@ -98,8 +101,7 @@ public class Order {
     mOrderDate = orderDate;
   }
 
-  @NonNull
-  public Integer getOrderQuantity() {
+  public int getOrderQuantity() {
     return mOrderQuantity;
   }
 
@@ -116,12 +118,22 @@ public class Order {
     mOrderTerritory = orderTerritory;
   }
 
+  public int getOrderCategory() {
+    return mOrderCategory;
+  }
+
+  public void setOrderCategory(@NonNull Integer orderCategory) {
+    mOrderCategory = orderCategory;
+  }
+
   @Override
   public String toString() {
     return "id:" + getId()
         + ", store_name:" + getStoreName()
         + ", order_date:" + getOrderDate()
         + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")"
-        + ", order_territory:" + getOrderTerritory();
+        + ", order_territory:" + getOrderTerritory()
+        + ", order_category:" + getOrderCategory();
   }
+
 }

@@ -41,7 +41,8 @@ public interface OrderDao {
    * @return The Order object.
    */
   @Query("select * from orders "
-      + "where id = :id")
+      + "where id = :id "
+      + "limit 1")
   Order get(String id);
 
   /**
@@ -50,9 +51,10 @@ public interface OrderDao {
    * @return The list of Order objects.
    */
   @Query("select * from orders "
+      + "where order_category = :orderCategory "
       + "order by order_date desc "
       + "limit 30")
-  List<Order> getAll();
+  List<Order> getAll(Integer orderCategory);
 
   /**
    * Insert a single {@link Order} object.

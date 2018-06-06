@@ -60,9 +60,13 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
   //  Are we getting data from database?
   private boolean mLoadingData;
 
+  //  Order List Category
+  private int mOrderCategory;
+
   public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
     mRepository = repository;
+    mOrderCategory = 0;
   }
 
   SnackBarMessage getSnackBarMessenger() {
@@ -89,16 +93,32 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mOrderDetailCommand;
   }
 
+  int getOrderCategory() {
+    return mOrderCategory;
+  }
+
+  /**
+   * Starts the view model's initializations with previously saved order category.
+   *
+   * Called by {@link OrderListFragment#onActivityCreated(Bundle)}
+   */
+  public void start() {
+    start(mOrderCategory);
+  }
+
   /**
    * Starts the view model's initializations.
    *
    * Called by {@link OrderListFragment#onActivityCreated(Bundle)}
    */
-  public void start() {
-    if (mLoadingData) {
+  public void start(int orderCategory) {
+    if (mLoadingData && mOrderCategory == orderCategory) {
       //  Loading data, ignore.
       return;
     }
+
+    //  Update order category
+    mOrderCategory = orderCategory;
 
     beginLoadingPhase();
     loadData();
@@ -124,7 +144,7 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
    * Query repository for all orders in database.
    */
   private void loadData() {
-    mRepository.getAllOrders(this);
+    mRepository.getAllOrders(mOrderCategory, this);
   }
 
   /**

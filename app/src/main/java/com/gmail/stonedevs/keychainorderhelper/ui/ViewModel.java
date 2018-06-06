@@ -78,8 +78,6 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
     mRepository = repository;
   }
 
-  protected abstract void start(String orderId);
-
   public String getOrderId() {
     return mOrderId;
   }

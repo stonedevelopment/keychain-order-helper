@@ -61,8 +61,8 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void getAllOrders(@NonNull LoadAllCallback callback) {
-    mLocalDataSource.getAllOrders(callback);
+  public void getAllOrders(int orderCategory, @NonNull LoadAllCallback callback) {
+    mLocalDataSource.getAllOrders(orderCategory, callback);
   }
 
   @Override

@@ -82,7 +82,7 @@ public interface DataSource {
    *
    * @param callback Listener to notify of query results.
    */
-  void getAllOrders(@NonNull LoadAllCallback callback);
+  void getAllOrders(int orderCategory, @NonNull LoadAllCallback callback);
 
   /**
    * Insert or replace object in database.
