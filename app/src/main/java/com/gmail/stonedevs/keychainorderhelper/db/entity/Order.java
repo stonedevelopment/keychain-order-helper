@@ -54,11 +54,23 @@ public class Order {
   private int mOrderCategory;
 
   /**
+   * todo update documentation
+   *
+   * @param storeName Name of the store the order is being made for
+   * @param orderDate Date the order is being made on
+   */
+  @Ignore
+  public Order(String storeName, Date orderDate) {
+    this(storeName, orderDate, 0);
+  }
+
+  /**
    * Default constructor used with creating new Orders. Creates a random UUID for id, nullifies
    * orderTerritory, and sets the orderQuantity to 0.
    *
    * @param storeName Name of the store the order is being made for
    * @param orderDate Date the order is being made on
+   * @param orderCategory Category of order being made (ex: keychains or taffy)
    */
   @Ignore
   public Order(String storeName, Date orderDate, int orderCategory) {
