@@ -27,6 +27,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -178,8 +179,17 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void startViewModel() {
-    int orderCategory = getArguments().getInt(BUNDLE_KEY_ORDER_CATEGORY);
     String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
-    mViewModel.start(orderId);
+    //  attempt to grab an order id from intent bundle
+
+    //  if orderId is not empty, the User is attempting to edit a previously created order
+    if (!TextUtils.isEmpty(orderId)) {
+      //  create an instance of a fragment used for editing
+      mViewModel.start(orderId);
+    } else {
+      //  create an instance of a fragment used for creating
+      int orderCategory = getArguments().getInt(BUNDLE_KEY_ORDER_CATEGORY);
+      mViewModel.start(orderCategory);
+    }
   }
 }

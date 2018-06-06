@@ -52,7 +52,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
       //  Add Order Type table to db
       database.execSQL("ALTER TABLE orders "
-          + " ADD COLUMN order_category INTEGER");
+          + " ADD COLUMN order_category INTEGER NOT NULL DEFAULT 0");
 
       //  Update all previous orders to default order category / keychains
       database.execSQL("UPDATE orders "

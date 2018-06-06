@@ -43,15 +43,17 @@ public class Order {
   @ColumnInfo(name = "order_date")
   private Date mOrderDate;
 
+  @NonNull
   @ColumnInfo(name = "order_quantity")
-  private int mOrderQuantity;
+  private Integer mOrderQuantity;
 
   @Nullable
   @ColumnInfo(name = "order_territory")
   private String mOrderTerritory;
 
+  @NonNull
   @ColumnInfo(name = "order_category")
-  private int mOrderCategory;
+  private Integer mOrderCategory;
 
   /**
    * todo update documentation
@@ -73,7 +75,7 @@ public class Order {
    * @param orderCategory Category of order being made (ex: keychains or taffy)
    */
   @Ignore
-  public Order(String storeName, Date orderDate, int orderCategory) {
+  public Order(String storeName, Date orderDate, Integer orderCategory) {
     this(UUID.randomUUID().toString(), storeName, orderDate, null, 0, orderCategory);
   }
 
@@ -81,7 +83,8 @@ public class Order {
    * Full constructor used by {@link AppDatabase} to make a POJO of Order.
    */
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @Nullable String orderTerritory, int orderQuantity, int orderCategory) {
+      @Nullable String orderTerritory, @NonNull Integer orderQuantity,
+      @NonNull Integer orderCategory) {
     mId = id;
     mStoreName = storeName;
     mOrderDate = orderDate;
@@ -113,7 +116,7 @@ public class Order {
     mOrderDate = orderDate;
   }
 
-  public int getOrderQuantity() {
+  public Integer getOrderQuantity() {
     return mOrderQuantity;
   }
 
@@ -130,7 +133,7 @@ public class Order {
     mOrderTerritory = orderTerritory;
   }
 
-  public int getOrderCategory() {
+  public Integer getOrderCategory() {
     return mOrderCategory;
   }
 

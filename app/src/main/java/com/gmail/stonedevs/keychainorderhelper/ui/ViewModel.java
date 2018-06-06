@@ -311,8 +311,6 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
 
   @Override
   public void onDataNotAvailable() {
-    Log.e(TAG, "onDataNotAvailable: " + mOrder.getOrder().toString());
-
     endLoadingPhase();
 
     mErrorLoadingDataEvent.call();
