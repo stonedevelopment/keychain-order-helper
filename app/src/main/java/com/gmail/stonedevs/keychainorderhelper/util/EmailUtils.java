@@ -27,6 +27,7 @@ import android.text.format.DateUtils;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder.OrderType;
 
 /**
  * Helper class that provides methods pertaining to send action intents.
@@ -50,18 +51,21 @@ public class EmailUtils {
     //  set email address from preferences
     String sendtoEmail =
         BuildConfig.DEBUG ? context.getString(R.string.intent_extra_email_default_value_debug)
-            : context.getString(R.string.intent_extra_email_default_value);
+            : OrderUtils.getSendToEmail(context, order.getOrderCategory());
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
+    int orderCategory = order.getOrderCategory();
+    OrderType orderType = order.getOrderType();
+
     //  the mail subject/body
-    String subject = String.format(context.getString(
-        R.string.intent_extra_subject_send_order_by_email), repTerritory, storeName);
+    String subject = String
+        .format(OrderUtils.getEmailSubject(context, orderCategory, orderType), repTerritory,
+            storeName);
     intent.putExtra(Intent.EXTRA_SUBJECT, subject);
 
     String body = String
-        .format(context.getString(R.string.intent_extra_text_body_send_order_by_email),
-            storeName);
+        .format(OrderUtils.getEmailBody(context, orderCategory), storeName);
     intent.putExtra(Intent.EXTRA_TEXT, body);
 
     // the attachment
@@ -87,17 +91,20 @@ public class EmailUtils {
     //  set email address from preferences
     String sendtoEmail =
         BuildConfig.DEBUG ? context.getString(R.string.intent_extra_email_default_value_debug)
-            : context.getString(R.string.intent_extra_email_default_value);
+            : OrderUtils.getSendToEmail(context, order.getOrderCategory());
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
+    int orderCategory = order.getOrderCategory();
+    OrderType orderType = order.getOrderType();
+
     //  the mail subject/body
-    String subject, body;
+    String subject = String.format(OrderUtils.getEmailSubject(context, orderCategory, orderType),
+        repTerritory, storeName);
+
+    String body;
     switch (order.getOrderType()) {
       case ACKNOWLEDGEMENT_WITH_ORDER:
-        subject = String.format(context.getString(
-            R.string.intent_extra_subject_send_order_acknowledgement_by_email),
-            repTerritory, storeName);
         body = String.format(context.getString(
             R.string.intent_extra_text_body_send_order_acknowledgement_by_email_with_order_details),
             storeName, DateUtils.getRelativeDateTimeString(context, order.getOrderDate().getTime(),
@@ -105,15 +112,13 @@ public class EmailUtils {
                 DateUtils.FORMAT_NUMERIC_DATE));
         break;
       case ACKNOWLEDGEMENT:
-        subject = String.format(context.getString(
-            R.string.intent_extra_subject_send_order_acknowledgement_by_email),
-            repTerritory, storeName);
         body = String.format(context.getString(
             R.string.intent_extra_text_body_send_order_acknowledgement_by_email), storeName);
         break;
       default:
         throw new RuntimeException("Invalid OrderType: " + order.getOrderType());
     }
+
     intent.putExtra(Intent.EXTRA_SUBJECT, subject);
     intent.putExtra(Intent.EXTRA_TEXT, body);
 

@@ -44,8 +44,8 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
 
     mListener = listener;
 
-    mKeychainNameTextView = itemView.findViewById(R.id.keychainNameTextView);
-    mItemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
+    mKeychainNameTextView = itemView.findViewById(R.id.orderItemNameTextView);
+    mItemQuantityTextView = itemView.findViewById(R.id.orderItemQuantityTextView);
 
     itemView.setOnClickListener(this);
     itemView.setOnLongClickListener(this);

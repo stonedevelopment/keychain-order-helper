@@ -36,8 +36,8 @@ class OrderDetailViewHolder extends RecyclerView.ViewHolder {
   OrderDetailViewHolder(View itemView) {
     super(itemView);
 
-    mKeychainNameTextView = itemView.findViewById(R.id.keychainNameTextView);
-    mItemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
+    mKeychainNameTextView = itemView.findViewById(R.id.orderItemNameTextView);
+    mItemQuantityTextView = itemView.findViewById(R.id.orderItemQuantityTextView);
   }
 
   void bindItem(@NonNull OrderItem item) {

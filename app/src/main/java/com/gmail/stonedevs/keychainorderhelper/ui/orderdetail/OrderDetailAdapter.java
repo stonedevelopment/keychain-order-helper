@@ -36,7 +36,7 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailViewHold
   @Override
   public OrderDetailViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.list_item_keychain, parent, false);
+        .inflate(R.layout.list_item_order_item, parent, false);
 
     return new OrderDetailViewHolder(view);
   }

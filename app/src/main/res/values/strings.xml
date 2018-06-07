@@ -20,13 +20,17 @@
   <!--  Intents -->
   <!--  Intents: Email Intent: Send Order By Email -->
   <string name="intent_title_send_order_by_email">Send Order</string>
-  <string name="intent_extra_subject_send_order_by_email">Keychain Order - %1$s/%2$s</string>
-  <string name="intent_extra_text_body_send_order_by_email">Attached is a keychain order for
+  <string name="intent_extra_subject_send_order_by_email_keychains">Keychain Order - %1$s/%2$s</string>
+  <string name="intent_extra_text_body_send_order_by_email_keychains">Attached is a keychain order for
+    %1$s.</string>
+  <string name="intent_extra_subject_send_order_by_email_taffy">Taffy Order - %1$s/%2$s</string>
+  <string name="intent_extra_text_body_send_order_by_email_taffy">Attached is a taffy order for
     %1$s.</string>
 
   <!--  Intents: Email Intent: Send Order Acknowledgement By Email -->
   <string name="intent_title_send_order_acknowledgement_by_email">Send Order</string>
-  <string name="intent_extra_subject_send_order_acknowledgement_by_email">Keychain Order - %1$s/%2$s - Acknowledgement</string>
+  <string name="intent_extra_subject_send_order_acknowledgement_by_email_keychains">Keychain Order - %1$s/%2$s - Acknowledgement</string>
+  <string name="intent_extra_subject_send_order_acknowledgement_by_email_taffy">Taffy Order - %1$s/%2$s - Acknowledgement</string>
   <string name="intent_extra_text_body_send_order_acknowledgement_by_email">This is an order
     acknowledgement for %1$s.\n\nNo order was needed on this service trip; order would not meet the
     set minimum requirements.</string>
@@ -52,7 +56,7 @@
 
   <!--  Layouts:  OrderDetailFragment -->
   <string name="layout_text_view_order_quantity_acknowledgement">Acknowledgement</string>
-  <string name="layout_text_view_no_keychains">No keychains were ordered.</string>
+  <string name="layout_text_view_no_order_items">No items were found.</string>
 
   <!--  Layouts:  OrderListFragment -->
   <string name="layout_text_view_no_orders">There are currently no orders.</string>
@@ -127,10 +131,10 @@
   <string name="dialog_message_incomplete_order">You\'re attempting to send an order that isn\'t
     finished, please fix the following:\n\n</string>
   <string name="dialog_message_incomplete_order_store_name_empty">- Store name is empty.\n</string>
-  <string name="dialog_message_incomplete_order_keychains_empty">- No keychains were
+  <string name="dialog_message_incomplete_order_items_empty">- No items were
     ordered.</string>
-  <string name="dialog_message_incomplete_order_keychains_minimum_not_met">- You need to order %1$d
-    more keychains to meet the minimum requirement of %2$d.</string>
+  <string name="dialog_message_incomplete_order_items_minimum_not_met">- You need to order %1$d
+    more items to meet the minimum requirement of %2$d.</string>
   <string name="dialog_negative_button_incomplete_order">Go Back</string>
 
   <!--  AlertDialog:  Incomplete Order Acknowledgement -->
@@ -191,7 +195,8 @@
 
   <!--  String formats -->
   <!--  String formats: Filename (Ex: app_keychain_order-lit3-big_red_148-20180205.xls) -->
-  <string name="string_format_filename">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
+  <string name="string_format_filename_keychains">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
+  <string name="string_format_filename_taffy">app_taffy_order-%1$s-%2$s-%3$s.xls</string>
 
   <!--  String formats: Compressed Date (Ex: 20180205) -->
   <string name="string_format_date_layout">%1$d/%2$d/%3$d</string>
@@ -208,14 +213,15 @@
   <string name="string_format_stringarray_item">&lt;item>%1$s&lt;/item></string>
 
   <!--  String formats: Order list item's total for layout -->
-  <string name="string_format_list_item_order_total_text">%1$d keychains</string>
+  <string name="string_format_list_item_order_total_text">%1$d items</string>
 
   <!--  String formats: Order sent time (Ex: Sent 10 minutes ago, on 10/18) -->
   <string name="string_format_list_item_order_sent_text">Sent %1$s, %2$s</string>
   <string name="string_format_list_item_order_sent_text_today">Sent %1$s</string>
 
   <!--  Strings related to Excel -->
-  <string name="excel_template_filename">template.xls</string>
+  <string name="excel_template_filename_keychains">template_keychains.xls</string>
+  <string name="excel_template_filename_taffy">template.xls</string>
 
   <string name="layout_text_view_rep_name">Rep Name:</string>
   <string name="layout_text_view_rep_territory">Rep Territory:</string>

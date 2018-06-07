@@ -47,4 +47,12 @@ public class StringUtils {
   public static String formatOrderQuantity(Context c, int quantity) {
     return String.format(c.getString(R.string.string_format_list_item_order_total_text), quantity);
   }
+
+  public static String[] getStringArrayResource(Context c, int r) {
+    return c.getResources().getStringArray(r);
+  }
+
+  public static String getStringResource(Context c, int r) {
+    return c.getString(r);
+  }
 }

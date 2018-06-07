@@ -58,8 +58,7 @@ import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 
 // TODO: 6/5/2018 Implement taffy excel spreadsheet
-// TODO: 6/5/2018 Change order quantity amounts
-// TODO: 6/5/2018 Fix order category standards (order quantity text shows x amount of keychains)
+// TODO: 6/6/2018 Delete action menu needs to cancel on swithcing tabs
 
 /**
  * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.
@@ -333,14 +332,14 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
     }
 
     if (mViewModel.isOrderQuantityZero()) {
-      message.append(getString(R.string.dialog_message_incomplete_order_keychains_empty));
+      message.append(getString(R.string.dialog_message_incomplete_order_items_empty));
     } else if (!mViewModel.doesOrderQuantityMeetMinimumRequirements()) {
       int minimum = getResources().getInteger(R.integer.order_quantity_minimum_requirement);
       int quantity = mViewModel.getOrderQuantity();
       int difference = minimum - quantity;
 
       message.append(String.format(getString(
-          R.string.dialog_message_incomplete_order_keychains_minimum_not_met),
+          R.string.dialog_message_incomplete_order_items_minimum_not_met),
           difference, minimum));
     }
     builder.setMessage(message);

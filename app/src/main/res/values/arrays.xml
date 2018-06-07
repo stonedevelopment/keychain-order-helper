@@ -17,20 +17,23 @@
 
 <resources>
 
-  <string-array name="excel_cell_values_taffy">
-    <item>Banana</item>
-    <item>Blue Raspberry</item>
-    <item>Bubble Gum</item>
-    <item>Cinnamon</item>
-    <item>Cotton Candy</item>
-    <item>Huckleberry</item>
-    <item>Orange Vanilla</item>
-    <item>Peach</item>
-    <item>Peppermint</item>
-    <item>Strawberry Banana</item>
-    <item>Watermelon</item>
-  </string-array>
+  <!--  Order Item Quantity Values -->
+  <!--  Order Item Quantity Values: Keychains -->
+  <integer-array name="order_item_quantity_values_keychains">
+    <item>4</item>
+    <item>6</item>
+  </integer-array>
 
+  <!--  Order Item Quantity Values: Taffy -->
+  <integer-array name="order_item_quantity_values_taffy">
+    <item>3</item>
+    <item>6</item>
+    <item>9</item>
+    <item>12</item>
+  </integer-array>
+
+  <!--  Cell Values -->
+  <!--  Cell Values:  Keychains -->
   <string-array name="excel_cell_values_keychains">
     <item>Army</item>
     <item>Air Force</item>
@@ -286,23 +289,39 @@
     <item>Zachary</item>
   </string-array>
 
+  <!--  Cell Values:  Taffy -->
+  <string-array name="excel_cell_values_taffy">
+    <item>Banana</item>
+    <item>Blue Raspberry</item>
+    <item>Bubble Gum</item>
+    <item>Cinnamon</item>
+    <item>Cotton Candy</item>
+    <item>Huckleberry</item>
+    <item>Orange Vanilla</item>
+    <item>Peach</item>
+    <item>Peppermint</item>
+    <item>Strawberry Banana</item>
+    <item>Watermelon</item>
+  </string-array>
+
   <!--  Cell Locations -->
-  <string-array name="excel_cell_locations_store_number">
+  <!--  Cell Locations: Keychains -->
+  <string-array name="excel_cell_locations_store_number_keychains">
     <item>H8</item>
     <item>H67</item>
   </string-array>
 
-  <string-array name="excel_cell_locations_rep_name">
+  <string-array name="excel_cell_locations_rep_name_keychains">
     <item>H9</item>
     <item>H68</item>
   </string-array>
 
-  <string-array name="excel_cell_locations_order_date">
+  <string-array name="excel_cell_locations_order_date_keychains">
     <item>H10</item>
     <item>H69</item>
   </string-array>
 
-  <string-array name="excel_cell_locations_names">
+  <string-array name="excel_cell_locations_item_names_keychains">
     <item>B14</item>
     <item>B15</item>
     <item>B16</item>
@@ -557,7 +576,7 @@
     <item>H114</item>
   </string-array>
 
-  <string-array name="excel_cell_locations_quantities">
+  <string-array name="excel_cell_locations_item_quantities_keychains">
     <item>C14</item>
     <item>C15</item>
     <item>C16</item>
@@ -812,4 +831,24 @@
     <item>I114</item>
   </string-array>
 
+  <!--  Cell Locations: Taffy -->
+  <string-array name="excel_cell_locations_store_number_taffy">
+
+  </string-array>
+
+  <string-array name="excel_cell_locations_rep_name_taffy">
+
+  </string-array>
+
+  <string-array name="excel_cell_locations_order_date_taffy">
+
+  </string-array>
+
+  <string-array name="excel_cell_locations_item_names_taffy">
+
+  </string-array>
+
+  <string-array name="excel_cell_locations_item_quantities_taffy">
+
+  </string-array>
 </resources>

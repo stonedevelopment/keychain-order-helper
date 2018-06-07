@@ -137,7 +137,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void setupAdapter() {
-    RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+    RecyclerView recyclerView = getView().findViewById(R.id.orderItemListRecyclerView);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
     recyclerView.setLayoutManager(layoutManager);
