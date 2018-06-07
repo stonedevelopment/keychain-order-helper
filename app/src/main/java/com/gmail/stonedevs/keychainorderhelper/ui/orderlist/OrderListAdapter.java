@@ -18,12 +18,8 @@ package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -40,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> implements
-    OnRecyclerViewItemClickListener, ActionMode.Callback {
+    OnRecyclerViewItemClickListener {
 
   private static final String TAG = OrderListAdapter.class.getSimpleName();
 
@@ -49,11 +45,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
   private OrderListViewModel mViewModel;
 
   private List<Order> mOrders;
-
-  //  Action mode object used for multi select deleting
-  private ActionMode mActionMode;
-
-  private List<Order> mSelectedOrders;
 
   OrderListAdapter(Context context, OrderListViewModel viewModel) {
     mContext = context;
@@ -99,91 +90,15 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     notifyDataSetChanged();
   }
 
-  private boolean isActionMode() {
-    return mActionMode != null;
-  }
-
-  private void setActionMode(ActionMode actionMode) {
-    mActionMode = actionMode;
-  }
-
-  private boolean isSelected(Order order) {
-    return isActionMode() && mSelectedOrders.contains(order);
-  }
-
-  private void selectItem(int position) {
-    Order order = getItem(position);
-
-    if (isSelected(order)) {
-      mSelectedOrders.remove(order);
-    } else {
-      mSelectedOrders.add(order);
-    }
-
-    notifyItemChanged(position);
-  }
-
-  private void removeSelectedItems() {
-    mViewModel.deleteOrders(mSelectedOrders);
-    mOrders.removeAll(mSelectedOrders);
-  }
-
   @Override
   public void onItemClick(int position) {
-    if (isActionMode()) {
-      selectItem(position);
-    } else {
-      Order order = getItem(position);
-      mViewModel.getOrderDetailCommand().setValue(order.getId());
-    }
+    Order order = getItem(position);
+    mViewModel.getOrderDetailCommand().setValue(order.getId());
   }
 
   @Override
   public boolean onItemLongClick(int position) {
-    if (isActionMode()) {
-      return false;
-    }
-
-    setActionMode(((OrderListActivity) mContext).startSupportActionMode(this));
-    selectItem(position);
-    return true;
-  }
-
-  @Override
-  public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-    MenuInflater inflater = mode.getMenuInflater();
-    inflater.inflate(R.menu.menu_order_list_action_mode, menu);
-
-    mActionMode = mode;
-    mSelectedOrders = new ArrayList<>(0);
-
-    notifyDataSetChanged();
-    return true;
-  }
-
-  @Override
-  public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
     return false;
-  }
-
-  @Override
-  public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.action_mode_delete:
-        removeSelectedItems();
-        mode.finish();
-        return true;
-    }
-
-    return false;
-  }
-
-  @Override
-  public void onDestroyActionMode(ActionMode mode) {
-    mActionMode = null;
-    mSelectedOrders = null;
-
-    notifyDataSetChanged();
   }
 
   class OrderListViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
@@ -209,9 +124,6 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
     }
 
     void bindItem(Context c, @NonNull Order order) {
-      mSelectCheckBox.setVisibility(isActionMode() ? View.VISIBLE : View.GONE);
-      mSelectCheckBox.setChecked(isSelected(order));
-
       String storeName = order.getStoreName();
       mStoreNameTextView.setText(storeName);
 
