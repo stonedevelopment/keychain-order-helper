@@ -20,12 +20,14 @@
   <!--  Order Item Quantity Values -->
   <!--  Order Item Quantity Values: Keychains -->
   <integer-array name="order_item_quantity_values_keychains">
+    <item>0</item>
     <item>4</item>
     <item>6</item>
   </integer-array>
 
   <!--  Order Item Quantity Values: Taffy -->
   <integer-array name="order_item_quantity_values_taffy">
+    <item>0</item>
     <item>3</item>
     <item>6</item>
     <item>9</item>

@@ -158,4 +158,15 @@ public class OrderUtils {
         throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
     }
   }
+
+  public static int[] getItemQuantities(Context c, int orderCategory) {
+    switch (orderCategory) {
+      case ORDER_CATEGORY_KEYCHAINS:
+        return StringUtils.getIntegerArrayResource(c, R.array.order_item_quantity_values_keychains);
+      case ORDER_CATEGORY_TAFFY:
+        return StringUtils.getIntegerArrayResource(c, R.array.order_item_quantity_values_taffy);
+      default:
+        throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
+    }
+  }
 }

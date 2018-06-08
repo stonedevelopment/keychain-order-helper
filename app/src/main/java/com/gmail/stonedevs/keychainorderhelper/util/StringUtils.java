@@ -52,6 +52,10 @@ public class StringUtils {
     return c.getResources().getStringArray(r);
   }
 
+  public static int[] getIntegerArrayResource(Context c, int r) {
+    return c.getResources().getIntArray(r);
+  }
+
   public static String getStringResource(Context c, int r) {
     return c.getString(r);
   }

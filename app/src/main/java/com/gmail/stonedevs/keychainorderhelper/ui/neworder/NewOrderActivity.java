@@ -58,7 +58,6 @@ import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 
 // TODO: 6/5/2018 Implement taffy excel spreadsheet
-// TODO: 6/6/2018 Fix order quantities as array rotations
 
 /**
  * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.

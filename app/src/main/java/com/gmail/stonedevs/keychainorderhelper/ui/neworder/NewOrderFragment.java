@@ -165,6 +165,7 @@ public class NewOrderFragment extends Fragment {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
         mAdapter.replaceData(order.getOrderItems());
+        mAdapter.updateItemQuantities(getContext(), order.getOrderCategory());
       }
     });
 

@@ -200,8 +200,16 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
     getOrder().setOrderQuantity(0);
   }
 
+  void setOrderQuantity(int quantity) {
+    getOrder().setOrderQuantity(quantity);
+  }
+
   void updateOrderQuantityBy(int change) {
     getOrder().updateOrderQuantityBy(change);
+  }
+
+  int getOrderCategory() {
+    return getOrder().getOrderCategory();
   }
 
   private void createOrder(final int orderCategory) {

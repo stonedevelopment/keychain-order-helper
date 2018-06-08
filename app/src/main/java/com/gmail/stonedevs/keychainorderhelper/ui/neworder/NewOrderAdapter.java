@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItemClickListener;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
   private NewOrderViewModel mViewModel;
 
   private List<OrderItem> mItems;
+
+  private int[] mItemQuantities;
 
   NewOrderAdapter(Context c, NewOrderViewModel viewModel) {
 
@@ -87,21 +90,39 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
     notifyDataSetChanged();
   }
 
+  void updateItemQuantities(Context c, int orderCategory) {
+    mItemQuantities = OrderUtils.getItemQuantities(c, orderCategory);
+  }
+
+  private int findItemQuantityPosition(int quantity) {
+    for (int i = 0; i < mItemQuantities.length; i++) {
+      if (mItemQuantities[i] == quantity) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  private int findNextItemQuantityPosition(int quantity) {
+    if (quantity == 0) {
+      return 1;
+    } else {
+      int pos = findItemQuantityPosition(quantity);
+      if (pos == mItemQuantities.length - 1) {
+        return 0;
+      }
+      return ++pos;
+    }
+  }
+
   @Override
   public void onItemClick(int position) {
     OrderItem item = getItem(position);
 
     int quantity = item.getQuantity();
-
-    if (quantity < mMinOrderQuantity) {
-      item.setQuantity(mMinOrderQuantity);
-    } else if (quantity < mMaxOrderQuantity) {
-      item.setQuantity(mMaxOrderQuantity);
-    } else {
-      item.setQuantity(0);
-    }
-
-    int newQuantity = item.getQuantity();
+    int quantityPosition = findNextItemQuantityPosition(quantity);
+    int newQuantity = mItemQuantities[quantityPosition];
+    item.setQuantity(newQuantity);
 
     int change = newQuantity - quantity;
 
@@ -116,10 +137,16 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
     OrderItem item = getItem(position);
 
     int quantity = item.getQuantity();
+    int quantityPosition = findItemQuantityPosition(quantity);
+    int lastPosition = mItemQuantities.length - 1;
 
-    item.setQuantity(0);
-
-    int newQuantity = item.getQuantity();
+    int newQuantity;
+    if (quantityPosition == 0) {
+      newQuantity = mItemQuantities[lastPosition];
+    } else {
+      newQuantity = 0;
+    }
+    item.setQuantity(newQuantity);
 
     int change = newQuantity - quantity;
 
