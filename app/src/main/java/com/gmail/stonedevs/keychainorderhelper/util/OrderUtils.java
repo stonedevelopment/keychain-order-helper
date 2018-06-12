@@ -101,6 +101,17 @@ public class OrderUtils {
     }
   }
 
+  public static String getFilenameForTemplate(Context c, int orderCategory) {
+    switch (orderCategory) {
+      case ORDER_CATEGORY_KEYCHAINS:
+        return StringUtils.getStringResource(c, R.string.excel_template_filename_keychains);
+      case ORDER_CATEGORY_TAFFY:
+        return StringUtils.getStringResource(c, R.string.excel_template_filename_taffy);
+      default:
+        throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
+    }
+  }
+
   public static String getSendToEmail(Context c, int orderCategory) {
     switch (orderCategory) {
       case ORDER_CATEGORY_KEYCHAINS:
@@ -169,4 +180,31 @@ public class OrderUtils {
         throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
     }
   }
+
+  public static int getOrderQuantityMinimum(Context c, int orderCategory) {
+    switch (orderCategory) {
+      case ORDER_CATEGORY_KEYCHAINS:
+        return StringUtils
+            .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_keychains);
+      case ORDER_CATEGORY_TAFFY:
+        return StringUtils
+            .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_taffy);
+      default:
+        throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
+    }
+  }
+
+  public static String[] getBestSellers(Context c, int orderCategory) {
+    switch (orderCategory) {
+      case ORDER_CATEGORY_KEYCHAINS:
+        return StringUtils
+            .getStringArrayResource(c, R.array.best_sellers_keychains);
+      case ORDER_CATEGORY_TAFFY:
+        return StringUtils
+            .getStringArrayResource(c, R.array.best_sellers_taffy);
+      default:
+        throw new RuntimeException("Invalid OrderCategory: " + orderCategory);
+    }
+  }
+
 }

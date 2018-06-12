@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,7 @@ public class OrderListFragment extends Fragment {
 
   private static final String TAG = OrderListFragment.class.getSimpleName();
 
-  private OrderListViewModel mViewModel;
+  private TabItemViewModel mViewModel;
 
   private OrderListAdapter mAdapter;
 
@@ -56,6 +57,8 @@ public class OrderListFragment extends Fragment {
   public static OrderListFragment createInstance(int orderCategory) {
     Bundle args = new Bundle();
     args.putInt(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY, orderCategory);
+
+    Log.d(TAG, "createInstance: " + orderCategory);
 
     OrderListFragment fragment = new OrderListFragment();
     fragment.setArguments(args);
@@ -79,13 +82,19 @@ public class OrderListFragment extends Fragment {
 
     subscribeToSnackBarMessenger();
 
+    subscribeToViewModelCommands();
+
     subscribeToViewModelEvents();
 
     startViewModel();
   }
 
   private void setupViewModel() {
-    mViewModel = OrderListActivity.obtainViewModel(getActivity());
+    Bundle args = getArguments();
+    int orderCategory = args.getInt(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY);
+
+    TabbedActivityViewModel viewModel = OrderListActivity.obtainViewModel(getActivity());
+    mViewModel = viewModel.obtainViewModel(orderCategory);
   }
 
   private void setupAdapter() {
@@ -104,6 +113,22 @@ public class OrderListFragment extends Fragment {
       @Override
       public void onNewMessage(int resourceId) {
         SnackbarUtils.showSnackbar(getView(), getString(resourceId));
+      }
+    });
+  }
+
+  private void subscribeToViewModelCommands() {
+    mViewModel.getOrderDetailCommand().observe(this, new Observer<String>() {
+      @Override
+      public void onChanged(@Nullable String orderId) {
+        mViewModel.commandOrderDetails(orderId);
+      }
+    });
+
+    mViewModel.getNewOrderCommand().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        mViewModel.commandNewOrder();
       }
     });
   }
@@ -141,7 +166,7 @@ public class OrderListFragment extends Fragment {
     });
   }
 
-  private void startViewModel() {
+  void startViewModel() {
     mViewModel.start();
   }
 }

@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
@@ -84,8 +85,10 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
   @Override
   protected Uri doInBackground(Void... voids) {
     try {
-      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
-          getContext().getString(R.string.excel_template_filename_keychains)));
+      String filename = OrderUtils.getFilenameForTemplate(getContext(), mOrder.getOrderCategory());
+      Log.d("GenerateExcelFileTask",
+          "doInBackground: " + filename + ", " + mOrder.getOrderCategory());
+      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(filename));
       return generateExcelFile(workbook);
     } catch (InvalidFormatException | IOException e) {
       e.printStackTrace();

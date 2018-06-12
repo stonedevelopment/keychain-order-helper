@@ -52,7 +52,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
 
   private static final String TAG = OrderListActivity.class.getSimpleName();
 
-  private OrderListViewModel mViewModel;
+  private TabbedActivityViewModel mViewModel;
 
   public static final int REQUEST_CODE = MainActivity.REQUEST_CODE + 1;
 
@@ -63,11 +63,11 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
 
     setupActionBar();
 
+    setupViewModel();
+
     setupFabMenu();
 
     setupViewPager();
-
-    setupViewModel();
 
     subscribeToViewModelCommands();
   }
@@ -75,8 +75,7 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     mViewModel.handleActivityResult(requestCode, resultCode);
-
-    mViewModel.start();
+    mViewModel.updateCurrentTab();
   }
 
   @Override
@@ -105,7 +104,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
   private void setupViewPager() {
     TabLayout tabLayout = findViewById(R.id.tab_layout);
 
-    OrderListViewPageAdapter pageAdapter = new OrderListViewPageAdapter(getSupportFragmentManager(),
+    OrderListViewPageAdapter pageAdapter = new OrderListViewPageAdapter(
+        getSupportFragmentManager(),
         tabLayout.getTabCount());
 
     final ViewPager viewPager = findViewById(R.id.view_pager);
@@ -129,6 +129,8 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
         //  intentionally left blank
       }
     });
+
+    viewPager.setCurrentItem(mViewModel.getCurrentTab());
   }
 
   private void setupFabMenu() {
@@ -161,17 +163,17 @@ public class OrderListActivity extends AppCompatActivity implements OrderListNav
     });
   }
 
-  static OrderListViewModel obtainViewModel(FragmentActivity activity) {
+  static TabbedActivityViewModel obtainViewModel(FragmentActivity activity) {
     // Use a Factory to inject dependencies into the ViewModel
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 
-    return ViewModelProviders.of(activity, factory).get(OrderListViewModel.class);
+    return ViewModelProviders.of(activity, factory).get(TabbedActivityViewModel.class);
   }
 
   @Override
   public void startNewOrderActivity() {
     Intent intent = new Intent(this, NewOrderActivity.class);
-    intent.putExtra(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY, mViewModel.getOrderCategory());
+    intent.putExtra(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY, mViewModel.getCurrentTab());
 
     startActivityForResult(intent, NewOrderActivity.REQUEST_CODE);
   }

@@ -130,4 +130,11 @@ public class CompleteOrder {
   public void setOrderCategory(int orderCategory) {
     mOrder.setOrderCategory(orderCategory);
   }
+
+  @Override
+  public String toString() {
+    StringBuilder orderBuilder = new StringBuilder(mOrder.toString());
+
+    return orderBuilder.toString();
+  }
 }

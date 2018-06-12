@@ -221,7 +221,7 @@
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename_keychains">template_keychains.xls</string>
-  <string name="excel_template_filename_taffy">template.xls</string>
+  <string name="excel_template_filename_taffy">template_taffy.xls</string>
 
   <string name="layout_text_view_rep_name">Rep Name:</string>
   <string name="layout_text_view_rep_territory">Rep Territory:</string>

@@ -33,20 +33,14 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
 
   private static final String TAG = NewOrderAdapter.class.getSimpleName();
 
-  private static int mMinOrderQuantity;
-  private static int mMaxOrderQuantity;
-
   private NewOrderViewModel mViewModel;
 
   private List<OrderItem> mItems;
 
   private int[] mItemQuantities;
+  private String[] mBestSellers;
 
   NewOrderAdapter(Context c, NewOrderViewModel viewModel) {
-
-    //  set min/max quantity attributes
-    mMinOrderQuantity = c.getResources().getInteger(R.integer.order_item_quantity_lower_value);
-    mMaxOrderQuantity = c.getResources().getInteger(R.integer.order_item_quantity_higher_value);
 
     mViewModel = viewModel;
 
@@ -88,6 +82,10 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
   void setData(List<OrderItem> items) {
     mItems = items;
     notifyDataSetChanged();
+  }
+
+  void updateBestSellers(Context c, int orderCategory) {
+    mBestSellers = OrderUtils.getBestSellers(c, orderCategory);
   }
 
   void updateItemQuantities(Context c, int orderCategory) {

@@ -31,6 +31,7 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.ViewModel;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.excel.GenerateExcelFileCallback;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
@@ -190,8 +191,8 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
   }
 
   boolean doesOrderQuantityMeetMinimumRequirements() {
-    int orderQuantityMinimumRequirement = getApplication().getResources()
-        .getInteger(R.integer.order_quantity_minimum_requirement);
+    int orderQuantityMinimumRequirement = OrderUtils
+        .getOrderQuantityMinimum(getApplication(), getOrderCategory());
 
     return getOrder().getOrderQuantity() >= orderQuantityMinimumRequirement;
   }

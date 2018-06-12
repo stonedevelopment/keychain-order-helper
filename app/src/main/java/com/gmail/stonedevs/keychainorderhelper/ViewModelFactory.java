@@ -26,7 +26,7 @@ import com.gmail.stonedevs.keychainorderhelper.db.Repository;
 import com.gmail.stonedevs.keychainorderhelper.ui.MainActivityViewModel;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderViewModel;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailViewModel;
-import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListViewModel;
+import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.TabbedActivityViewModel;
 
 /**
  * A creator is used to inject the product ID into the ViewModel
@@ -73,9 +73,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
       //noinspection unchecked
       return (T) new NewOrderViewModel(mApplication, mRepository);
     }
-    if (modelClass.isAssignableFrom(OrderListViewModel.class)) {
+    if (modelClass.isAssignableFrom(TabbedActivityViewModel.class)) {
       //noinspection unchecked
-      return (T) new OrderListViewModel(mApplication, mRepository);
+      return (T) new TabbedActivityViewModel(mApplication, mRepository);
     }
     if (modelClass.isAssignableFrom(OrderDetailViewModel.class)) {
       //noinspection unchecked

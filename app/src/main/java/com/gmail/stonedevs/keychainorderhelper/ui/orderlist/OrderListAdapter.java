@@ -42,11 +42,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListViewHolder> 
 
   private final Context mContext;
 
-  private OrderListViewModel mViewModel;
+  private TabItemViewModel mViewModel;
 
   private List<Order> mOrders;
 
-  OrderListAdapter(Context context, OrderListViewModel viewModel) {
+  OrderListAdapter(Context context, TabItemViewModel viewModel) {
     mContext = context;
     mViewModel = viewModel;
 

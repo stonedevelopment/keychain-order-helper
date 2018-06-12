@@ -16,26 +16,33 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.orderlist;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * TODO: Add a class header comment!
  */
-public class OrderListViewPageAdapter extends FragmentStatePagerAdapter {
+public class OrderListViewPageAdapter extends FragmentPagerAdapter {
+
+  private List<OrderListFragment> fragmentList = new ArrayList<>(0);
 
   private int mTabCount;
 
   public OrderListViewPageAdapter(FragmentManager fm, int tabCount) {
     super(fm);
 
+    for (int i = 0; i < tabCount; i++) {
+      fragmentList.add(OrderListFragment.createInstance(i));
+    }
+
     mTabCount = tabCount;
   }
 
   @Override
-  public Fragment getItem(int position) {
-    return OrderListFragment.createInstance(position);
+  public OrderListFragment getItem(int position) {
+    return fragmentList.get(position);
   }
 
   @Override

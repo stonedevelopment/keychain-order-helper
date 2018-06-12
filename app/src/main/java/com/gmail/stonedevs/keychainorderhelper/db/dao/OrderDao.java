@@ -54,7 +54,7 @@ public interface OrderDao {
       + "where order_category = :orderCategory "
       + "order by order_date desc "
       + "limit 30")
-  List<Order> getAll(Integer orderCategory);
+  List<Order> getAll(int orderCategory);
 
   /**
    * Insert a single {@link Order} object.

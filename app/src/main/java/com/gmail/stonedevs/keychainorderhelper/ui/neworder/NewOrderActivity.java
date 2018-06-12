@@ -56,8 +56,10 @@ import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragmen
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 
 // TODO: 6/5/2018 Implement taffy excel spreadsheet
+// TODO: 6/7/2018 Top sellers list to be bold in item ListView
 
 /**
  * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.
@@ -333,7 +335,8 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
     if (mViewModel.isOrderQuantityZero()) {
       message.append(getString(R.string.dialog_message_incomplete_order_items_empty));
     } else if (!mViewModel.doesOrderQuantityMeetMinimumRequirements()) {
-      int minimum = getResources().getInteger(R.integer.order_quantity_minimum_requirement);
+      int minimum = OrderUtils
+          .getOrderQuantityMinimum(getApplicationContext(), mViewModel.getOrderCategory());
       int quantity = mViewModel.getOrderQuantity();
       int difference = minimum - quantity;
 

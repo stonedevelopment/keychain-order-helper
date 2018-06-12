@@ -56,7 +56,15 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
   }
 
   void bindItem(@NonNull OrderItem item) {
-    mKeychainNameTextView.setText(item.getName());
+    String name = item.getName();
+
+//  TODO  Distinguish whether item is in Best Seller list (WIP)
+//    if (name.startsWith("*")) {
+//      name = name.replace("*", "");
+//      name += " (Top Seller)";
+//    }
+
+    mKeychainNameTextView.setText(name);
 
     if (item.getQuantity() > 0) {
       mLayout
