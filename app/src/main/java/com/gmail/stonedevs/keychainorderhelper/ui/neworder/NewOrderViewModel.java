@@ -24,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -48,11 +49,18 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
+  //  Events
+  private final SingleLiveEvent<Integer> mUpdateItemQuantitiesEvent = new SingleLiveEvent<>();
+
   private final AppExecutors mAppExecutors;
 
   public NewOrderViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application, repository);
     mAppExecutors = new AppExecutors();
+  }
+
+  public SingleLiveEvent<Integer> getUpdateItemQuantitiesEvent() {
+    return mUpdateItemQuantitiesEvent;
   }
 
   /**
@@ -96,6 +104,13 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
       //  if order id wasn't set, then it's a new order, create it, otherwise load it.
       createOrder(orderCategory);
     }
+  }
+
+  @Override
+  public void updateUI() {
+    super.updateUI();
+
+    mUpdateItemQuantitiesEvent.setValue(getOrder().getOrderQuantity());
   }
 
   /**

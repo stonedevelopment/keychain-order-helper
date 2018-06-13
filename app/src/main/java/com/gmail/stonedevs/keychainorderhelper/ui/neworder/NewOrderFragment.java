@@ -32,11 +32,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 /**
  * Main UI for the New Order screen.
@@ -175,6 +177,15 @@ public class NewOrderFragment extends Fragment {
         //  Determine whether data is loading, react accordingly.
         ProgressBar progressBar = getView().findViewById(R.id.progressBar);
         progressBar.setVisibility(isDataLoading ? View.VISIBLE : View.GONE);
+      }
+    });
+
+    mViewModel.getUpdateItemQuantitiesEvent().observe(this, new Observer<Integer>() {
+      @Override
+      public void onChanged(@Nullable Integer quantity) {
+        //  Update subtotal text view
+        TextView textView = getView().findViewById(R.id.subtotalTextView);
+        textView.setText(StringUtils.formatSubtotal(getContext(), quantity));
       }
     });
   }
