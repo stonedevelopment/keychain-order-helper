@@ -38,7 +38,7 @@ public class ExcelUtils {
   public static void GenerateStringArrayFormat(Context c)
       throws IOException, InvalidFormatException {
     Workbook workbook = WorkbookFactory.create(c.getAssets().open(
-        c.getString(R.string.excel_template_filename)));
+        c.getString(R.string.excel_template_filename_keychains)));
 
     Sheet sheet = workbook.getSheetAt(0);
 

@@ -85,7 +85,7 @@ public class OrderDetailFragment extends Fragment {
   }
 
   private void setupAdapter() {
-    RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+    RecyclerView recyclerView = getView().findViewById(R.id.orderItemListRecyclerView);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
     recyclerView.setLayoutManager(layoutManager);
@@ -136,7 +136,7 @@ public class OrderDetailFragment extends Fragment {
         mAdapter.setData(orders);
 
         //  Hide no data textView
-        TextView textView = getView().findViewById(R.id.noKeychainsFoundText);
+        TextView textView = getView().findViewById(R.id.noOrderItemsFoundText);
         textView.setVisibility((orders.size() > 0) ? View.GONE : View.VISIBLE);
       }
     });

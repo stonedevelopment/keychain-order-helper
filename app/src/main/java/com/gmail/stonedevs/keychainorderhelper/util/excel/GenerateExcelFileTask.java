@@ -26,12 +26,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.BuildConfig;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.DateUtil;
 import com.gmail.stonedevs.keychainorderhelper.util.ExcelUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -83,8 +85,10 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
   @Override
   protected Uri doInBackground(Void... voids) {
     try {
-      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(
-          getContext().getString(R.string.excel_template_filename)));
+      String filename = OrderUtils.getFilenameForTemplate(getContext(), mOrder.getOrderCategory());
+      Log.d("GenerateExcelFileTask",
+          "doInBackground: " + filename + ", " + mOrder.getOrderCategory());
+      Workbook workbook = WorkbookFactory.create(getContext().getAssets().open(filename));
       return generateExcelFile(workbook);
     } catch (InvalidFormatException | IOException e) {
       e.printStackTrace();
@@ -112,9 +116,10 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
 
     Sheet sheet = workbook.getSheetAt(0);
 
+    int orderCategory = mOrder.getOrderCategory();
+
     //  Write Store Name and Number.
-    String[] storeNameCellLocations = getContext().getResources()
-        .getStringArray(R.array.excel_cell_locations_store_number);
+    String[] storeNameCellLocations = OrderUtils.getStoreNameLocations(getContext(), orderCategory);
     for (String cellLocation : storeNameCellLocations) {
       getCellByAddress(sheet, cellLocation).setCellValue(storeName);
     }
@@ -127,8 +132,7 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
         : prefs.getString(getContext().getString(R.string.pref_key_rep_territory),
             getContext().getString(R.string.pref_error_default_value_rep_territory));
 
-    String[] repNameCellLocations = getContext().getResources()
-        .getStringArray(R.array.excel_cell_locations_rep_name);
+    String[] repNameCellLocations = OrderUtils.getRepNameLocations(getContext(), orderCategory);
     for (String cellLocation : repNameCellLocations) {
       String repFormat = String
           .format(getContext().getString(R.string.string_format_repName_repTerritory), repName,
@@ -138,27 +142,25 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
 
     //  Write Current Date.
     String dateFormat = DateUtil.getFormattedDateForLayout(orderDate);
-    String[] dateCellLocations = getContext().getResources()
-        .getStringArray(R.array.excel_cell_locations_order_date);
+    String[] dateCellLocations = OrderUtils.getOrderDateLocations(getContext(), orderCategory);
     for (String cellLocation : dateCellLocations) {
       getCellByAddress(sheet, cellLocation).setCellValue(dateFormat);
     }
 
     //  Write Order Item data.
-    String[] keychainNameCellLocations = getContext().getResources()
-        .getStringArray(R.array.excel_cell_locations_names);
-    String[] keychainQuantityCellLocations = getContext().getResources()
-        .getStringArray(R.array.excel_cell_locations_quantities);
+    String[] itemNameCellLocations = OrderUtils.getItemNameLocations(getContext(), orderCategory);
+    String[] itemQuantityCellLocations = OrderUtils
+        .getItemQuantityLocations(getContext(), orderCategory);
 
     List<OrderItem> orderItems = mOrder.getOrderItems();
     for (int i = 0; i < orderItems.size(); i++) {
       OrderItem orderItem = orderItems.get(i);
 
       if (orderItem != null) {
-        Cell nameCell = ExcelUtils.getCellByAddress(sheet, keychainNameCellLocations[i]);
+        Cell nameCell = ExcelUtils.getCellByAddress(sheet, itemNameCellLocations[i]);
         nameCell.setCellValue(orderItem.getName());
 
-        Cell quantityCell = ExcelUtils.getCellByAddress(sheet, keychainQuantityCellLocations[i]);
+        Cell quantityCell = ExcelUtils.getCellByAddress(sheet, itemQuantityCellLocations[i]);
         int quantity = orderItem.getQuantity();
         if (quantity > 0) {
           quantityCell.setCellValue(quantity);
@@ -171,7 +173,7 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
     SimpleDateFormat format = new SimpleDateFormat(
         getContext().getString(R.string.string_date_filename), Locale.getDefault());
     String filenameDateFormat = format.format(orderDate);
-    String filename = String.format(getContext().getString(R.string.string_format_filename),
+    String filename = String.format(OrderUtils.getFilename(getContext(), orderCategory),
         repTerritory.toLowerCase(),
         storeName.toLowerCase().replaceAll("[^a-zA-Z0-9.\\-]", "_"),
         filenameDateFormat);
@@ -184,7 +186,6 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
     out.close();
 
     return GenerateExcelFileProvider
-        .getUriForFile(getContext(),
-            BuildConfig.APPLICATION_ID + ".provider", file);
+        .getUriForFile(getContext(), BuildConfig.APPLICATION_ID + ".provider", file);
   }
 }

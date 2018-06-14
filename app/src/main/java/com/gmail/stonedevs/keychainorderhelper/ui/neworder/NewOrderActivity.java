@@ -55,6 +55,11 @@ import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragmen
 import com.gmail.stonedevs.keychainorderhelper.ui.dialog.UserPromptDialogFragment.UserPromptDialogListener;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
+
+// TODO: 6/5/2018 Implement taffy excel spreadsheet
+// TODO: 6/7/2018 Top sellers list to be bold in item ListView
 
 /**
  * Activity for creating a new order, called by {@link OrderListActivity#startNewOrderActivity()}.
@@ -262,9 +267,21 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
     NewOrderFragment fragment = (NewOrderFragment) getSupportFragmentManager()
         .findFragmentById(R.id.fragment_container);
 
+    //  determine if we need to create a new fragment or re-use it
     if (fragment == null) {
+
+      //  attempt to grab an order id from intent bundle
       String orderId = getIntent().getStringExtra(getString(R.string.bundle_key_order_id));
-      fragment = NewOrderFragment.createInstance(orderId);
+
+      //  if orderId is not empty, the User is attempting to edit a previously created order
+      if (!TextUtils.isEmpty(orderId)) {
+        //  create an instance of a fragment used for editing
+        fragment = NewOrderFragment.createInstance(orderId);
+      } else {
+        //  create an instance of a fragment used for creating
+        int orderCategory = getIntent().getIntExtra(BundleUtils.BUNDLE_KEY_ORDER_CATEGORY, 0);
+        fragment = NewOrderFragment.createInstance(orderCategory);
+      }
     }
 
     return fragment;
@@ -316,14 +333,15 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
     }
 
     if (mViewModel.isOrderQuantityZero()) {
-      message.append(getString(R.string.dialog_message_incomplete_order_keychains_empty));
+      message.append(getString(R.string.dialog_message_incomplete_order_items_empty));
     } else if (!mViewModel.doesOrderQuantityMeetMinimumRequirements()) {
-      int minimum = getResources().getInteger(R.integer.order_quantity_minimum_requirement);
+      int minimum = OrderUtils
+          .getOrderQuantityMinimum(getApplicationContext(), mViewModel.getOrderCategory());
       int quantity = mViewModel.getOrderQuantity();
       int difference = minimum - quantity;
 
       message.append(String.format(getString(
-          R.string.dialog_message_incomplete_order_keychains_minimum_not_met),
+          R.string.dialog_message_incomplete_order_items_minimum_not_met),
           difference, minimum));
     }
     builder.setMessage(message);

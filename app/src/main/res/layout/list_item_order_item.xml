@@ -21,11 +21,10 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/list_item"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:background="?android:attr/selectableItemBackground">
+  android:layout_height="wrap_content">
 
   <TextView
-    android:id="@+id/keychainNameTextView"
+    android:id="@+id/orderItemNameTextView"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"
@@ -38,7 +37,7 @@
     tools:text="Ashley"/>
 
   <TextView
-    android:id="@+id/itemQuantityTextView"
+    android:id="@+id/orderItemQuantityTextView"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="12dp"

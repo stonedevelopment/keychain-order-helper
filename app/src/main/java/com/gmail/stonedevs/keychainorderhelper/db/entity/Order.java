@@ -51,28 +51,46 @@ public class Order {
   @ColumnInfo(name = "order_territory")
   private String mOrderTerritory;
 
+  @NonNull
+  @ColumnInfo(name = "order_category")
+  private Integer mOrderCategory;
+
   /**
-   * Default constructor used with creating new Orders. Creates a random UUID for id, nullifies
-   * orderTerritory, and sets the orderQuantity to 0.
+   * todo update documentation
    *
    * @param storeName Name of the store the order is being made for
    * @param orderDate Date the order is being made on
    */
   @Ignore
   public Order(String storeName, Date orderDate) {
-    this(UUID.randomUUID().toString(), storeName, orderDate, null, 0);
+    this(storeName, orderDate, 0);
+  }
+
+  /**
+   * Default constructor used with creating new Orders. Creates a random UUID for id, nullifies
+   * orderTerritory, and sets the orderQuantity to 0.
+   *
+   * @param storeName Name of the store the order is being made for
+   * @param orderDate Date the order is being made on
+   * @param orderCategory Category of order being made (ex: keychains or taffy)
+   */
+  @Ignore
+  public Order(String storeName, Date orderDate, Integer orderCategory) {
+    this(UUID.randomUUID().toString(), storeName, orderDate, null, 0, orderCategory);
   }
 
   /**
    * Full constructor used by {@link AppDatabase} to make a POJO of Order.
    */
   public Order(@NonNull String id, @NonNull String storeName, @NonNull Date orderDate,
-      @Nullable String orderTerritory, @NonNull Integer orderQuantity) {
+      @Nullable String orderTerritory, @NonNull Integer orderQuantity,
+      @NonNull Integer orderCategory) {
     mId = id;
     mStoreName = storeName;
     mOrderDate = orderDate;
     mOrderTerritory = orderTerritory;
     mOrderQuantity = orderQuantity;
+    mOrderCategory = orderCategory;
   }
 
   @NonNull
@@ -98,7 +116,6 @@ public class Order {
     mOrderDate = orderDate;
   }
 
-  @NonNull
   public Integer getOrderQuantity() {
     return mOrderQuantity;
   }
@@ -116,12 +133,22 @@ public class Order {
     mOrderTerritory = orderTerritory;
   }
 
+  public Integer getOrderCategory() {
+    return mOrderCategory;
+  }
+
+  public void setOrderCategory(@NonNull Integer orderCategory) {
+    mOrderCategory = orderCategory;
+  }
+
   @Override
   public String toString() {
     return "id:" + getId()
         + ", store_name:" + getStoreName()
         + ", order_date:" + getOrderDate()
         + "(" + DateUtil.getFormattedDateForLayout(getOrderDate()) + ")"
-        + ", order_territory:" + getOrderTerritory();
+        + ", order_territory:" + getOrderTerritory()
+        + ", order_category:" + getOrderCategory();
   }
+
 }

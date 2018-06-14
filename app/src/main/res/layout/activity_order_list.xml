@@ -34,10 +34,30 @@
       android:layout_height="?attr/actionBarSize"
       app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
+    <android.support.design.widget.TabLayout
+      android:id="@+id/tab_layout"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:layout_gravity="start"
+      app:tabGravity="fill"
+      app:tabMode="fixed">
+
+      <android.support.design.widget.TabItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/layout_tab_layout_tab_item_text_keychains"/>
+
+      <android.support.design.widget.TabItem
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/layout_tab_layout_tab_item_text_taffy"/>
+
+    </android.support.design.widget.TabLayout>
+
   </android.support.design.widget.AppBarLayout>
 
-  <FrameLayout
-    android:id="@+id/fragment_container"
+  <android.support.v4.view.ViewPager
+    android:id="@+id/view_pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
@@ -49,7 +69,7 @@
     android:layout_margin="@dimen/fab_margin"
     android:src="@drawable/ic_action_add"
     app:fabSize="normal"
-    app:layout_anchor="@id/fragment_container"
+    app:layout_anchor="@id/view_pager"
     app:layout_anchorGravity="bottom|right|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

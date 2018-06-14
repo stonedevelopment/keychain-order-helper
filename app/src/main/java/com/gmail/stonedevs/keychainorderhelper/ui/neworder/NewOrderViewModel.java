@@ -18,11 +18,13 @@ package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -30,6 +32,7 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.ViewModel;
+import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.excel.GenerateExcelFileCallback;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
 import java.util.ArrayList;
@@ -46,6 +49,9 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
 
   private final static String TAG = NewOrderViewModel.class.getSimpleName();
 
+  //  Events
+  private final SingleLiveEvent<Integer> mUpdateItemQuantitiesEvent = new SingleLiveEvent<>();
+
   private final AppExecutors mAppExecutors;
 
   public NewOrderViewModel(@NonNull Application application, @NonNull Repository repository) {
@@ -53,13 +59,36 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
     mAppExecutors = new AppExecutors();
   }
 
+  public SingleLiveEvent<Integer> getUpdateItemQuantitiesEvent() {
+    return mUpdateItemQuantitiesEvent;
+  }
+
   /**
    * Starts the view model's initializations.
-   *
+   * todo update documentation
    * Called by {@link NewOrderFragment#onActivityCreated(Bundle)}
    */
-  @Override
   public void start(String orderId) {
+    if (isLoadingData()) {
+      //  Loading data, ignore.
+      return;
+    }
+
+    if (orderNotNull()) {
+      //  main order object exists and is ready for ui to update with its contents.
+      readyOrder();
+    } else {
+      //  main order object is null, load from database.
+      beginLoadingPhase();
+      setOrderId(orderId);
+      loadOrder();
+    }
+  }
+
+  /**
+   * todo update documentation
+   */
+  protected void start(int orderCategory) {
     if (isLoadingData()) {
       //  Loading data, ignore.
       return;
@@ -73,13 +102,15 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
       beginLoadingPhase();
 
       //  if order id wasn't set, then it's a new order, create it, otherwise load it.
-      if (orderId == null) {
-        createOrder();
-      } else {
-        setOrderId(orderId);
-        loadOrder();
-      }
+      createOrder(orderCategory);
     }
+  }
+
+  @Override
+  public void updateUI() {
+    super.updateUI();
+
+    mUpdateItemQuantitiesEvent.setValue(getOrder().getOrderQuantity());
   }
 
   /**
@@ -175,8 +206,8 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
   }
 
   boolean doesOrderQuantityMeetMinimumRequirements() {
-    int orderQuantityMinimumRequirement = getApplication().getResources()
-        .getInteger(R.integer.order_quantity_minimum_requirement);
+    int orderQuantityMinimumRequirement = OrderUtils
+        .getOrderQuantityMinimum(getApplication(), getOrderCategory());
 
     return getOrder().getOrderQuantity() >= orderQuantityMinimumRequirement;
   }
@@ -185,23 +216,30 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
     getOrder().setOrderQuantity(0);
   }
 
+  void setOrderQuantity(int quantity) {
+    getOrder().setOrderQuantity(quantity);
+  }
+
   void updateOrderQuantityBy(int change) {
     getOrder().updateOrderQuantityBy(change);
   }
 
-  private void createOrder() {
+  int getOrderCategory() {
+    return getOrder().getOrderCategory();
+  }
+
+  private void createOrder(final int orderCategory) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
         String storeName = "";
         Date orderDate = Calendar.getInstance().getTime();
 
-        final Order order = new Order(storeName, orderDate);
+        final Order order = new Order(storeName, orderDate, orderCategory);
 
         String orderId = order.getId();
 
-        String[] names = getApplication().getResources()
-            .getStringArray(R.array.excel_cell_values_names);
+        String[] names = getNames(orderCategory);
 
         final List<OrderItem> orderItems = new ArrayList<>(0);
         for (String name : names) {
@@ -218,6 +256,19 @@ public class NewOrderViewModel extends ViewModel implements InsertCallback, Load
     };
 
     mAppExecutors.diskIO().execute(runnable);
+  }
+
+  private String[] getNames(int orderCategory) {
+    Resources resources = getApplication().getResources();
+
+    switch (orderCategory) {
+      case 0:
+        return resources.getStringArray(R.array.excel_cell_values_keychains);
+      case 1:
+        return resources.getStringArray(R.array.excel_cell_values_taffy);
+      default:
+        return new String[]{};
+    }
   }
 
   /**

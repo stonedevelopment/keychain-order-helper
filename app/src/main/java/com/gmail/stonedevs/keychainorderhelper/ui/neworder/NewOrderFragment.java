@@ -16,6 +16,7 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
+import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_CATEGORY;
 import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
 
 import android.arch.lifecycle.Observer;
@@ -26,15 +27,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
 /**
  * Main UI for the New Order screen.
@@ -61,13 +65,31 @@ public class NewOrderFragment extends Fragment {
   /**
    * Creates an instance of this fragment. If a non-null argument is passed, this means that the
    * activity will be reactive for editing an order, instead of its default behavior of creating a
-   * new order.
+   * new order. todo update this documentation
+   *
+   * @param orderCategory The argument passed for if we're creating an order. This is the category
+   * for the {@link Order} entity class.
+   * @return The created instance of this fragment.
+   */
+  public static NewOrderFragment createInstance(int orderCategory) {
+    Bundle args = new Bundle();
+    args.putInt(BUNDLE_KEY_ORDER_CATEGORY, orderCategory);
+
+    NewOrderFragment fragment = new NewOrderFragment();
+    fragment.setArguments(args);
+    return fragment;
+  }
+
+  /**
+   * Creates an instance of this fragment. If a non-null argument is passed, this means that the
+   * activity will be reactive for editing an order, instead of its default behavior of creating a
+   * new order. todo update this documentation
    *
    * @param orderId The argument passed for if we're editing an order. This is the row id for the
    * {@link Order} entity class.
    * @return The created instance of this fragment.
    */
-  public static NewOrderFragment createInstance(@Nullable String orderId) {
+  public static NewOrderFragment createInstance(String orderId) {
     Bundle args = new Bundle();
     args.putString(BUNDLE_KEY_ORDER_ID, orderId);
 
@@ -117,7 +139,7 @@ public class NewOrderFragment extends Fragment {
   }
 
   private void setupAdapter() {
-    RecyclerView recyclerView = getView().findViewById(R.id.keychainListRecyclerView);
+    RecyclerView recyclerView = getView().findViewById(R.id.orderItemListRecyclerView);
 
     LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
     recyclerView.setLayoutManager(layoutManager);
@@ -145,6 +167,7 @@ public class NewOrderFragment extends Fragment {
       @Override
       public void onChanged(@Nullable CompleteOrder order) {
         mAdapter.replaceData(order.getOrderItems());
+        mAdapter.updateItemQuantities(getContext(), order.getOrderCategory());
       }
     });
 
@@ -156,10 +179,29 @@ public class NewOrderFragment extends Fragment {
         progressBar.setVisibility(isDataLoading ? View.VISIBLE : View.GONE);
       }
     });
+
+    mViewModel.getUpdateItemQuantitiesEvent().observe(this, new Observer<Integer>() {
+      @Override
+      public void onChanged(@Nullable Integer quantity) {
+        //  Update subtotal text view
+        TextView textView = getView().findViewById(R.id.subtotalTextView);
+        textView.setText(StringUtils.formatSubtotal(getContext(), quantity));
+      }
+    });
   }
 
   private void startViewModel() {
     String orderId = getArguments().getString(getString(R.string.bundle_key_order_id));
-    mViewModel.start(orderId);
+    //  attempt to grab an order id from intent bundle
+
+    //  if orderId is not empty, the User is attempting to edit a previously created order
+    if (!TextUtils.isEmpty(orderId)) {
+      //  create an instance of a fragment used for editing
+      mViewModel.start(orderId);
+    } else {
+      //  create an instance of a fragment used for creating
+      int orderCategory = getArguments().getInt(BUNDLE_KEY_ORDER_CATEGORY);
+      mViewModel.start(orderCategory);
+    }
   }
 }

@@ -122,4 +122,19 @@ public class CompleteOrder {
   public void setOrderType(OrderType orderType) {
     mOrderType = orderType;
   }
+
+  public int getOrderCategory() {
+    return mOrder.getOrderCategory();
+  }
+
+  public void setOrderCategory(int orderCategory) {
+    mOrder.setOrderCategory(orderCategory);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder orderBuilder = new StringBuilder(mOrder.toString());
+
+    return orderBuilder.toString();
+  }
 }

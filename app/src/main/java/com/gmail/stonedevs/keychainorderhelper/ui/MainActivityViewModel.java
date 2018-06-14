@@ -160,7 +160,7 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
         //  import order quantities and convert into order items
         List<Integer> orderQuantities = jsonOrder.getOrderQuantities();
         String[] names = getApplication().getResources()
-            .getStringArray(R.array.excel_cell_values_names);
+            .getStringArray(R.array.excel_cell_values_keychains);
 
         if (orderQuantities.size() != names.length) {
           //  if the lists don't match, move on to next

@@ -20,65 +20,51 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DataNotAvailableCallback;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
-import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadAllCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
-import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
-import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.neworder.NewOrderActivity;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivity;
-import java.util.List;
 
 /**
  * ViewModel for the Order List screen.
+ *
+ * todo refactor to TabbedActivityViewModel
+ *
+ * will effectively tell activity which tab to show
+ *
+ * Treat this like a parent ViewModel for children ViewModels
  */
-public class OrderListViewModel extends AndroidViewModel implements LoadAllCallback,
-    DeleteCallback {
+public class TabbedActivityViewModel extends AndroidViewModel {
 
-  private static final String TAG = OrderListViewModel.class.getSimpleName();
+  private static final String TAG = TabbedActivityViewModel.class.getSimpleName();
 
   //  SnackBar
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
-  //  Events
-  private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<List<Order>> mDataLoadedEvent = new SingleLiveEvent<>();
-  private final SingleLiveEvent<Void> mNoDataLoadedEvent = new SingleLiveEvent<>();
+  //  Data repository
+  private final Repository mRepository;
+
+  //  Tab that's currently being shown?
+  private int mCurrentTab;
+
+  private SparseArray<TabItemViewModel> mViewModels;
+
+  public TabbedActivityViewModel(@NonNull Application application, @NonNull Repository repository) {
+    super(application);
+    mRepository = repository;
+    mCurrentTab = 0;
+    mViewModels = new SparseArray<>(0);
+  }
 
   //  Commands directed by User via on-screen interactions.
   private final SingleLiveEvent<Void> mNewOrderCommand = new SingleLiveEvent<>();
   private final SingleLiveEvent<String> mOrderDetailCommand = new SingleLiveEvent<>();
 
-  //  Data repository
-  private final Repository mRepository;
-
-  //  Are we getting data from database?
-  private boolean mLoadingData;
-
-  public OrderListViewModel(@NonNull Application application, @NonNull Repository repository) {
-    super(application);
-    mRepository = repository;
-  }
-
   SnackBarMessage getSnackBarMessenger() {
     return mSnackBarMessenger;
-  }
-
-  SingleLiveEvent<Boolean> getDataLoadingEvent() {
-    return mDataLoadingEvent;
-  }
-
-  SingleLiveEvent<List<Order>> getDataLoadedEvent() {
-    return mDataLoadedEvent;
-  }
-
-  SingleLiveEvent<Void> getNoDataLoadedEvent() {
-    return mNoDataLoadedEvent;
   }
 
   SingleLiveEvent<Void> getNewOrderCommand() {
@@ -89,56 +75,59 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     return mOrderDetailCommand;
   }
 
+  Repository getRepository() {
+    return mRepository;
+  }
+
+  int getCurrentTab() {
+    return mCurrentTab;
+  }
+
+  /**
+   * Forces a child view model to update its data for views.
+   *
+   * Called by {@link OrderListFragment#onActivityCreated(Bundle)}
+   */
+  public void updateCurrentTab() {
+    mViewModels.get(mCurrentTab).start();
+  }
+
   /**
    * Starts the view model's initializations.
    *
    * Called by {@link OrderListFragment#onActivityCreated(Bundle)}
    */
-  public void start() {
-    if (mLoadingData) {
-      //  Loading data, ignore.
+  public void start(int tabNumber) {
+    if (mCurrentTab == tabNumber) {
+      //  Same tab, ignore.
       return;
     }
 
-    beginLoadingPhase();
-    loadData();
+    //  Update order category
+    mCurrentTab = tabNumber;
+
+    //  Start up tab item view model
+    mViewModels.get(tabNumber).start();
   }
 
-  /**
-   * Tell fragment to enable progress bar, we're about to load some data.
-   */
-  private void beginLoadingPhase() {
-    mLoadingData = true;
-    mDataLoadingEvent.setValue(true);
+  TabItemViewModel obtainViewModel(int tabNumber) {
+    TabItemViewModel viewModel = mViewModels.get(tabNumber);
+    if (viewModel != null) {
+      return viewModel;
+    }
+
+    viewModel = new TabItemViewModel(this, tabNumber);
+    mViewModels.put(tabNumber, viewModel);
+
+    return viewModel;
   }
 
-  /**
-   * Tell fragment to disable progress bar, it's ok to display the ui again.
-   */
-  private void endLoadingPhase() {
-    mLoadingData = false;
-    mDataLoadingEvent.setValue(false);
+  void commandNewOrder() {
+    mNewOrderCommand.call();
   }
 
-  /**
-   * Query repository for all orders in database.
-   */
-  private void loadData() {
-    mRepository.getAllOrders(this);
-  }
-
-  /**
-   * Persist ActionMode, because we're relying on the response of the repository to let us know when
-   * data was deleted. Otherwise, ActionMode will complete and refresh data before the callback was
-   * called.
-   *
-   * Sidenote:  We could possibly use this to allow for configuration changes to continue in this
-   * manner instead of resetting the ui.
-   */
-  void deleteOrders(List<Order> orders) {
-    beginLoadingPhase();
-
-    mRepository.deleteOrders(orders, this);
+  void commandOrderDetails(String orderId) {
+    mOrderDetailCommand.setValue(orderId);
   }
 
   /**
@@ -193,39 +182,4 @@ public class OrderListViewModel extends AndroidViewModel implements LoadAllCallb
     }
   }
 
-  /**
-   * @see DataNotAvailableCallback#onDataNotAvailable()
-   */
-  @Override
-  public void onDataNotAvailable() {
-    //  Update screen components first.
-    mNoDataLoadedEvent.call();
-    endLoadingPhase();
-  }
-
-  /**
-   * @see DataSource.LoadCallback#onDataLoaded(CompleteOrder)
-   */
-  @Override
-  public void onDataLoaded(List<Order> orders) {
-    //  Let adapter know its safe to fill items
-    mDataLoadedEvent.setValue(orders);
-    endLoadingPhase();
-  }
-
-  /**
-   * @see DataSource.DeleteCallback#onDataDeleted(int)
-   */
-  @Override
-  public void onDataDeleted(int rowsDeleted) {
-    if (rowsDeleted > 0) {
-      int resourceId = rowsDeleted > 1 ? R.string.snackbar_message_data_deleted_success_multiple
-          : R.string.snackbar_message_data_deleted_success_one;
-      mSnackBarMessenger.setValue(resourceId);
-    } else {
-      mSnackBarMessenger.setValue(R.string.snackbar_message_data_deleted_success_zero);
-    }
-
-    loadData();
-  }
 }

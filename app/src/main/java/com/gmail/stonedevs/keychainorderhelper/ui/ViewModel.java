@@ -78,8 +78,6 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
     mRepository = repository;
   }
 
-  protected abstract void start(String orderId);
-
   public String getOrderId() {
     return mOrderId;
   }
@@ -313,8 +311,6 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
 
   @Override
   public void onDataNotAvailable() {
-    Log.e(TAG, "onDataNotAvailable: " + mOrder.getOrder().toString());
-
     endLoadingPhase();
 
     mErrorLoadingDataEvent.call();

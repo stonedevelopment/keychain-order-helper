@@ -11,39 +11,39 @@
     android:label="@string/app_name"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
-    android:theme="@style/AppTheme"
+    android:theme="@style/AppTheme.NoActionBar"
     tools:ignore="GoogleAppIndexingWarning">
 
     <activity
       android:name=".ui.MainActivity"
       android:theme="@style/AppTheme.NoActionBar.SplashTheme">
+
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+
     </activity>
 
     <activity
-      android:name=".ui.orderlist.OrderListActivity"
-      android:theme="@style/AppTheme.NoActionBar">
+      android:name=".ui.orderlist.OrderListActivity">
     </activity>
 
     <activity
       android:label="@string/title_activity_neworder"
-      android:name=".ui.neworder.NewOrderActivity"
-      android:theme="@style/AppTheme.NoActionBar">
+      android:name=".ui.neworder.NewOrderActivity">
     </activity>
 
     <activity
       android:label="@string/title_activity_orderdetail"
-      android:name=".ui.orderdetail.OrderDetailActivity"
-      android:theme="@style/AppTheme.NoActionBar">
+      android:name=".ui.orderdetail.OrderDetailActivity">
     </activity>
 
     <activity
       android:label="@string/title_activity_settings"
-      android:name=".ui.SettingsActivity">
+      android:name=".ui.SettingsActivity"
+      android:theme="@style/AppTheme">
     </activity>
 
     <provider

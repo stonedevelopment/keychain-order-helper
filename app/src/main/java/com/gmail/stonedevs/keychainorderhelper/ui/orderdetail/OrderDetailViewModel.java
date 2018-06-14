@@ -33,7 +33,6 @@ public class OrderDetailViewModel extends ViewModel {
     super(application, repository);
   }
 
-  @Override
   public void start(String orderId) {
     if (isLoadingData()) {
       //  Loading data, ignore.

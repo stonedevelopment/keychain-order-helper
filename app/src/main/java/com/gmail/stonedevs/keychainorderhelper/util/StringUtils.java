@@ -47,4 +47,24 @@ public class StringUtils {
   public static String formatOrderQuantity(Context c, int quantity) {
     return String.format(c.getString(R.string.string_format_list_item_order_total_text), quantity);
   }
+
+  public static String formatSubtotal(Context c, int quantity) {
+    return String.format(c.getString(R.string.string_format_layout_subtotal_text), quantity);
+  }
+
+  public static String[] getStringArrayResource(Context c, int r) {
+    return c.getResources().getStringArray(r);
+  }
+
+  public static int[] getIntegerArrayResource(Context c, int r) {
+    return c.getResources().getIntArray(r);
+  }
+
+  public static int getIntegerResource(Context c, int r) {
+    return c.getResources().getInteger(r);
+  }
+
+  public static String getStringResource(Context c, int r) {
+    return c.getString(r);
+  }
 }

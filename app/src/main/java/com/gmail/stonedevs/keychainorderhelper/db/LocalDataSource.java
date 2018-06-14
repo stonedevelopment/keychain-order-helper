@@ -17,6 +17,7 @@
 package com.gmail.stonedevs.keychainorderhelper.db;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderDao;
 import com.gmail.stonedevs.keychainorderhelper.db.dao.OrderItemDao;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
@@ -61,11 +62,11 @@ public class LocalDataSource implements DataSource {
    * or the table is empty.
    */
   @Override
-  public void getAllOrders(@NonNull final LoadAllCallback callback) {
+  public void getAllOrders(final int orderCategory, @NonNull final LoadAllCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        final List<Order> orders = mOrderDao.getAll();
+        final List<Order> orders = mOrderDao.getAll(orderCategory);
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override

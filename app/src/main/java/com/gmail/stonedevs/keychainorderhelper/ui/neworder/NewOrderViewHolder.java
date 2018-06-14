@@ -16,7 +16,9 @@
 
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
+import android.content.res.Resources.Theme;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +36,7 @@ import com.gmail.stonedevs.keychainorderhelper.model.listener.OnRecyclerViewItem
 public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnClickListener,
     OnLongClickListener {
 
+  private final ConstraintLayout mLayout;
   private final TextView mKeychainNameTextView;
   private final TextView mItemQuantityTextView;
 
@@ -44,19 +47,32 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
 
     mListener = listener;
 
-    mKeychainNameTextView = itemView.findViewById(R.id.keychainNameTextView);
-    mItemQuantityTextView = itemView.findViewById(R.id.itemQuantityTextView);
+    mLayout = itemView.findViewById(R.id.list_item);
+    mKeychainNameTextView = itemView.findViewById(R.id.orderItemNameTextView);
+    mItemQuantityTextView = itemView.findViewById(R.id.orderItemQuantityTextView);
 
     itemView.setOnClickListener(this);
     itemView.setOnLongClickListener(this);
   }
 
   void bindItem(@NonNull OrderItem item) {
-    mKeychainNameTextView.setText(item.getName());
+    String name = item.getName();
+
+//  TODO  Distinguish whether item is in Best Seller list (WIP)
+//    if (name.startsWith("*")) {
+//      name = name.replace("*", "");
+//      name += " (Top Seller)";
+//    }
+
+    mKeychainNameTextView.setText(name);
 
     if (item.getQuantity() > 0) {
+      mLayout
+          .setBackgroundColor(mLayout.getContext().getResources().getColor(R.color.secondaryLightColor));
       mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
     } else {
+      mLayout
+          .setBackgroundColor(mLayout.getContext().getResources().getColor(android.R.color.background_light));
       mItemQuantityTextView.setText("");
     }
   }
