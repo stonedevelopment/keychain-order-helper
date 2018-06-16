@@ -24,4 +24,6 @@ interface OrderDetailCommander {
   void showConfirmSendOrderDialog();
 
   void showConfirmSendAcknowledgementDialog();
+
+  void showConfirmDeleteOrderDialog();
 }

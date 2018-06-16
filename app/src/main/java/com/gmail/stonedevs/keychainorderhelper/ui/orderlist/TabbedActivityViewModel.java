@@ -31,8 +31,6 @@ import com.gmail.stonedevs.keychainorderhelper.ui.orderdetail.OrderDetailActivit
 /**
  * ViewModel for the Order List screen.
  *
- * todo refactor to TabbedActivityViewModel
- *
  * will effectively tell activity which tab to show
  *
  * Treat this like a parent ViewModel for children ViewModels
@@ -174,8 +172,10 @@ public class TabbedActivityViewModel extends AndroidViewModel {
                 .setValue(R.string.snackbar_message_send_order_error_no_supported_apps);
             break;
           case OrderDetailActivity.RESULT_DATA_LOAD_ERROR:
-            //  send failed message
             mSnackBarMessenger.setValue(R.string.snackbar_message_data_loading_error);
+            break;
+          case OrderDetailActivity.RESULT_DELETE_ORDER_OK:
+            mSnackBarMessenger.setValue(R.string.snackbar_message_delete_order_ok);
             break;
         }
         break;

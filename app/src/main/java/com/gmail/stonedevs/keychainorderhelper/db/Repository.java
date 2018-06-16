@@ -76,12 +76,12 @@ public class Repository implements DataSource {
   }
 
   @Override
-  public void deleteOrder(@NonNull Order order, @NonNull DeleteCallback callback) {
+  public void deleteOrder(@NonNull CompleteOrder order, @NonNull DeleteCallback callback) {
     mLocalDataSource.deleteOrder(order, callback);
   }
 
   @Override
-  public void deleteOrders(@NonNull List<Order> orders, @NonNull DeleteCallback callback) {
+  public void deleteOrders(@NonNull List<CompleteOrder> orders, @NonNull DeleteCallback callback) {
     mLocalDataSource.deleteOrders(orders, callback);
   }
 

@@ -67,6 +67,11 @@ public interface DataSource {
      * @param rowsDeleted The amount of rows that were deleted.
      */
     void onDataDeleted(int rowsDeleted);
+
+    /**
+     * Data was not deleted successfully.
+     */
+    void onDataNotDeleted();
   }
 
   /**
@@ -106,7 +111,7 @@ public interface DataSource {
    * @param order Object to delete.
    * @param callback Listener to notify of deletion.
    */
-  void deleteOrder(@NonNull Order order, @NonNull DeleteCallback callback);
+  void deleteOrder(@NonNull CompleteOrder order, @NonNull DeleteCallback callback);
 
   /**
    * Delete a list of objects from database.
@@ -114,7 +119,7 @@ public interface DataSource {
    * @param orders List of objects to delete.
    * @param callback Listener to notify of deletions.
    */
-  void deleteOrders(@NonNull List<Order> orders, @NonNull DeleteCallback callback);
+  void deleteOrders(@NonNull List<CompleteOrder> orders, @NonNull DeleteCallback callback);
 
   /**
    * Delete all objects in table.

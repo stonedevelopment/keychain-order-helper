@@ -119,6 +119,12 @@
   <string name="dialog_positive_button_resend_order">Resend Order</string>
   <string name="dialog_negative_button_resend_order">Go Back</string>
 
+  <!--  AlertDialog:  Delete Order -->
+  <string name="dialog_title_delete_order">Delete Order</string>
+  <string name="dialog_message_delete_order">Are you sure you want to delete this order?</string>
+  <string name="dialog_positive_button_delete_order">Delete Order</string>
+  <string name="dialog_negative_button_delete_order">Go Back</string>
+
   <!--  AlertDialog:  Cancel Order -->
   <string name="dialog_title_cancel_order">Cancel Order</string>
   <string name="dialog_message_cancel_order">Are you sure you want to cancel your order? Any changes
@@ -166,10 +172,12 @@
     sent.</string>
   <string name="snackbar_message_send_order_fail_quantity_minimum_not_met">Minimum order quantity
     of %1$d not met, order not sent.</string>
-  <string name="snackbar_message_data_loading_error">There was an error loading data.</string>
+  <string name="snackbar_message_delete_order_ok">Order was deleted.</string>
+  <string name="snackbar_message_data_loading_error">There was an error loading order(s).</string>
   <string name="snackbar_message_data_deleted_success_one">Order was deleted.</string>
   <string name="snackbar_message_data_deleted_success_multiple">Orders were deleted.</string>
   <string name="snackbar_message_data_deleted_success_zero">No orders were deleted.</string>
+  <string name="snackbar_message_data_deleted_fail">There was an error deleting order(s).</string>
   <string name="snackbar_message_changes_saved">Changes were saved.</string>
   <string name="snackbar_message_no_changes">No changes were made.</string>
   <string name="snackbar_message_generate_file_failed">File generation failed.</string>

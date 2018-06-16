@@ -131,7 +131,7 @@ public class TabItemViewModel implements LoadAllCallback,
    * Sidenote:  We could possibly use this to allow for configuration changes to continue in this
    * manner instead of resetting the ui.
    */
-  void deleteOrders(List<Order> orders) {
+  void deleteOrders(List<CompleteOrder> orders) {
     beginLoadingPhase();
 
     getRepository().deleteOrders(orders, this);
@@ -179,5 +179,10 @@ public class TabItemViewModel implements LoadAllCallback,
     }
 
     loadData();
+  }
+
+  @Override
+  public void onDataNotDeleted() {
+    getSnackBarMessenger().setValue(R.string.snackbar_message_data_deleted_fail);
   }
 }

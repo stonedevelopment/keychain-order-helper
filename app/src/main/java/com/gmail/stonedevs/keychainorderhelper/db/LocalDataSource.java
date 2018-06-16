@@ -24,6 +24,7 @@ import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.OrderItem;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.util.executor.AppExecutors;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -158,16 +159,23 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void deleteOrder(@NonNull final Order order, @NonNull final DeleteCallback callback) {
+  public void deleteOrder(@NonNull final CompleteOrder order,
+      @NonNull final DeleteCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        final int rowsDeleted = mOrderDao.delete(order);
+        final int rowsDeleted = mOrderDao.delete(order.getOrder());
+
+        final boolean dataDeletedSuccessfully = rowsDeleted > 0;
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
           public void run() {
-            callback.onDataDeleted(rowsDeleted);
+            if (dataDeletedSuccessfully) {
+              callback.onDataDeleted(rowsDeleted);
+            } else {
+              callback.onDataNotDeleted();
+            }
           }
         });
       }
@@ -177,17 +185,28 @@ public class LocalDataSource implements DataSource {
   }
 
   @Override
-  public void deleteOrders(@NonNull final List<Order> orders,
+  public void deleteOrders(@NonNull final List<CompleteOrder> orders,
       @NonNull final DeleteCallback callback) {
     Runnable runnable = new Runnable() {
       @Override
       public void run() {
-        final int rowsDeleted = mOrderDao.delete(orders);
+        List<Order> rowsToDelete = new ArrayList<>(0);
+        for (CompleteOrder order : orders) {
+          rowsToDelete.add(order.getOrder());
+        }
+
+        final int rowsDeleted = mOrderDao.delete(rowsToDelete);
+
+        final boolean dataDeletedSuccessfully = orders.size() == rowsDeleted;
 
         mAppExecutors.mainThread().execute(new Runnable() {
           @Override
           public void run() {
-            callback.onDataDeleted(rowsDeleted);
+            if (dataDeletedSuccessfully) {
+              callback.onDataDeleted(rowsDeleted);
+            } else {
+              callback.onDataNotDeleted();
+            }
           }
         });
       }

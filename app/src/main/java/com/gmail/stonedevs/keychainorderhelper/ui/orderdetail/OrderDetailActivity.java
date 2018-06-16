@@ -68,6 +68,7 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
   //  RESULT_OK
   public static final int RESULT_SENT_ORDER_OK = RESULT_OK;
   public static final int RESULT_SENT_ACKNOWLEDGEMENT_OK = RESULT_SENT_ORDER_OK - 1;
+  public static final int RESULT_DELETE_ORDER_OK = RESULT_SENT_ACKNOWLEDGEMENT_OK - 1;
 
   //  RESULT_CANCELED
   public static final int RESULT_SENT_CANCEL = RESULT_CANCELED + 1;
@@ -117,6 +118,10 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
       case R.id.action_send_acknowledgement:
         mViewModel.initializeSendAcknowledgementPhase();
         showConfirmSendAcknowledgementDialog();
+        return true;
+      case R.id.action_delete:
+        mViewModel.initializeDeleteOrderPhase();
+        showConfirmDeleteOrderDialog();
         return true;
       case R.id.action_settings:
         startActivity(new Intent(this, SettingsActivity.class));
@@ -208,6 +213,22 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
       public void onChanged(@Nullable Void aVoid) {
         //  Data was not received properly.
         finishWithResult(RESULT_DATA_LOAD_ERROR);
+      }
+    });
+
+    mViewModel.getDataDeletedEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        //  Data was not received properly.
+        finishWithResult(RESULT_DELETE_ORDER_OK);
+      }
+    });
+
+    mViewModel.getErrorDeletingDataEvent().observe(this, new Observer<Void>() {
+      @Override
+      public void onChanged(@Nullable Void aVoid) {
+        //  Data was not deleted properly.
+        mViewModel.getSnackBarMessenger().setValue(R.string.snackbar_message_data_deleted_fail);
       }
     });
 
@@ -322,6 +343,28 @@ public class OrderDetailActivity extends AppCompatActivity implements OrderDetai
             mViewModel.endSendAcknowledgementPhase();
           }
         });
+    builder.setCancelable(false);
+    builder.show();
+  }
+
+  @Override
+  public void showConfirmDeleteOrderDialog() {
+    AlertDialog.Builder builder = new Builder(this);
+    builder.setTitle(R.string.dialog_title_delete_order);
+    builder.setMessage(R.string.dialog_message_delete_order);
+    builder.setPositiveButton(R.string.dialog_positive_button_delete_order,
+        new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            mViewModel.beginDeleteOrderPhase();
+          }
+        });
+    builder.setNegativeButton(R.string.dialog_negative_button_delete_order, new OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        mViewModel.endDeleteOrderPhase();
+      }
+    });
     builder.setCancelable(false);
     builder.show();
   }

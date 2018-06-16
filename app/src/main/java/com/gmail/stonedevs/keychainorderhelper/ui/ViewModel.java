@@ -22,10 +22,10 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SingleLiveEvent;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage;
+import com.gmail.stonedevs.keychainorderhelper.db.DataSource.DeleteCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.InsertCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.DataSource.LoadCallback;
 import com.gmail.stonedevs.keychainorderhelper.db.Repository;
@@ -39,7 +39,7 @@ import com.gmail.stonedevs.keychainorderhelper.util.excel.GenerateExcelFileTask;
  * ViewModel model for any screen that wishes to view, edit, or send an order.
  */
 public abstract class ViewModel extends AndroidViewModel implements LoadCallback,
-    GenerateExcelFileCallback, InsertCallback {
+    GenerateExcelFileCallback, InsertCallback, DeleteCallback {
 
   private static final String TAG = ViewModel.class.getSimpleName();
 
@@ -53,6 +53,8 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
   private final SingleLiveEvent<Boolean> mDataLoadingEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<CompleteOrder> mDataLoadedEvent = new SingleLiveEvent<>();
   private final SingleLiveEvent<Void> mErrorLoadingDataEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mErrorDeletingDataEvent = new SingleLiveEvent<>();
+  private final SingleLiveEvent<Void> mDataDeletedEvent = new SingleLiveEvent<>();
 
   private final SnackBarMessage mSnackBarMessenger = new SnackBarMessage();
 
@@ -68,6 +70,9 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
 
   //  Are we in the sending order process?
   private boolean mSendingOrder;
+
+  //  Are we in the deleting order process?
+  private boolean mDeletingOrder;
 
   //  Are we in the sending order acknowledgement process?
   private boolean mSendingAcknowledgement;
@@ -101,7 +106,7 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
   /**
    * Updates the current order's store name. If order object is null, nullify view model's order id
    * variable as this is most likely being called by the layout after garbage collection. Meaning,
-   * let's just reset and start a new order when {@link #start(String)} is called.
+   * let's just reset and start a new order when START is called.
    */
   public void updateStoreName(String storeName) {
     if (mOrder != null) {
@@ -151,6 +156,14 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
     return mErrorLoadingDataEvent;
   }
 
+  public SingleLiveEvent<Void> getErrorDeletingDataEvent() {
+    return mErrorDeletingDataEvent;
+  }
+
+  public SingleLiveEvent<Void> getDataDeletedEvent() {
+    return mDataDeletedEvent;
+  }
+
   /**
    * Readies order for observers to use.
    */
@@ -191,6 +204,10 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
     mRepository.saveOrder(mOrder, this);
   }
 
+  private void deleteOrder() {
+    mRepository.deleteOrder(mOrder, this);
+  }
+
   /**
    * Are we currently in the process of sending an order?
    */
@@ -228,6 +245,19 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
    */
   public void endSendOrderPhase() {
     mSendingOrder = false;
+  }
+
+  public void initializeDeleteOrderPhase() {
+    mDeletingOrder = true;
+  }
+
+  public void beginDeleteOrderPhase() {
+    //  Delete order from database
+    deleteOrder();
+  }
+
+  public void endDeleteOrderPhase() {
+    mDeletingOrder = false;
   }
 
   /**
@@ -321,5 +351,19 @@ public abstract class ViewModel extends AndroidViewModel implements LoadCallback
     if (!mSendingOrder || !mSendingAcknowledgement) {
       updateUI();
     }
+  }
+
+  @Override
+  public void onDataDeleted(int rowsDeleted) {
+    //  close order detail screen
+    //  update list data in order list screen
+    mDataDeletedEvent.call();
+  }
+
+  @Override
+  public void onDataNotDeleted() {
+    endDeleteOrderPhase();
+
+    mErrorDeletingDataEvent.call();
   }
 }
