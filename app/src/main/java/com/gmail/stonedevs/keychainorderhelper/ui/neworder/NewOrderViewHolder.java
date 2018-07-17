@@ -68,7 +68,7 @@ public class NewOrderViewHolder extends RecyclerView.ViewHolder implements OnCli
 
     if (item.getQuantity() > 0) {
       mLayout
-          .setBackgroundColor(mLayout.getContext().getResources().getColor(R.color.secondaryLightColor));
+          .setBackgroundColor(mLayout.getContext().getResources().getColor(R.color.accent_material_dark));
       mItemQuantityTextView.setText(String.valueOf(item.getQuantity()));
     } else {
       mLayout

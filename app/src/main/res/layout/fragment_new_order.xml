@@ -22,27 +22,39 @@
     android:id="@+id/orderItemListRecyclerView"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_marginBottom="8dp"
     android:scrollbars="vertical"
-    app:layout_constraintBottom_toTopOf="@+id/subtotalTextView"
+    app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     tools:listitem="@layout/list_item_order_item">
   </android.support.v7.widget.RecyclerView>
 
-  <TextView
-    android:id="@+id/subtotalTextView"
+  <android.support.constraint.ConstraintLayout
+    android:id="@+id/constraintLayout"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:text="@string/string_format_layout_subtotal_text"
-    android:textAlignment="viewEnd"
-    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+    android:elevation="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"/>
+    app:layout_constraintStart_toStartOf="parent">
+
+    <TextView
+      android:id="@+id/subtotalTextView"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:text="@string/string_format_layout_subtotal_text"
+      android:textAlignment="viewEnd"
+      android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      tools:text="0"/>
+  </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
