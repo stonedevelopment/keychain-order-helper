@@ -61,7 +61,6 @@ import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.PrefUtils;
 
-// TODO: 6/5/2018 Implement taffy excel spreadsheet
 // TODO: 6/7/2018 Top sellers list to be bold in item ListView
 
 /**
@@ -230,7 +229,6 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
   }
 
   private void setupViewModel() {
-    Log.d(TAG, "setupViewModel: ");
     mViewModel = obtainViewModel(this);
   }
 

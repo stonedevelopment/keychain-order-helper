@@ -42,8 +42,8 @@
       android:id="@+id/divider"
       android:layout_width="match_parent"
       android:layout_height="1dp"
-      android:background="?android:attr/listDivider"
-      />
+      android:background="?android:attr/listDivider"/>
+
     <TextView
       android:id="@+id/subtotalTextView"
       android:layout_width="0dp"
