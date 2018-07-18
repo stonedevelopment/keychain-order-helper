@@ -25,6 +25,14 @@
     <item>6</item>
   </integer-array>
 
+  <!--  Order Item Quantity Values: Keychains -->
+  <integer-array name="order_item_quantity_values_keychains_pugs">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+  </integer-array>
+
   <!--  Order Item Quantity Values: Taffy -->
   <integer-array name="order_item_quantity_values_taffy">
     <item>0</item>

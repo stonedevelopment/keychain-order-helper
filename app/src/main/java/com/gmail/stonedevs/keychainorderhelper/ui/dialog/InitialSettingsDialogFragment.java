@@ -28,11 +28,13 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import com.gmail.stonedevs.keychainorderhelper.R;
@@ -42,11 +44,14 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
 
   private static final String TAG = InitialSettingsDialogFragment.class.getSimpleName();
 
+  private AppCompatSpinner mCompanyDivisionSpinner;
+
   private TextInputLayout mRepNameTextInputLayout;
   private TextInputEditText mRepNameEditText;
-  private Button mSaveButton;
 
   private EditText mRepTerritoryEditText;
+
+  private Button mSaveButton;
 
   private OnSaveListener mListener;
 
@@ -76,8 +81,16 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     @SuppressLint("InflateParams") View view = getActivity().getLayoutInflater()
         .inflate(R.layout.dialog_initial_settings, null);
 
+    //  Instantiate save button first for events from other widgets
     mSaveButton = view.findViewById(R.id.saveButton);
     mSaveButton.setOnClickListener(this);
+
+    mCompanyDivisionSpinner = view.findViewById(R.id.companyDivisionSpinner);
+//    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
+//        .createFromResource(getContext(), R.array.pref_array_company_division,
+//            R.layout.simple_spinner_item);
+////    spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+//    mCompanyDivisionSpinner.setAdapter(spinnerAdapter);
 
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);
     mRepNameEditText = view.findViewById(R.id.repNameEditText);
@@ -106,12 +119,13 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     }
   }
 
-  private void saveInitialSettings(String repName, String repTerritory) {
+  private void saveInitialSettings(String repName, String repTerritory, String companyDivision) {
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
     prefs.edit()
         .putString(getContext().getString(R.string.pref_key_rep_name), repName)
         .putString(getContext().getString(R.string.pref_key_rep_territory), repTerritory)
+        .putString(getContext().getString(R.string.pref_key_company_division), companyDivision)
         .apply();
   }
 
@@ -119,9 +133,10 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
   public void onClick(View v) {
     String nameText = mRepNameEditText.getText().toString();
     String territoryText = mRepTerritoryEditText.getText().toString();
+    String companyDivision = mCompanyDivisionSpinner.getSelectedItem().toString();
 
     if (!TextUtils.isEmpty(nameText)) {
-      saveInitialSettings(nameText, territoryText);
+      saveInitialSettings(nameText, territoryText,companyDivision);
       mListener.onSave();
       dismiss();
     }

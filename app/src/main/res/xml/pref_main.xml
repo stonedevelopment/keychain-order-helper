@@ -11,4 +11,11 @@
     android:summary="@string/pref_description_rep_territory"
     android:title="@string/pref_title_rep_territory"/>
 
+  <ListPreference
+    android:key="@string/pref_key_company_division"
+    android:summary="@string/pref_description_company_division"
+    android:entries="@array/pref_entries_company_division"
+    android:entryValues="@array/pref_entries_company_division"
+    android:title="@string/pref_title_company_division"/>
+
 </PreferenceScreen>

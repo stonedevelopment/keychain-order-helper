@@ -69,9 +69,10 @@
     enter your name, as you would usually on order forms, and your territory (Ex: LIT3).\n\nLeave
     Territory blank if you do not have a set territory.</string>
   <string name="dialog_hint_initial_settings_rep_name">Your Name</string>
-  <string name="dialog_field_error_initial_settings_rep_name_text">This field is required.</string>
   <string name="dialog_hint_initial_settings_rep_territory">Your Territory</string>
+  <string name="dialog_label_initial_settings_company_division">Company Division</string>
   <string name="dialog_positive_button_initial_settings">Save</string>
+  <string name="dialog_field_error_initial_settings_rep_name_text">This field is required.</string>
 
   <!--  Layouts:  TerritoryDialogFragment -->
   <string name="dialog_title_territory">Order Territory</string>
@@ -201,6 +202,16 @@
   <string name="pref_debug_default_value_rep_territory">USA1</string>
   <string name="pref_error_default_value_rep_territory">NOT_SET</string>
 
+  <!--  Settings: Company Division -->
+  <string name="pref_key_company_division">pref_key_rep_company_division</string>
+  <string name="pref_title_company_division">Company Division</string>
+  <string name="pref_description_company_division">United we stand, divided we fall.</string>
+  <string-array name="pref_entries_company_division">
+    <item>Solaray</item>
+    <item>Pugs</item>
+  </string-array>
+  <string name="pref_default_value_company_division">Solaray</string>
+
   <!--  String formats -->
   <!--  String formats: Filename (Ex: app_keychain_order-lit3-big_red_148-20180205.xls) -->
   <string name="string_format_filename_keychains">app_keychain_order-%1$s-%2$s-%3$s.xls</string>
@@ -228,7 +239,7 @@
   <string name="string_format_list_item_order_sent_text_today">Sent %1$s</string>
 
   <!--  String formats: Subtotal for new orders (Ex: Subtotal: 0) -->
-  <string name="string_format_layout_subtotal_text">Subtotal: %1$d</string>
+  <string name="string_format_layout_subtotal_text">Order Quantity: %1$d</string>
 
   <!--  Strings related to Excel -->
   <string name="excel_template_filename_keychains">template_keychains.xls</string>
@@ -236,6 +247,7 @@
 
   <string name="layout_text_view_rep_name">Rep Name:</string>
   <string name="layout_text_view_rep_territory">Rep Territory:</string>
+  <string name="layout_text_view_company_division">Company Division:</string>
   <string name="layout_text_view_store_name">Store Name:</string>
   <string name="layout_text_view_order_quantity">Order Quantity:</string>
 

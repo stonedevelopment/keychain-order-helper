@@ -115,8 +115,13 @@ public class OrderUtils {
   public static String getSendToEmail(Context c, int orderCategory) {
     switch (orderCategory) {
       case ORDER_CATEGORY_KEYCHAINS:
-        return StringUtils
-            .getStringResource(c, R.string.intent_extra_email_default_value_keychains);
+        if (PrefUtils.isCompanyDivisionDefault(c)) {
+          return StringUtils
+              .getStringResource(c, R.string.intent_extra_email_default_value_keychains);
+        } else {
+          return StringUtils
+              .getStringResource(c, R.string.intent_extra_email_default_value_keychains_pugs);
+        }
       case ORDER_CATEGORY_TAFFY:
         return StringUtils.getStringResource(c, R.string.intent_extra_email_default_value_taffy);
       default:
@@ -173,7 +178,13 @@ public class OrderUtils {
   public static int[] getItemQuantities(Context c, int orderCategory) {
     switch (orderCategory) {
       case ORDER_CATEGORY_KEYCHAINS:
-        return StringUtils.getIntegerArrayResource(c, R.array.order_item_quantity_values_keychains);
+        if (PrefUtils.isCompanyDivisionDefault(c)) {
+          return StringUtils
+              .getIntegerArrayResource(c, R.array.order_item_quantity_values_keychains);
+        } else {
+          return StringUtils
+              .getIntegerArrayResource(c, R.array.order_item_quantity_values_keychains_pugs);
+        }
       case ORDER_CATEGORY_TAFFY:
         return StringUtils.getIntegerArrayResource(c, R.array.order_item_quantity_values_taffy);
       default:
@@ -184,8 +195,13 @@ public class OrderUtils {
   public static int getOrderQuantityMinimum(Context c, int orderCategory) {
     switch (orderCategory) {
       case ORDER_CATEGORY_KEYCHAINS:
-        return StringUtils
-            .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_keychains);
+        if (PrefUtils.isCompanyDivisionDefault(c)) {
+          return StringUtils
+              .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_keychains);
+        } else {
+          return StringUtils
+              .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_keychains_pugs);
+        }
       case ORDER_CATEGORY_TAFFY:
         return StringUtils
             .getIntegerResource(c, R.integer.order_quantity_minimum_requirement_taffy);

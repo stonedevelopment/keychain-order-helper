@@ -20,6 +20,8 @@ import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KE
 import static com.gmail.stonedevs.keychainorderhelper.util.BundleUtils.BUNDLE_KEY_ORDER_ID;
 
 import android.arch.lifecycle.Observer;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -37,6 +39,7 @@ import com.gmail.stonedevs.keychainorderhelper.R;
 import com.gmail.stonedevs.keychainorderhelper.SnackBarMessage.SnackBarObserver;
 import com.gmail.stonedevs.keychainorderhelper.db.entity.Order;
 import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
+import com.gmail.stonedevs.keychainorderhelper.util.PrefUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.SnackbarUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
 
@@ -46,7 +49,7 @@ import com.gmail.stonedevs.keychainorderhelper.util.StringUtils;
  * Users can click on the list to adjust quantities of items, and edit the territory this order
  * belongs to.
  */
-public class NewOrderFragment extends Fragment {
+public class NewOrderFragment extends Fragment implements OnSharedPreferenceChangeListener {
 
   //  Debug tag used for logging.
   private static final String TAG = NewOrderFragment.class.getSimpleName();
@@ -99,6 +102,18 @@ public class NewOrderFragment extends Fragment {
   }
 
   @Override
+  public void onResume() {
+    super.onResume();
+    PrefUtils.getPrefs(getContext()).registerOnSharedPreferenceChangeListener(this);
+  }
+
+  @Override
+  public void onDestroy() {
+    PrefUtils.getPrefs(getContext()).unregisterOnSharedPreferenceChangeListener(this);
+    super.onDestroy();
+  }
+
+  @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     return inflater.inflate(R.layout.fragment_new_order, container, false);
@@ -148,8 +163,7 @@ public class NewOrderFragment extends Fragment {
         layoutManager.getOrientation());
     recyclerView.addItemDecoration(dividerItemDecoration);
 
-    mAdapter = new NewOrderAdapter(getActivity(), mViewModel);
-
+    mAdapter = new NewOrderAdapter(mViewModel);
     recyclerView.setAdapter(mAdapter);
   }
 
@@ -202,6 +216,13 @@ public class NewOrderFragment extends Fragment {
       //  create an instance of a fragment used for creating
       int orderCategory = getArguments().getInt(BUNDLE_KEY_ORDER_CATEGORY);
       mViewModel.start(orderCategory);
+    }
+  }
+
+  @Override
+  public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+    if (PrefUtils.isCompanyDivisionPrefKey(getContext(), s)) {
+      mAdapter.updateItemQuantities(getContext(), mViewModel.getOrderCategory());
     }
   }
 }

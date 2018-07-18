@@ -23,6 +23,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -39,6 +40,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,6 +59,7 @@ import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.ActivityUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.BundleUtils;
 import com.gmail.stonedevs.keychainorderhelper.util.OrderUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.PrefUtils;
 
 // TODO: 6/5/2018 Implement taffy excel spreadsheet
 // TODO: 6/7/2018 Top sellers list to be bold in item ListView
@@ -227,6 +230,7 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
   }
 
   private void setupViewModel() {
+    Log.d(TAG, "setupViewModel: ");
     mViewModel = obtainViewModel(this);
   }
 
@@ -415,19 +419,23 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
     AlertDialog.Builder builder = new Builder(this);
     builder.setTitle(R.string.dialog_title_send_order);
 
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    String repName = prefs.getString(getString(R.string.pref_key_rep_name), null);
+    String repName = PrefUtils.getRepName(this);
     String repTerritory = mViewModel.getTerritory();
+    String companyDivision = PrefUtils.getCompanyDivision(this);
     String storeName = mViewModel.getStoreName();
     int orderQuantity = mViewModel.getOrderQuantity();
     String orderQuantityFormat = String
         .format(getString(R.string.string_format_list_item_order_total_text), orderQuantity);
 
     View view = View.inflate(this, R.layout.dialog_send_order, null);
+
     TextView repNameTextView = view.findViewById(R.id.repNameTextView);
     repNameTextView.setText(repName);
     TextView repTerritoryTextView = view.findViewById(R.id.repTerritoryTextView);
     repTerritoryTextView.setText(repTerritory);
+    TextView companyDivisionTextView = view.findViewById(R.id.companyDivisionTextView);
+    companyDivisionTextView.setText(companyDivision);
+
     TextView storeNameTextView = view.findViewById(R.id.storeNameTextView);
     storeNameTextView.setText(storeName);
     TextView orderQuantityTextView = view.findViewById(R.id.orderQuantityTextView);
@@ -540,4 +548,5 @@ public class NewOrderActivity extends AppCompatActivity implements NewOrderComma
       finishWithResult(RESULT_SENT_ERROR_NO_APPS);
     }
   }
+
 }

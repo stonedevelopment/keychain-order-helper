@@ -35,6 +35,7 @@ import com.gmail.stonedevs.keychainorderhelper.model.CompleteOrder;
 import com.gmail.stonedevs.keychainorderhelper.model.json.JSONOrder;
 import com.gmail.stonedevs.keychainorderhelper.ui.orderlist.OrderListActivity;
 import com.gmail.stonedevs.keychainorderhelper.util.JSONUtils;
+import com.gmail.stonedevs.keychainorderhelper.util.PrefUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
   //  ViewModel variables
   private String mRepName;
   private String mRepTerritory;
+  private String mCompanyDivision;
 
   public MainActivityViewModel(@NonNull Application application, @NonNull Repository repository) {
     super(application);
@@ -75,8 +77,20 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
     return mRepTerritory;
   }
 
+  String getCompanyDivision() {
+    return mCompanyDivision;
+  }
+
   private boolean isReady() {
+    return isRepNameReady() && isCompanyDivisionReady();
+  }
+
+  private boolean isRepNameReady() {
     return !TextUtils.isEmpty(mRepName);
+  }
+
+  private boolean isCompanyDivisionReady() {
+    return !TextUtils.isEmpty(mCompanyDivision);
   }
 
   SingleLiveEvent<Void> getOpenInitialSettingsDialogCommand() {
@@ -101,19 +115,17 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
    */
   private void setupDefaultValues() {
     Context c = getApplication().getApplicationContext();
-    SharedPreferences prefs = PreferenceManager
-        .getDefaultSharedPreferences(c);
 
-    mRepName = prefs.getString(c.getString(R.string.pref_key_rep_name), "");
-    mRepTerritory = prefs.getString(c.getString(R.string.pref_key_rep_territory), "");
+    mRepName = PrefUtils.getRepName(c);
+    mRepTerritory = PrefUtils.getRepTerritory(c);
+    mCompanyDivision = PrefUtils.getCompanyDivision(c);
   }
 
   /**
    * Perform the steps required to keep newest version up to date and clean.
    */
   private void performUpdateCleanUp() {
-    updateFrom4to5_prefs();
-    updateFrom4to5_json();
+    updateFrom4to5();
   }
 
   /**
@@ -123,6 +135,11 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
    *
    * Imports old orders.json file into database.
    */
+  private void updateFrom4to5() {
+    updateFrom4to5_prefs();
+    updateFrom4to5_json();
+  }
+
   private void updateFrom4to5_prefs() {
     Context context = getApplication();
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -189,6 +206,20 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
       // TODO: 3/11/2018 Update firebase that file was not removed
       Log.e(TAG, "updateFrom4to5: file was not removed.");
     }
+  }
+
+  /**
+   * Update from version 8 (0.1.3) to 9 (0.1.4)
+   */
+  private void updateFrom8to9() {
+
+  }
+
+  private void updateFrom8to9_prefs() {
+    Context context = getApplication();
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+
   }
 
   /**
