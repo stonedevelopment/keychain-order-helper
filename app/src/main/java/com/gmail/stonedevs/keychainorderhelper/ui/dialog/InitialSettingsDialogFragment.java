@@ -38,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import com.gmail.stonedevs.keychainorderhelper.R;
+import com.gmail.stonedevs.keychainorderhelper.util.PrefUtils;
 
 public class InitialSettingsDialogFragment extends DialogFragment implements OnClickListener,
     TextWatcher {
@@ -87,10 +88,14 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
 
     mCompanyDivisionSpinner = view.findViewById(R.id.companyDivisionSpinner);
 //    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
-//        .createFromResource(getContext(), R.array.pref_array_company_division,
-//            R.layout.simple_spinner_item);
-////    spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+//        .createFromResource(getContext(), R.array.pref_entries_company_division,
+//            android.R.layout.simple_spinner_item);
+//    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //    mCompanyDivisionSpinner.setAdapter(spinnerAdapter);
+
+    if (!PrefUtils.isCompanyDivisionDefault(getContext())) {
+      mCompanyDivisionSpinner.setSelection(1);
+    }
 
     mRepNameTextInputLayout = view.findViewById(R.id.repNameTextInputLayout);
     mRepNameEditText = view.findViewById(R.id.repNameEditText);

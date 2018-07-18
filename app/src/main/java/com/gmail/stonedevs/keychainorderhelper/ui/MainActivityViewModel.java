@@ -209,20 +209,6 @@ public class MainActivityViewModel extends AndroidViewModel implements InsertCal
   }
 
   /**
-   * Update from version 8 (0.1.3) to 9 (0.1.4)
-   */
-  private void updateFrom8to9() {
-
-  }
-
-  private void updateFrom8to9_prefs() {
-    Context context = getApplication();
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-
-  }
-
-  /**
    * If the Required Fields are not empty, open {@link OrderListActivity},
    * Otherwise, open dialog for user to enter their name and territory.
    */
