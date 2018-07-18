@@ -202,12 +202,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       EditText editRepTerritory = editRepTerritoryPref.getEditText();
       editRepTerritory.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
+      ListPreference companyDivisionPref = (ListPreference) findPreference(
+          getString(R.string.pref_key_company_division));
+
       // Bind the summaries of EditText/List/Dialog/Ringtone preferences
       // to their values. When their values change, their summaries are
       // updated to reflect the new value, per the Android Design
       // guidelines.
       bindPreferenceSummaryToValue(editRepNamePref);
       bindPreferenceSummaryToValue(editRepTerritoryPref);
+      bindPreferenceSummaryToValue(companyDivisionPref);
     }
 
     @Override

@@ -17,6 +17,7 @@
 package com.gmail.stonedevs.keychainorderhelper.ui.neworder;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,17 +39,16 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
   private List<OrderItem> mItems;
 
   private int[] mItemQuantities;
-  private String[] mBestSellers;
 
-  NewOrderAdapter(Context c, NewOrderViewModel viewModel) {
-
+  NewOrderAdapter(NewOrderViewModel viewModel) {
     mViewModel = viewModel;
 
     setData(new ArrayList<OrderItem>(0));
   }
 
+  @NonNull
   @Override
-  public NewOrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  public NewOrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.list_item_order_item, parent, false);
 
@@ -56,7 +56,7 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
   }
 
   @Override
-  public void onBindViewHolder(NewOrderViewHolder holder, int position) {
+  public void onBindViewHolder(@NonNull NewOrderViewHolder holder, int position) {
     OrderItem item = getItem(position);
     holder.bindItem(item);
   }
@@ -82,10 +82,6 @@ public class NewOrderAdapter extends RecyclerView.Adapter<NewOrderViewHolder> im
   void setData(List<OrderItem> items) {
     mItems = items;
     notifyDataSetChanged();
-  }
-
-  void updateBestSellers(Context c, int orderCategory) {
-    mBestSellers = OrderUtils.getBestSellers(c, orderCategory);
   }
 
   void updateItemQuantities(Context c, int orderCategory) {

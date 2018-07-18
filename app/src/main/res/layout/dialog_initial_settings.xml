@@ -33,18 +33,42 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"/>
 
+  <TextView
+    android:id="@+id/companyDivisionTextView"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:text="@string/dialog_label_initial_settings_company_division"
+    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/messageTextView"/>
+
+  <Spinner
+    android:id="@+id/companyDivisionSpinner"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:entries="@array/pref_entries_company_division"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/companyDivisionTextView"/>
+
   <android.support.design.widget.TextInputLayout
     android:id="@+id/repNameTextInputLayout"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="24dp"
+    android:layout_marginTop="16dp"
     android:layout_marginStart="24dp"
     android:layout_marginEnd="24dp"
     app:errorEnabled="true"
     app:errorTextAppearance="@style/Error"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/messageTextView">
+    app:layout_constraintTop_toBottomOf="@+id/companyDivisionSpinner">
 
     <android.support.design.widget.TextInputEditText
       android:id="@+id/repNameEditText"
@@ -62,6 +86,7 @@
     android:id="@+id/repTerritoryEditText"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
     android:layout_marginStart="24dp"
     android:layout_marginEnd="24dp"
     android:ems="10"
@@ -78,7 +103,6 @@
     style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
     android:text="@string/dialog_positive_button_initial_settings"
     app:layout_constraintEnd_toEndOf="parent"

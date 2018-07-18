@@ -49,9 +49,7 @@ public class EmailUtils {
     intent.setType("vnd.android.cursor.dir/email");
 
     //  set email address from preferences
-    String sendtoEmail =
-        BuildConfig.DEBUG ? context.getString(R.string.intent_extra_email_default_value_debug)
-            : OrderUtils.getSendToEmail(context, order.getOrderCategory());
+    String sendtoEmail = OrderUtils.getSendToEmail(context, order.getOrderCategory());
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 
@@ -89,9 +87,7 @@ public class EmailUtils {
     intent.setType("vnd.android.cursor.dir/email");
 
     //  set email address from preferences
-    String sendtoEmail =
-        BuildConfig.DEBUG ? context.getString(R.string.intent_extra_email_default_value_debug)
-            : OrderUtils.getSendToEmail(context, order.getOrderCategory());
+    String sendtoEmail = OrderUtils.getSendToEmail(context, order.getOrderCategory());
     String to[] = {sendtoEmail};
     intent.putExtra(Intent.EXTRA_EMAIL, to);
 

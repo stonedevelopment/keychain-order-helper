@@ -18,8 +18,8 @@ android {
         applicationId "com.gmail.stonedevs.keychainorderhelper"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 8
-        versionName '0.1.3'
+        versionCode 9
+        versionName '0.1.4'
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
