@@ -34,7 +34,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import com.gmail.stonedevs.keychainorderhelper.R;
@@ -87,13 +86,9 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     mSaveButton.setOnClickListener(this);
 
     mCompanyDivisionSpinner = view.findViewById(R.id.companyDivisionSpinner);
-//    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
-//        .createFromResource(getContext(), R.array.pref_entries_company_division,
-//            android.R.layout.simple_spinner_item);
-//    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//    mCompanyDivisionSpinner.setAdapter(spinnerAdapter);
-
     if (!PrefUtils.isCompanyDivisionDefault(getContext())) {
+      //  lazy load the second division as Pugs
+      //  TODO  Iterate adapter items to match currently selected division
       mCompanyDivisionSpinner.setSelection(1);
     }
 
@@ -141,7 +136,7 @@ public class InitialSettingsDialogFragment extends DialogFragment implements OnC
     String companyDivision = mCompanyDivisionSpinner.getSelectedItem().toString();
 
     if (!TextUtils.isEmpty(nameText)) {
-      saveInitialSettings(nameText, territoryText,companyDivision);
+      saveInitialSettings(nameText, territoryText, companyDivision);
       mListener.onSave();
       dismiss();
     }

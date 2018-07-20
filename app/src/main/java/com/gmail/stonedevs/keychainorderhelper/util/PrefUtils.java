@@ -43,7 +43,8 @@ public class PrefUtils {
   }
 
   static public boolean isCompanyDivisionDefault(Context c) {
-    return getCompanyDivision(c).equals(c.getString(R.string.pref_default_value_company_division));
+    String companyDivision = getCompanyDivision(c);
+    return companyDivision.isEmpty() || companyDivision.equals(c.getString(R.string.pref_default_value_company_division));
   }
 
   static private String getCompanyDivisionPrefKey(Context c) {
