@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/KeychainOrderHelper.iml" filepath="$PROJECT_DIR$/KeychainOrderHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/keychain-order-helper.iml" filepath="$PROJECT_DIR$/keychain-order-helper.iml" />
     </modules>
   </component>
 </project>
