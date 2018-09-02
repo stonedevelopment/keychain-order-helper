@@ -171,8 +171,8 @@ public class GenerateExcelFileTask extends AsyncTask<Void, Void, Uri> {
             OrderItem orderItem = orderItems.get( i );
 
             if ( orderItem != null ) {
-                Cell nameCell = ExcelUtils.getCellByAddress( sheet, itemNameCellLocations[i] );
-                nameCell.setCellValue( orderItem.getName() );
+//                Cell nameCell = ExcelUtils.getCellByAddress( sheet, itemNameCellLocations[i] );
+//                nameCell.setCellValue( orderItem.getName() );
 
                 Cell quantityCell = ExcelUtils.getCellByAddress( sheet, itemQuantityCellLocations[i] );
                 int quantity = orderItem.getQuantity();
